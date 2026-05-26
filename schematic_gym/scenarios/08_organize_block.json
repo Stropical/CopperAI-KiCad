@@ -1,0 +1,117 @@
+{
+  "scenario_id": "08_organize_block",
+  "name": "Organize Op-Amp Block",
+  "description": "An LM358 op-amp with two feedback resistors is poorly laid out. Reorganize the components into a clean, readable inverting amplifier configuration without breaking connectivity.",
+  "sheet": {
+    "width": 297,
+    "height": 210,
+    "paper": "A4"
+  },
+  "symbol_catalog": [
+    "LM358",
+    "R",
+    "VCC",
+    "GND"
+  ],
+  "initial_state": {
+    "instances": [
+      {
+        "symbol_id": "LM358",
+        "reference": "U1",
+        "value": "LM358",
+        "x": 145.0,
+        "y": 105.0,
+        "rotation": 0
+      },
+      {
+        "symbol_id": "R",
+        "reference": "R1",
+        "value": "10k",
+        "x": 100.0,
+        "y": 120.0,
+        "rotation": 90
+      },
+      {
+        "symbol_id": "R",
+        "reference": "R2",
+        "value": "100k",
+        "x": 160.0,
+        "y": 70.0,
+        "rotation": 90
+      }
+    ],
+    "wires": [
+      {
+        "x1": 101.27,
+        "y1": 120.0,
+        "x2": 139.92,
+        "y2": 120.0
+      },
+      {
+        "x1": 139.92,
+        "y1": 120.0,
+        "x2": 139.92,
+        "y2": 106.27
+      },
+      {
+        "x1": 151.35,
+        "y1": 105.0,
+        "x2": 160.0,
+        "y2": 105.0
+      },
+      {
+        "x1": 160.0,
+        "y1": 105.0,
+        "x2": 160.0,
+        "y2": 71.27
+      },
+      {
+        "x1": 160.0,
+        "y1": 68.73,
+        "x2": 139.92,
+        "y2": 68.73
+      },
+      {
+        "x1": 139.92,
+        "y1": 68.73,
+        "x2": 139.92,
+        "y2": 106.27
+      }
+    ],
+    "junctions": [],
+    "labels": [],
+    "power_symbols": [
+      {
+        "symbol_id": "VCC",
+        "x": 145.0,
+        "y": 85.0,
+        "rotation": 0
+      },
+      {
+        "symbol_id": "GND",
+        "x": 145.0,
+        "y": 125.0,
+        "rotation": 0
+      }
+    ]
+  },
+  "objectives": [
+    {
+      "type": "cleanup",
+      "target_readability": 0.6,
+      "step_budget": 50
+    }
+  ],
+  "net_names": [
+    "VIN",
+    "VOUT",
+    "VFB",
+    "VCC",
+    "GND"
+  ],
+  "scoring_overrides": {
+    "readability_weight": 0.6,
+    "electrical_weight": 0.4
+  },
+  "curriculum_level": 8
+}

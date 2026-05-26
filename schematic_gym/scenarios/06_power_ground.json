@@ -1,0 +1,36 @@
+{
+  "scenario_id": "06_power_ground",
+  "name": "Power and Ground Connections",
+  "description": "Connect a pre-placed resistor (acting as an IC placeholder) to VCC and GND power symbols. One pin goes to VCC, the other to GND.",
+  "sheet": {
+    "width": 297,
+    "height": 210,
+    "paper": "A4"
+  },
+  "symbol_catalog": ["R", "VCC", "GND"],
+  "initial_state": {
+    "instances": [
+      {"symbol_id": "R", "reference": "R1", "value": "IC_STUB", "x": 130.0, "y": 90.0, "rotation": 0}
+    ],
+    "wires": [],
+    "junctions": [],
+    "labels": [],
+    "power_symbols": [
+      {"symbol_id": "VCC", "x": 130.0, "y": 75.0, "rotation": 0},
+      {"symbol_id": "GND", "x": 130.0, "y": 105.0, "rotation": 0}
+    ]
+  },
+  "objectives": [
+    {
+      "type": "connect_all",
+      "required_connections": [
+        {"pin_a": "R1.1", "pin_b": "VCC.1", "net_name": "VCC"},
+        {"pin_a": "R1.2", "pin_b": "GND.1", "net_name": "GND"}
+      ],
+      "step_budget": 30
+    }
+  ],
+  "net_names": ["VCC", "GND"],
+  "scoring_overrides": {},
+  "curriculum_level": 6
+}

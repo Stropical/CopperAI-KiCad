@@ -1,0 +1,40 @@
+{
+  "scenario_id": "05_avoid_crossings",
+  "name": "Avoid Wire Crossings",
+  "description": "Four components are pre-placed in a layout that tempts diagonal or crossing wires. Route all connections using only orthogonal paths with no crossings.",
+  "sheet": {
+    "width": 297,
+    "height": 210,
+    "paper": "A4"
+  },
+  "symbol_catalog": ["R", "C"],
+  "initial_state": {
+    "instances": [
+      {"symbol_id": "R", "reference": "R1", "value": "10k", "x": 90.0,  "y": 70.0,  "rotation": 0},
+      {"symbol_id": "C", "reference": "C1", "value": "10n", "x": 150.0, "y": 70.0,  "rotation": 0},
+      {"symbol_id": "R", "reference": "R2", "value": "10k", "x": 90.0,  "y": 110.0, "rotation": 0},
+      {"symbol_id": "C", "reference": "C2", "value": "10n", "x": 150.0, "y": 110.0, "rotation": 0}
+    ],
+    "wires": [],
+    "junctions": [],
+    "labels": [],
+    "power_symbols": []
+  },
+  "objectives": [
+    {
+      "type": "connect_all",
+      "required_connections": [
+        {"pin_a": "R1.2", "pin_b": "C2.1", "net_name": "CROSS_A"},
+        {"pin_a": "R2.2", "pin_b": "C1.1", "net_name": "CROSS_B"},
+        {"pin_a": "R1.1", "pin_b": "R2.1", "net_name": "IN"},
+        {"pin_a": "C1.2", "pin_b": "C2.2", "net_name": "OUT"}
+      ],
+      "step_budget": 40
+    }
+  ],
+  "net_names": ["IN", "OUT", "CROSS_A", "CROSS_B"],
+  "scoring_overrides": {
+    "crossing_penalty": -0.15
+  },
+  "curriculum_level": 5
+}

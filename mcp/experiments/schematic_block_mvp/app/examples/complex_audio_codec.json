@@ -1,0 +1,49 @@
+{
+  "block_type": "opamp_noninverting",
+  "components": [
+    {
+      "id": "U1", "kind": "opamp_ic",
+      "pins": ["IN+", "IN-", "OUT", "V+", "V-",
+               "BCLK", "LRCLK", "SDIN", "SDOUT", "MCLK",
+               "AVDD", "DVDD", "AGND", "DGND"],
+      "value": "WM8960"
+    },
+    { "id": "CIN_L", "kind": "input_cap", "pins": ["1", "2"], "value": "1uF" },
+    { "id": "CIN_R", "kind": "input_cap", "pins": ["1", "2"], "value": "1uF" },
+    { "id": "COUT_L", "kind": "output_cap", "pins": ["1", "2"], "value": "220uF" },
+    { "id": "COUT_R", "kind": "output_cap", "pins": ["1", "2"], "value": "220uF" },
+    { "id": "C_AVDD", "kind": "bypass_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "C_DVDD", "kind": "bypass_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "C_AVDD2", "kind": "bypass_cap", "pins": ["1", "2"], "value": "10uF" },
+    { "id": "C_DVDD2", "kind": "bypass_cap", "pins": ["1", "2"], "value": "10uF" },
+    { "id": "R_BIAS", "kind": "gain_resistor", "pins": ["1", "2"], "value": "40k" },
+    { "id": "J_LINE_IN", "kind": "generic", "pins": ["TIP", "RING", "GND"], "value": "3.5mm Jack" },
+    { "id": "J_HP_OUT", "kind": "generic", "pins": ["TIP", "RING", "GND"], "value": "3.5mm Jack" }
+  ],
+  "nets": [
+    { "name": "AVDD", "members": ["U1.AVDD", "C_AVDD.1", "C_AVDD2.1"] },
+    { "name": "DVDD", "members": ["U1.DVDD", "C_DVDD.1", "C_DVDD2.1"] },
+    { "name": "AGND", "members": ["U1.AGND", "C_AVDD.2", "C_AVDD2.2", "CIN_L.2", "CIN_R.2", "R_BIAS.2", "J_LINE_IN.GND"] },
+    { "name": "DGND", "members": ["U1.DGND", "C_DVDD.2", "C_DVDD2.2"] },
+    { "name": "LINE_IN_L", "members": ["J_LINE_IN.TIP", "CIN_L.1"] },
+    { "name": "LINE_IN_R", "members": ["J_LINE_IN.RING", "CIN_R.1"] },
+    { "name": "LINP", "members": ["U1.IN+", "CIN_L.2"] },
+    { "name": "LINN", "members": ["U1.IN-", "CIN_R.2"] },
+    { "name": "HP_L", "members": ["U1.OUT", "COUT_L.1"] },
+    { "name": "HP_R", "members": ["U1.V-", "COUT_R.1"] },
+    { "name": "HP_OUT_L", "members": ["COUT_L.2", "J_HP_OUT.TIP"] },
+    { "name": "HP_OUT_R", "members": ["COUT_R.2", "J_HP_OUT.RING"] },
+    { "name": "HP_GND", "members": ["J_HP_OUT.GND"] },
+    { "name": "I2S_BCLK", "members": ["U1.BCLK"] },
+    { "name": "I2S_LRCLK", "members": ["U1.LRCLK"] },
+    { "name": "I2S_SDIN", "members": ["U1.SDIN"] },
+    { "name": "I2S_SDOUT", "members": ["U1.SDOUT"] },
+    { "name": "I2S_MCLK", "members": ["U1.MCLK"] },
+    { "name": "VMID", "members": ["U1.V+", "R_BIAS.1"] }
+  ],
+  "constraints": {
+    "flow": "left_to_right",
+    "power_top_ground_bottom": true,
+    "compact_feedback_loop": false
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "block_type": "buck_regulator",
+  "components": [
+    { "id": "U1", "kind": "regulator_ic", "pins": ["VIN", "SW", "FB", "EN", "GND", "BST", "VOUT"] },
+    { "id": "CIN1", "kind": "input_cap", "pins": ["1", "2"], "value": "10uF" },
+    { "id": "CIN2", "kind": "bypass_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "L1", "kind": "inductor", "pins": ["1", "2"], "value": "4.7uH" },
+    { "id": "COUT1", "kind": "output_cap", "pins": ["1", "2"], "value": "22uF" },
+    { "id": "COUT2", "kind": "output_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "R_TOP", "kind": "fb_top", "pins": ["1", "2"], "value": "100k" },
+    { "id": "R_BOT", "kind": "fb_bottom", "pins": ["1", "2"], "value": "47k" },
+    { "id": "C_BST", "kind": "bootstrap_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "R_EN", "kind": "enable_resistor", "pins": ["1", "2"], "value": "100k" },
+    { "id": "D1", "kind": "diode", "pins": ["A", "K"], "value": "SS34" }
+  ],
+  "nets": [
+    { "name": "VIN_12V", "members": ["U1.VIN", "CIN1.1", "CIN2.1", "R_EN.1"] },
+    { "name": "SW_NODE", "members": ["U1.SW", "L1.1", "C_BST.2", "D1.K"] },
+    { "name": "BST", "members": ["U1.BST", "C_BST.1"] },
+    { "name": "VOUT_3V3", "members": ["L1.2", "COUT1.1", "COUT2.1", "R_TOP.1"] },
+    { "name": "FB_DIV", "members": ["U1.FB", "R_TOP.2", "R_BOT.1"] },
+    { "name": "EN", "members": ["U1.EN", "R_EN.2"] },
+    { "name": "GND", "members": ["U1.GND", "CIN1.2", "CIN2.2", "COUT1.2", "COUT2.2", "R_BOT.2", "D1.A"] }
+  ],
+  "constraints": {
+    "flow": "left_to_right",
+    "power_top_ground_bottom": true,
+    "compact_feedback_loop": true
+  }
+}

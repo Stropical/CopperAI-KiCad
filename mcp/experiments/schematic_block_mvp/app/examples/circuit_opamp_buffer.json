@@ -1,0 +1,24 @@
+{
+  "block_type": "opamp_noninverting",
+  "components": [
+    { "id": "U1", "kind": "opamp_ic", "pins": ["IN+", "IN-", "OUT", "V+", "V-"], "value": "LMV321" },
+    { "id": "C_BYP", "kind": "bypass_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "CIN", "kind": "input_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "COUT", "kind": "output_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "RF", "kind": "feedback_resistor", "pins": ["1", "2"], "value": "0R" }
+  ],
+  "nets": [
+    { "name": "VIN_SIG", "members": ["CIN.1"] },
+    { "name": "IN_FILTERED", "members": ["CIN.2", "U1.IN+"] },
+    { "name": "OUT", "members": ["U1.OUT", "RF.1", "COUT.1"] },
+    { "name": "FB_NET", "members": ["RF.2", "U1.IN-"] },
+    { "name": "VOUT_BUF", "members": ["COUT.2"] },
+    { "name": "VCC", "members": ["U1.V+", "C_BYP.1"] },
+    { "name": "GND", "members": ["U1.V-", "C_BYP.2"] }
+  ],
+  "constraints": {
+    "flow": "left_to_right",
+    "power_top_ground_bottom": true,
+    "compact_feedback_loop": true
+  }
+}

@@ -1,0 +1,282 @@
+# Copper AI — WebSocket Agent Stack
+#
+# Runs scalable agent instances behind a WebSocket load balancer.
+# Tool calls against the KiCad MCP are proxied over WebSocket to the client.
+# json-mcp runs in Docker for schematic.json sync (export_schematic_to_json, etc.).
+#
+# Usage:
+#   docker compose up                    # default 3 agent replicas
+#   docker compose up --scale agent=5    # custom scale
+#   docker compose down
+
+services:
+  # --- Agent (WebSocket relay) ---
+  # Chat view: connect the website to the loadbalancer at ws://localhost:9090 (set NEXT_PUBLIC_RUNNER_URL in the website .env).
+  agent:
+    build:
+      context: .
+      dockerfile: agents/top_dog/Dockerfile.ws
+    env_file:
+      - agents/.env
+    environment:
+      - WS_PORT=3000
+      - MCP_RELAY_HOST=localhost
+      - JSON_MCP_URL=http://json-mcp:8082/mcp
+      - PART_FINDER_MCP_URL=http://part-finder:8083/mcp
+      - LIBRARY_IMPORT_MCP_URL=http://library-import:8084/mcp
+      - LLM_PROVIDER=cliproxy
+      - CLIPROXY_BASE_URL=http://host.docker.internal:8317/v1
+      - CLIPROXY_CONFIG=/root/.cli-proxy-api/config.yaml
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434/v1}
+      - NETLISTSVG_GEOMETRY_ENABLED=1
+      - NETLISTSVG_GEOMETRY_ROOT=/app/netlistsvg_probe/kicad_skin_experiment
+      - NETLISTSVG_WIRE_LABEL_THRESHOLD=650
+      - NETLISTSVG_WIRE_LABEL_MIN_SPAN=160
+      - NETLISTSVG_WIRE_LABEL_RATIO=1.2
+      - LAYOUTENGINE_PUBLIC_PORT=4174
+      - LAYOUTENGINE_ASSET_BASE_URL=http://127.0.0.1:4174/public/kicad-symbols-upstream/
+      # docker-agent-entrypoint serves static assets; keep relay-side asset server off.
+      - LAYOUTENGINE_SERVE_ASSETS=0
+      # Relay move assist (human-like placement refinement for move_component)
+      - LAYOUTENGINE_ASSIST_MOVE=1
+      - LAYOUTENGINE_ASSIST_MOVE_ALWAYS=1
+      - LAYOUTENGINE_ASSIST_MOVE_STRATEGY=region
+      - LAYOUTENGINE_ASSIST_REGION_MARGIN_MM=25
+      - LAYOUTENGINE_ASSIST_PLACE_MODE=balanced
+      - LIGHT_LEVEL_PROVIDER=${LIGHT_LEVEL_PROVIDER:-ollama}
+      - LIGHT_LEVEL_MODEL=${LIGHT_LEVEL_MODEL:-gemma4:e4b}
+      - CORE_LEVEL_PROVIDER=${CORE_LEVEL_PROVIDER:-ollama}
+      - CORE_LEVEL_MODEL=${CORE_LEVEL_MODEL:-gemma4:e4b}
+      - PRO_LEVEL_MODEL=gpt-5.2-codex
+      - ULTRA_LEVEL_MODEL=gpt-5.4
+      - USE_GEMINI_CLI=0
+      - USE_GEMINI_CLI_VERIFIER=0
+      - FALLBACK_FREE_TIER_OPENROUTER_MODELS=stepfun/step-3.5-flash:free,nvidia/nemotron-3-super-120b-a12b:free,z-ai/glm-4.5-air:free,qwen/qwen3.6-plus-preview:free,minimax/minimax-m2.5:free,nvidia/nemotron-3-nano-30b-a3b:free,openai/gpt-oss-120b:free,openrouter/hunter-alpha,openrouter/healer-alpha
+      # GEMINI_API_KEY from agents/.env is used if set (for free Gemini Flash)
+      - PLANNER_WORKSPACE_TEMPLATE=/app/planner-workspace
+      - TOP_DOG_WORKSPACE_TEMPLATE=/app/top_dog-workspace
+      - PIPELINE_TIMEOUT_MS=1800000
+      - AGENT_REPLICA_ID={{.Task.Slot}}
+      # Langfuse tracing
+      - LANGFUSE_BASE_URL=http://langfuse:3000
+      - LANGFUSE_PUBLIC_KEY=pk-lf-8246ab06-8983-4017-b228-f51616df9f99
+      - LANGFUSE_SECRET_KEY=sk-lf-6d820e43-efa2-47ab-9c7d-a640666ca9f1
+    volumes:
+      # Mount Google auth so container can use your free Gemini Flash (gcloud ADC)
+      - ~/.config/gcloud:/root/.config/gcloud:ro
+      - ~/.cli-proxy-api:/root/.cli-proxy-api:ro
+      - agent-sessions:/app/sessions
+      # Mirror host home path so absolute KiCad schematic paths remain readable in-container.
+      - ${HOME}:${HOME}:ro
+    expose:
+      - "3000"
+    deploy:
+      replicas: 1
+    networks:
+      - agent-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      json-mcp:
+        condition: service_healthy
+      part-finder:
+        condition: service_healthy
+      library-import:
+        condition: service_healthy
+      # langfuse is optional — agents start even without it; tracing is a no-op if keys not set
+
+  # --- JSON MCP (schematic.json sync; shared sessions volume with agent) ---
+  json-mcp:
+    build:
+      context: .
+      dockerfile: agents/json_mcp/Dockerfile
+    environment:
+      - JSON_MCP_PORT=8082
+      - JSON_MCP_HTTP_ONLY=1
+      # KiCad MCP runs on the host (not in this container).
+      - KICAD_MCP_URL=http://host.docker.internal:8080/mcp
+      - KICAD_MCP_URL_FALLBACKS=http://127.0.0.1:8080/mcp
+    expose:
+      - "8082"
+    volumes:
+      - agent-sessions:/app/sessions
+      # Mirror host home path so get_open_documents absolute schematic paths are readable.
+      - ${HOME}:${HOME}:ro
+    restart: unless-stopped
+    networks:
+      - agent-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8082/health"]
+
+  # --- Part Finder MCP (part search/details/alternatives only) ---
+  part-finder:
+    build:
+      context: .
+      dockerfile: agents/part_finder/Dockerfile
+    environment:
+      - PART_FINDER_PORT=8083
+      - PART_FINDER_HTTP_ONLY=1
+      - CIRCUIT_SYNTH_ROOT=/app/circuit-synth
+      - DIGIKEY_CLIENT_ID=${DIGIKEY_CLIENT_ID:-}
+      - DIGIKEY_CLIENT_SECRET=${DIGIKEY_CLIENT_SECRET:-}
+      - DIGIKEY_CLIENT_SANDBOX=${DIGIKEY_CLIENT_SANDBOX:-false}
+      - DIGIKEY_STORAGE_PATH=${DIGIKEY_STORAGE_PATH:-/tmp/digikey}
+      - JLC_ACCESS_KEY=${JLC_ACCESS_KEY:-}
+      - JLC_SECRET=${JLC_SECRET:-}
+    expose:
+      - "8083"
+    restart: unless-stopped
+    networks:
+      - agent-net
+    healthcheck:
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8083/health"]
+
+  # --- Library Import MCP (Tier A local import + project library table registration) ---
+  library-import:
+    build:
+      context: .
+      dockerfile: agents/library_import/Dockerfile
+    environment:
+      - LIBRARY_IMPORT_PORT=8084
+      - LIBRARY_IMPORT_HTTP_ONLY=1
+    expose:
+      - "8084"
+    restart: unless-stopped
+    networks:
+      - agent-net
+    volumes:
+      - agent-sessions:/app/sessions
+      - ${HOME}:${HOME}:rw
+    healthcheck:
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8084/health"]
+
+  # --- WebSocket Load Balancer (chat connects here: host:9090) ---
+  loadbalancer:
+    build:
+      context: ws-loadbalancer
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    networks:
+      - agent-net
+    depends_on:
+      agent:
+        condition: service_healthy
+
+  # --- Website (Next.js frontend) ---
+  website:
+    build:
+      context: website
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_RUNNER_URL: ${NEXT_PUBLIC_RUNNER_URL:-ws://localhost:9090}
+        NEXT_PUBLIC_KICAD_MCP_URL: ${NEXT_PUBLIC_KICAD_MCP_URL:-http://127.0.0.1:8080/mcp}
+        NEXT_PUBLIC_KICAD_IPC_URL: ${NEXT_PUBLIC_KICAD_IPC_URL:-http://127.0.0.1:8765}
+        NEXT_PUBLIC_SESSION_MANAGER_URL: ${NEXT_PUBLIC_SESSION_MANAGER_URL:-}
+        NEXT_PUBLIC_AGENT_AUTH_URL: ${NEXT_PUBLIC_AGENT_AUTH_URL:-http://127.0.0.1:5001/api/auth/set-token}
+    env_file:
+      - website/.env
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_RUNNER_URL=${NEXT_PUBLIC_RUNNER_URL:-ws://localhost:9090}
+      - NEXT_PUBLIC_KICAD_MCP_URL=${NEXT_PUBLIC_KICAD_MCP_URL:-http://127.0.0.1:8080/mcp}
+      - NEXT_PUBLIC_KICAD_IPC_URL=${NEXT_PUBLIC_KICAD_IPC_URL:-http://127.0.0.1:8765}
+      - NEXT_PUBLIC_SESSION_MANAGER_URL=${NEXT_PUBLIC_SESSION_MANAGER_URL:-}
+      - NEXT_PUBLIC_AGENT_AUTH_URL=${NEXT_PUBLIC_AGENT_AUTH_URL:-http://127.0.0.1:5001/api/auth/set-token}
+      - SUPABASE_PRIVATE_KEY=${SUPABASE_PRIVATE_KEY:-}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - agent-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      loadbalancer:
+        condition: service_started
+
+  # --- Resource MCP (Filesystem/Web) ---
+  # resource-mcp:
+  #   build:
+  #     context: resource-mcp
+  #     dockerfile: Dockerfile
+  #   expose:
+  #     - "3002"
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ../:/workspace:ro
+  #   working_dir: /workspace
+  #   networks:
+  #     - agent-net
+  #   healthcheck:
+  #     test: [ "CMD", "node", "-e", "const h=require('http');h.get('http://localhost:3002/health',r=>{process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))" ]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 3
+
+  # --- Langfuse self-hosted observability (v2 — PostgreSQL only, no ClickHouse) ---
+  # UI: http://localhost:3001  (login: admin@example.com / changeme)
+  # Agent env: LANGFUSE_PUBLIC_KEY=pk-lf-dev, LANGFUSE_SECRET_KEY=sk-lf-dev
+
+  langfuse-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: langfuse
+      POSTGRES_DB: langfuse
+    volumes:
+      - langfuse-db:/var/lib/postgresql/data
+    networks:
+      - agent-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U langfuse"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  langfuse:
+    image: langfuse/langfuse:2
+    ports:
+      - "3001:3000"
+    environment:
+      DATABASE_URL: postgresql://langfuse:langfuse@langfuse-db:5432/langfuse
+      NEXTAUTH_URL: http://localhost:3001
+      NEXTAUTH_SECRET: "dev-secret-change-in-prod-1234567890"
+      SALT: "dev-salt-change-in-prod-1234"
+      TELEMETRY_ENABLED: "false"
+      # First-run setup: visit http://localhost:3001, create account + project,
+      # then paste the generated keys into LANGFUSE_PUBLIC_KEY / LANGFUSE_SECRET_KEY
+      # in the agent environment section above and run: docker compose up -d agent
+    networks:
+      - agent-net
+    restart: unless-stopped
+    depends_on:
+      langfuse-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q \"http://$(hostname -i):3000/api/public/health\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+networks:
+  agent-net:
+    driver: bridge
+
+volumes:
+  agent-sessions:
+  langfuse-db:

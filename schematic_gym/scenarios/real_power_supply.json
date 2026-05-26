@@ -1,0 +1,37 @@
+{
+  "scenario_id": "real_power_supply",
+  "name": "5V Power Supply with LM7805",
+  "description": "A complete 5V regulated power supply. LM7805 with input/output bypass capacitors. VIN comes in, 5V regulated comes out. Must have proper decoupling.",
+  "initial_state": {
+    "instances": [
+      {"symbol_id": "LM7805", "reference": "U1", "value": "LM7805", "x": 130.0, "y": 70.0, "rotation": 0},
+      {"symbol_id": "C", "reference": "C1", "value": "100nF", "x": 105.0, "y": 75.0, "rotation": 0},
+      {"symbol_id": "C", "reference": "C2", "value": "100nF", "x": 155.0, "y": 75.0, "rotation": 0},
+      {"symbol_id": "C", "reference": "C3", "value": "10uF", "x": 90.0, "y": 75.0, "rotation": 0},
+      {"symbol_id": "C", "reference": "C4", "value": "10uF", "x": 170.0, "y": 75.0, "rotation": 0}
+    ],
+    "power_symbols": [
+      {"symbol_id": "power:GND", "x": 130.0, "y": 95.0, "rotation": 0}
+    ]
+  },
+  "objectives": [
+    {
+      "type": "connect_all",
+      "required_connections": [
+        {"pin_a": "C3.1", "pin_b": "C1.1", "net_name": "VIN"},
+        {"pin_a": "C1.1", "pin_b": "U1.1", "net_name": "VIN"},
+        {"pin_a": "U1.3", "pin_b": "C2.1", "net_name": "+5V"},
+        {"pin_a": "C2.1", "pin_b": "C4.1", "net_name": "+5V"},
+        {"pin_a": "U1.2", "pin_b": "GND.1", "net_name": "GND"},
+        {"pin_a": "C1.2", "pin_b": "GND.1", "net_name": "GND"},
+        {"pin_a": "C2.2", "pin_b": "GND.1", "net_name": "GND"},
+        {"pin_a": "C3.2", "pin_b": "GND.1", "net_name": "GND"},
+        {"pin_a": "C4.2", "pin_b": "GND.1", "net_name": "GND"}
+      ],
+      "step_budget": 60,
+      "target_readability": 0.7
+    }
+  ],
+  "net_names": ["VIN", "+5V", "GND"],
+  "curriculum_level": 7
+}

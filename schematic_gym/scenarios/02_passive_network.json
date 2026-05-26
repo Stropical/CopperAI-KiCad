@@ -1,0 +1,74 @@
+{
+  "scenario_id": "02_passive_network",
+  "name": "Passive Series Network",
+  "description": "Place and orient a resistor, capacitor, and inductor in a series network. Connect them in order: R1.2 -> C1.1, C1.2 -> L1.1.",
+  "sheet": {
+    "width": 297,
+    "height": 210,
+    "paper": "A4"
+  },
+  "symbol_catalog": [
+    "Device:R",
+    "Device:C",
+    "Device:L"
+  ],
+  "initial_state": {
+    "instances": [
+      {
+        "symbol_id": "R",
+        "reference": "R1",
+        "value": "10k",
+        "x": 120,
+        "y": 80,
+        "rotation": 0
+      },
+      {
+        "symbol_id": "C",
+        "reference": "C1",
+        "value": "100nF",
+        "x": 140,
+        "y": 80,
+        "rotation": 0
+      },
+      {
+        "symbol_id": "L",
+        "reference": "L1",
+        "value": "10uH",
+        "x": 160,
+        "y": 80,
+        "rotation": 0
+      }
+    ],
+    "wires": [],
+    "junctions": [],
+    "labels": [],
+    "power_symbols": []
+  },
+  "objectives": [
+    {
+      "type": "place_and_wire",
+      "required_connections": [
+        {
+          "pin_a": "R1.2",
+          "pin_b": "C1.1",
+          "net_name": "N1"
+        },
+        {
+          "pin_a": "C1.2",
+          "pin_b": "L1.1",
+          "net_name": "N2"
+        }
+      ],
+      "step_budget": 30,
+      "target_readability": 0.6
+    }
+  ],
+  "net_names": [
+    "N1",
+    "N2",
+    "IN",
+    "OUT"
+  ],
+  "scoring_overrides": {},
+  "curriculum_level": 2
+}

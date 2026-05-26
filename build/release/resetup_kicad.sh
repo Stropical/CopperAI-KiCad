@@ -1,0 +1,1 @@
+cmake -DCMAKE_TOOLCHAIN_FILE=/Users/ethanmarreel/Documents/GitHub/kicad-mac-builder/toolchain/kicad-mac-builder.cmake ../..

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kicad-experiments"
+version = "0.1.0"
+description = "KiCad experiment workspace with schematic and spatial layout tooling."
+requires-python = ">=3.10"
+dependencies = [
+  "torch",
+  "pyarrow>=14",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["spatial_layout*", "sch2py*"]
+

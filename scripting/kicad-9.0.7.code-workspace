@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../../Documents/GitHub/kicad-source-mirror/PRIVATE/copper_ai"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"algorithm": "cpp",
+			"unordered_set": "cpp"
+		}
+	}
+}

@@ -1,0 +1,5 @@
+torch
+pyarrow>=14
+
+[dev]
+pytest

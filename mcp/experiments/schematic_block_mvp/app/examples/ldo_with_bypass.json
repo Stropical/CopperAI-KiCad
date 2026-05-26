@@ -1,0 +1,19 @@
+{
+  "block_type": "ldo_regulator",
+  "components": [
+    { "id": "U1", "kind": "ldo_ic", "pins": ["VIN", "VOUT", "GND", "EN"] },
+    { "id": "CIN", "kind": "input_cap", "pins": ["1", "2"], "value": "1uF" },
+    { "id": "COUT", "kind": "output_cap", "pins": ["1", "2"], "value": "10uF" },
+    { "id": "CBYP", "kind": "bypass_cap", "pins": ["1", "2"], "value": "100nF" }
+  ],
+  "nets": [
+    { "name": "VIN", "members": ["U1.VIN", "CIN.1"] },
+    { "name": "VOUT", "members": ["U1.VOUT", "COUT.1", "CBYP.1"] },
+    { "name": "GND", "members": ["U1.GND", "CIN.2", "COUT.2", "CBYP.2"] }
+  ],
+  "constraints": {
+    "flow": "left_to_right",
+    "power_top_ground_bottom": true,
+    "compact_feedback_loop": false
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "block_type": "opamp_noninverting",
+  "components": [
+    { "id": "U1", "kind": "opamp_ic", "pins": ["IN+", "IN-", "OUT", "V+", "V-"], "value": "OPA340" },
+    { "id": "RF", "kind": "feedback_resistor", "pins": ["1", "2"], "value": "100k" },
+    { "id": "RIN", "kind": "input_resistor", "pins": ["1", "2"], "value": "10k" },
+    { "id": "C_BYP", "kind": "bypass_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "RG", "kind": "gain_resistor", "pins": ["1", "2"], "value": "10k" }
+  ],
+  "nets": [
+    { "name": "VIN_SIG", "members": ["RIN.1"] },
+    { "name": "INV_NODE", "members": ["RIN.2", "RF.2", "U1.IN-"] },
+    { "name": "OUT", "members": ["U1.OUT", "RF.1"] },
+    { "name": "GND", "members": ["U1.IN+", "RG.2", "U1.V-", "C_BYP.2"] },
+    { "name": "VCC", "members": ["U1.V+", "C_BYP.1", "RG.1"] }
+  ],
+  "constraints": {
+    "flow": "left_to_right",
+    "power_top_ground_bottom": true,
+    "compact_feedback_loop": true
+  }
+}

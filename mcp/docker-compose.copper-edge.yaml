@@ -1,0 +1,75 @@
+# CopperEdge stack: ws-relay + website for Copper + Temporal — same `copper-net` as CopperRuntime.
+#
+# Remote redeploy target:
+#   DOCKER_HOST=tcp://192.168.177.144:2375
+#
+# Full edge stack:
+#   docker network create copper-net   # if needed
+#   DOCKER_HOST=tcp://192.168.177.144:2375 docker compose -f docker-compose.copper-edge.yaml up -d --build
+#
+# Relay-only rebuild for Copper runtime UX/protocol changes:
+#   DOCKER_HOST=tcp://192.168.177.144:2375 docker compose -f docker-compose.copper-edge.yaml up -d --build copper-ws-relay
+#
+# Important:
+# - Rebuilding `website` or deploying Cloudflare does NOT update the relay protocol.
+# - If chat output still looks stale, rebuild `copper-ws-relay`, not just the website.
+#
+name: CopperEdge
+
+# CopperRuntime must be up first (Temporal on copper-net). Edge uses service hostname `temporal:7233`.
+
+services:
+  copper-ws-relay:
+    build:
+      context: ./agents/top_dog
+      dockerfile: Dockerfile
+    ports:
+      - "${COPPER_EDGE_PORT:-3001}:3000"
+    environment:
+      WS_PORT: "3000"
+      COPPER_ENABLE: "1"
+      COPPER_TEMPORAL_ADDRESS: temporal:7233
+      COPPER_TASK_QUEUE: copper-orchestrator
+      COPPER_STREAM_SINK_TOKEN: ${COPPER_STREAM_SINK_TOKEN:-dev-shared-secret}
+      # Workers POST stream events; use this hostname from orchestrator/subagent containers.
+      COPPER_STREAM_SINK_PUBLIC_URL: ${COPPER_STREAM_SINK_PUBLIC_URL:-http://copper-ws-relay:3000}
+      JSON_MCP_URL: "off"
+      PART_FINDER_MCP_URL: "off"
+      LIBRARY_IMPORT_MCP_URL: "off"
+    networks:
+      - copper-net
+
+  website:
+    build:
+      context: ./website
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_RUNNER_URL: ${NEXT_PUBLIC_RUNNER_URL:-ws://localhost:${COPPER_EDGE_PORT:-3001}}
+        NEXT_PUBLIC_KICAD_MCP_URL: ${NEXT_PUBLIC_KICAD_MCP_URL:-http://127.0.0.1:8080/mcp}
+        NEXT_PUBLIC_KICAD_IPC_URL: ${NEXT_PUBLIC_KICAD_IPC_URL:-http://127.0.0.1:8765}
+        NEXT_PUBLIC_SESSION_MANAGER_URL: ${NEXT_PUBLIC_SESSION_MANAGER_URL:-}
+        NEXT_PUBLIC_AGENT_AUTH_URL: ${NEXT_PUBLIC_AGENT_AUTH_URL:-http://127.0.0.1:5001/api/auth/set-token}
+    env_file:
+      - website/.env
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_RUNNER_URL=${NEXT_PUBLIC_RUNNER_URL:-ws://localhost:${COPPER_EDGE_PORT:-3001}}
+      - NEXT_PUBLIC_KICAD_MCP_URL=${NEXT_PUBLIC_KICAD_MCP_URL:-http://127.0.0.1:8080/mcp}
+      - NEXT_PUBLIC_KICAD_IPC_URL=${NEXT_PUBLIC_KICAD_IPC_URL:-http://127.0.0.1:8765}
+      - NEXT_PUBLIC_SESSION_MANAGER_URL=${NEXT_PUBLIC_SESSION_MANAGER_URL:-}
+      - NEXT_PUBLIC_AGENT_AUTH_URL=${NEXT_PUBLIC_AGENT_AUTH_URL:-http://127.0.0.1:5001/api/auth/set-token}
+      - SUPABASE_PRIVATE_KEY=${SUPABASE_PRIVATE_KEY:-}
+    ports:
+      - "${COPPER_WEBSITE_PORT:-3000}:3000"
+    restart: unless-stopped
+    networks:
+      - copper-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      copper-ws-relay:
+        condition: service_started
+
+networks:
+  copper-net:
+    external: true

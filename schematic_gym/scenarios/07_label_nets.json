@@ -1,0 +1,39 @@
+{
+  "scenario_id": "07_label_nets",
+  "name": "Add Net Labels",
+  "description": "Two pre-placed resistors are already wired in series. Add net labels to the input, midpoint, and output nets to make the schematic readable and meaningful.",
+  "sheet": {
+    "width": 297,
+    "height": 210,
+    "paper": "A4"
+  },
+  "symbol_catalog": ["R"],
+  "initial_state": {
+    "instances": [
+      {"symbol_id": "R", "reference": "R1", "value": "4.7k", "x": 120.0, "y": 80.0, "rotation": 0},
+      {"symbol_id": "R", "reference": "R2", "value": "4.7k", "x": 120.0, "y": 100.0, "rotation": 0}
+    ],
+    "wires": [
+      {"x1": 120.0, "y1": 81.27, "x2": 120.0, "y2": 78.73},
+      {"x1": 120.0, "y1": 98.73, "x2": 120.0, "y2": 81.27},
+      {"x1": 120.0, "y1": 101.27, "x2": 120.0, "y2": 105.0}
+    ],
+    "junctions": [],
+    "labels": [],
+    "power_symbols": []
+  },
+  "objectives": [
+    {
+      "type": "readability_threshold",
+      "target_readability": 0.6,
+      "step_budget": 30,
+      "allowed_actions": ["place_net_label", "no_op"]
+    }
+  ],
+  "net_names": ["VIN", "VMID", "VOUT"],
+  "scoring_overrides": {
+    "readability_weight": 0.7,
+    "electrical_weight": 0.3
+  },
+  "curriculum_level": 7
+}

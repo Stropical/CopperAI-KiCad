@@ -1,0 +1,1067 @@
+{
+  "placements": [
+    {
+      "id": "U1",
+      "x": 40.64,
+      "y": 40.64,
+      "rotation": 0,
+      "width": 25.4,
+      "height": 35.56
+    },
+    {
+      "id": "CIN_L",
+      "x": 20.32,
+      "y": 38.1,
+      "rotation": 270,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "CIN_R",
+      "x": 5.08,
+      "y": 45.72,
+      "rotation": 270,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "COUT_L",
+      "x": 73.66,
+      "y": 50.8,
+      "rotation": 270,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "COUT_R",
+      "x": 73.66,
+      "y": 68.58,
+      "rotation": 270,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "C_AVDD",
+      "x": 5.08,
+      "y": 22.86,
+      "rotation": 0,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "C_DVDD",
+      "x": 27.94,
+      "y": 12.7,
+      "rotation": 0,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "C_AVDD2",
+      "x": -10.16,
+      "y": 20.32,
+      "rotation": 0,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "C_DVDD2",
+      "x": 27.94,
+      "y": -7.62,
+      "rotation": 0,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "R_BIAS",
+      "x": -12.7,
+      "y": 58.42,
+      "rotation": 90,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "J_LINE_IN",
+      "x": -25.4,
+      "y": 40.64,
+      "rotation": 0,
+      "width": 7.62,
+      "height": 15.24
+    },
+    {
+      "id": "J_HP_OUT",
+      "x": 53.34,
+      "y": 88.9,
+      "rotation": 270,
+      "width": 7.62,
+      "height": 15.24
+    }
+  ],
+  "routes": [
+    {
+      "net": "AVDD",
+      "points": [
+        {
+          "x": -7.62,
+          "y": 10.16
+        },
+        {
+          "x": 53.34,
+          "y": 10.16
+        }
+      ]
+    },
+    {
+      "net": "AVDD",
+      "points": [
+        {
+          "x": 53.34,
+          "y": 35.56
+        },
+        {
+          "x": 53.34,
+          "y": 10.16
+        }
+      ]
+    },
+    {
+      "net": "AVDD",
+      "points": [
+        {
+          "x": 7.62,
+          "y": 17.78
+        },
+        {
+          "x": 7.62,
+          "y": 10.16
+        }
+      ]
+    },
+    {
+      "net": "AVDD",
+      "points": [
+        {
+          "x": -7.62,
+          "y": 15.24
+        },
+        {
+          "x": -7.62,
+          "y": 10.16
+        }
+      ]
+    },
+    {
+      "net": "DVDD",
+      "points": [
+        {
+          "x": 30.48,
+          "y": 7.619999999999999
+        },
+        {
+          "x": 58.42,
+          "y": 7.619999999999999
+        }
+      ]
+    },
+    {
+      "net": "DVDD",
+      "points": [
+        {
+          "x": 58.42,
+          "y": 35.56
+        },
+        {
+          "x": 58.42,
+          "y": 7.619999999999999
+        }
+      ]
+    },
+    {
+      "net": "DVDD",
+      "points": [
+        {
+          "x": 30.48,
+          "y": -12.7
+        },
+        {
+          "x": 30.48,
+          "y": 7.619999999999999
+        }
+      ]
+    },
+    {
+      "net": "AGND",
+      "points": [
+        {
+          "x": -12.7,
+          "y": 81.28
+        },
+        {
+          "x": 53.34,
+          "y": 81.28
+        }
+      ]
+    },
+    {
+      "net": "AGND",
+      "points": [
+        {
+          "x": 7.62,
+          "y": 40.64
+        },
+        {
+          "x": 2.54,
+          "y": 40.64
+        },
+        {
+          "x": 2.54,
+          "y": 81.28
+        }
+      ]
+    },
+    {
+      "net": "AGND",
+      "points": [
+        {
+          "x": -7.62,
+          "y": 38.1
+        },
+        {
+          "x": -15.24,
+          "y": 38.1
+        },
+        {
+          "x": -15.24,
+          "y": 81.28
+        }
+      ]
+    },
+    {
+      "net": "AGND",
+      "points": [
+        {
+          "x": 15.239999999999998,
+          "y": 40.64
+        },
+        {
+          "x": 20.32,
+          "y": 40.64
+        },
+        {
+          "x": 20.32,
+          "y": 81.28
+        }
+      ]
+    },
+    {
+      "net": "AGND",
+      "points": [
+        {
+          "x": -1.7763568394002505e-15,
+          "y": 48.26
+        },
+        {
+          "x": 2.5399999999999983,
+          "y": 48.26
+        },
+        {
+          "x": 2.5399999999999983,
+          "y": 81.28
+        }
+      ]
+    },
+    {
+      "net": "AGND",
+      "points": [
+        {
+          "x": 5.080000000000002,
+          "y": 60.96
+        },
+        {
+          "x": 5.080000000000002,
+          "y": 81.28
+        }
+      ]
+    },
+    {
+      "net": "AGND",
+      "points": [
+        {
+          "x": -12.7,
+          "y": 53.34
+        },
+        {
+          "x": -15.239999999999998,
+          "y": 53.34
+        },
+        {
+          "x": -15.239999999999998,
+          "y": 81.28
+        }
+      ]
+    },
+    {
+      "net": "DGND",
+      "points": [
+        {
+          "x": 30.48,
+          "y": 30.48
+        },
+        {
+          "x": 58.42,
+          "y": 30.48
+        }
+      ]
+    },
+    {
+      "net": "DGND",
+      "points": [
+        {
+          "x": 58.42,
+          "y": 81.28
+        },
+        {
+          "x": 58.42,
+          "y": 30.48
+        }
+      ]
+    },
+    {
+      "net": "DGND",
+      "points": [
+        {
+          "x": 30.48,
+          "y": 10.16
+        },
+        {
+          "x": 35.56,
+          "y": 10.16
+        },
+        {
+          "x": 35.56,
+          "y": 30.48
+        }
+      ]
+    },
+    {
+      "net": "LINE_IN_L",
+      "points": [
+        {
+          "x": -12.7,
+          "y": 43.18
+        },
+        {
+          "x": 38.1,
+          "y": 43.18
+        },
+        {
+          "x": 38.1,
+          "y": 40.64
+        }
+      ]
+    },
+    {
+      "net": "LINE_IN_R",
+      "points": [
+        {
+          "x": -12.7,
+          "y": 48.26
+        },
+        {
+          "x": 22.86,
+          "y": 48.26
+        }
+      ]
+    },
+    {
+      "net": "LINP",
+      "points": [
+        {
+          "x": 35.56,
+          "y": 45.72
+        },
+        {
+          "x": 35.56,
+          "y": 40.64
+        },
+        {
+          "x": 15.239999999999998,
+          "y": 40.64
+        }
+      ]
+    },
+    {
+      "net": "LINN",
+      "points": [
+        {
+          "x": 35.56,
+          "y": 50.8
+        },
+        {
+          "x": -1.7763568394002505e-15,
+          "y": 50.8
+        },
+        {
+          "x": -1.7763568394002505e-15,
+          "y": 48.26
+        }
+      ]
+    },
+    {
+      "net": "HP_L",
+      "points": [
+        {
+          "x": 71.12,
+          "y": 45.72
+        },
+        {
+          "x": 91.44,
+          "y": 45.72
+        },
+        {
+          "x": 91.44,
+          "y": 53.339999999999996
+        }
+      ]
+    },
+    {
+      "net": "HP_R",
+      "points": [
+        {
+          "x": 48.26,
+          "y": 81.28
+        },
+        {
+          "x": 91.44,
+          "y": 81.28
+        },
+        {
+          "x": 91.44,
+          "y": 71.12
+        }
+      ]
+    },
+    {
+      "net": "HP_OUT_L",
+      "points": [
+        {
+          "x": 68.58,
+          "y": 53.339999999999996
+        },
+        {
+          "x": 68.58,
+          "y": 101.60000000000001
+        },
+        {
+          "x": 66.04,
+          "y": 101.60000000000001
+        }
+      ]
+    },
+    {
+      "net": "HP_OUT_R",
+      "points": [
+        {
+          "x": 68.58,
+          "y": 71.12
+        },
+        {
+          "x": 68.58,
+          "y": 101.60000000000001
+        },
+        {
+          "x": 60.96,
+          "y": 101.60000000000001
+        }
+      ]
+    },
+    {
+      "net": "VMID",
+      "points": [
+        {
+          "x": 48.26,
+          "y": 35.56
+        },
+        {
+          "x": 48.26,
+          "y": 60.96
+        },
+        {
+          "x": -17.78,
+          "y": 60.96
+        }
+      ]
+    }
+  ],
+  "pin_anchors": [
+    {
+      "component_id": "U1",
+      "pin_name": "IN+",
+      "x": 35.56,
+      "y": 45.72
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "IN-",
+      "x": 35.56,
+      "y": 50.8
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "OUT",
+      "x": 71.12,
+      "y": 45.72
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "V+",
+      "x": 48.26,
+      "y": 35.56
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "V-",
+      "x": 48.26,
+      "y": 81.28
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "BCLK",
+      "x": 71.12,
+      "y": 50.8
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "LRCLK",
+      "x": 71.12,
+      "y": 55.88
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "SDIN",
+      "x": 71.12,
+      "y": 60.96
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "SDOUT",
+      "x": 71.12,
+      "y": 66.03999999999999
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "MCLK",
+      "x": 71.12,
+      "y": 71.12
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "AVDD",
+      "x": 53.34,
+      "y": 35.56
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "DVDD",
+      "x": 58.42,
+      "y": 35.56
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "AGND",
+      "x": 53.34,
+      "y": 81.28
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "DGND",
+      "x": 58.42,
+      "y": 81.28
+    },
+    {
+      "component_id": "CIN_L",
+      "pin_name": "1",
+      "x": 38.1,
+      "y": 40.64
+    },
+    {
+      "component_id": "CIN_L",
+      "pin_name": "2",
+      "x": 15.239999999999998,
+      "y": 40.64
+    },
+    {
+      "component_id": "CIN_R",
+      "pin_name": "1",
+      "x": 22.86,
+      "y": 48.26
+    },
+    {
+      "component_id": "CIN_R",
+      "pin_name": "2",
+      "x": -1.7763568394002505e-15,
+      "y": 48.26
+    },
+    {
+      "component_id": "COUT_L",
+      "pin_name": "1",
+      "x": 91.44,
+      "y": 53.339999999999996
+    },
+    {
+      "component_id": "COUT_L",
+      "pin_name": "2",
+      "x": 68.58,
+      "y": 53.339999999999996
+    },
+    {
+      "component_id": "COUT_R",
+      "pin_name": "1",
+      "x": 91.44,
+      "y": 71.12
+    },
+    {
+      "component_id": "COUT_R",
+      "pin_name": "2",
+      "x": 68.58,
+      "y": 71.12
+    },
+    {
+      "component_id": "C_AVDD",
+      "pin_name": "1",
+      "x": 7.62,
+      "y": 17.78
+    },
+    {
+      "component_id": "C_AVDD",
+      "pin_name": "2",
+      "x": 7.62,
+      "y": 40.64
+    },
+    {
+      "component_id": "C_DVDD",
+      "pin_name": "1",
+      "x": 30.48,
+      "y": 7.619999999999999
+    },
+    {
+      "component_id": "C_DVDD",
+      "pin_name": "2",
+      "x": 30.48,
+      "y": 30.48
+    },
+    {
+      "component_id": "C_AVDD2",
+      "pin_name": "1",
+      "x": -7.62,
+      "y": 15.24
+    },
+    {
+      "component_id": "C_AVDD2",
+      "pin_name": "2",
+      "x": -7.62,
+      "y": 38.1
+    },
+    {
+      "component_id": "C_DVDD2",
+      "pin_name": "1",
+      "x": 30.48,
+      "y": -12.7
+    },
+    {
+      "component_id": "C_DVDD2",
+      "pin_name": "2",
+      "x": 30.48,
+      "y": 10.16
+    },
+    {
+      "component_id": "R_BIAS",
+      "pin_name": "1",
+      "x": -17.78,
+      "y": 60.96
+    },
+    {
+      "component_id": "R_BIAS",
+      "pin_name": "2",
+      "x": 5.080000000000002,
+      "y": 60.96
+    },
+    {
+      "component_id": "J_LINE_IN",
+      "pin_name": "TIP",
+      "x": -12.7,
+      "y": 43.18
+    },
+    {
+      "component_id": "J_LINE_IN",
+      "pin_name": "RING",
+      "x": -12.7,
+      "y": 48.26
+    },
+    {
+      "component_id": "J_LINE_IN",
+      "pin_name": "GND",
+      "x": -12.7,
+      "y": 53.34
+    },
+    {
+      "component_id": "J_HP_OUT",
+      "pin_name": "TIP",
+      "x": 66.04,
+      "y": 101.60000000000001
+    },
+    {
+      "component_id": "J_HP_OUT",
+      "pin_name": "RING",
+      "x": 60.96,
+      "y": 101.60000000000001
+    },
+    {
+      "component_id": "J_HP_OUT",
+      "pin_name": "GND",
+      "x": 55.88,
+      "y": 101.60000000000001
+    }
+  ],
+  "score": {
+    "total": 5034.444649044338,
+    "overlaps": 0,
+    "crossings": 0,
+    "wire_length": 779.78,
+    "bends": 20,
+    "fb_loop_distance": 0.0,
+    "flow_violations": 0,
+    "cin_distance": 0.0,
+    "cout_distance": 0.0,
+    "spacing_penalty": 83.09329298088676
+  },
+  "schematic": {
+    "wires": [],
+    "power_symbols": [
+      {
+        "net": "AVDD",
+        "x": 51.88,
+        "y": 19.36,
+        "kind": "vcc",
+        "label": "AVDD"
+      },
+      {
+        "net": "AVDD",
+        "x": 7.62,
+        "y": 12.86,
+        "kind": "vcc",
+        "label": "AVDD"
+      },
+      {
+        "net": "AVDD",
+        "x": -7.62,
+        "y": 10.32,
+        "kind": "vcc",
+        "label": "AVDD"
+      },
+      {
+        "net": "DVDD",
+        "x": 59.88,
+        "y": 19.52,
+        "kind": "vcc",
+        "label": "DVDD"
+      },
+      {
+        "net": "DVDD",
+        "x": 22.94,
+        "y": 7.54,
+        "kind": "vcc",
+        "label": "DVDD"
+      },
+      {
+        "net": "DVDD",
+        "x": 30.48,
+        "y": -17.62,
+        "kind": "vcc",
+        "label": "DVDD"
+      },
+      {
+        "net": "AGND",
+        "x": 51.88,
+        "y": 89.55,
+        "kind": "gnd",
+        "label": "AGND"
+      },
+      {
+        "net": "AGND",
+        "x": 7.51,
+        "y": 41.97,
+        "kind": "gnd",
+        "label": "AGND"
+      },
+      {
+        "net": "AGND",
+        "x": -12.84,
+        "y": 42.17,
+        "kind": "gnd",
+        "label": "AGND"
+      },
+      {
+        "net": "AGND",
+        "x": 15.51,
+        "y": 40.73,
+        "kind": "gnd",
+        "label": "AGND"
+      },
+      {
+        "net": "AGND",
+        "x": -0.0,
+        "y": 52.92,
+        "kind": "gnd",
+        "label": "AGND"
+      },
+      {
+        "net": "AGND",
+        "x": 5.08,
+        "y": 68.84,
+        "kind": "gnd",
+        "label": "AGND"
+      },
+      {
+        "net": "AGND",
+        "x": -12.83,
+        "y": 57.3,
+        "kind": "gnd",
+        "label": "AGND"
+      },
+      {
+        "net": "DGND",
+        "x": 59.88,
+        "y": 88.23,
+        "kind": "gnd",
+        "label": "DGND"
+      },
+      {
+        "net": "DGND",
+        "x": 30.48,
+        "y": 35.4,
+        "kind": "gnd",
+        "label": "DGND"
+      },
+      {
+        "net": "DGND",
+        "x": 38.02,
+        "y": 10.26,
+        "kind": "gnd",
+        "label": "DGND"
+      }
+    ],
+    "net_labels": [
+      {
+        "net": "HP_GND",
+        "x": 54.97,
+        "y": 101.72,
+        "label": "HP_GND",
+        "orientation": "up",
+        "anchor_x": 55.88,
+        "anchor_y": 101.60000000000001,
+        "component_id": "J_HP_OUT",
+        "pin_name": "GND"
+      },
+      {
+        "net": "HP_L",
+        "x": 91.56,
+        "y": 53.34,
+        "label": "HP_L",
+        "orientation": "left",
+        "anchor_x": 91.44,
+        "anchor_y": 53.339999999999996,
+        "component_id": "COUT_L",
+        "pin_name": "1"
+      },
+      {
+        "net": "HP_OUT_L",
+        "x": 68.46,
+        "y": 31.52,
+        "label": "HP_OUT_L",
+        "orientation": "right",
+        "anchor_x": 68.58,
+        "anchor_y": 53.339999999999996,
+        "component_id": "COUT_L",
+        "pin_name": "2"
+      },
+      {
+        "net": "HP_OUT_L",
+        "x": 66.96,
+        "y": 101.72,
+        "label": "HP_OUT_L",
+        "orientation": "up",
+        "anchor_x": 66.04,
+        "anchor_y": 101.60000000000001,
+        "component_id": "J_HP_OUT",
+        "pin_name": "TIP"
+      },
+      {
+        "net": "HP_OUT_R",
+        "x": 68.46,
+        "y": 76.23,
+        "label": "HP_OUT_R",
+        "orientation": "right",
+        "anchor_x": 68.58,
+        "anchor_y": 71.12,
+        "component_id": "COUT_R",
+        "pin_name": "2"
+      },
+      {
+        "net": "HP_OUT_R",
+        "x": 60.96,
+        "y": 101.72,
+        "label": "HP_OUT_R",
+        "orientation": "up",
+        "anchor_x": 60.96,
+        "anchor_y": 101.60000000000001,
+        "component_id": "J_HP_OUT",
+        "pin_name": "RING"
+      },
+      {
+        "net": "HP_R",
+        "x": 91.56,
+        "y": 71.12,
+        "label": "HP_R",
+        "orientation": "left",
+        "anchor_x": 91.44,
+        "anchor_y": 71.12,
+        "component_id": "COUT_R",
+        "pin_name": "1"
+      },
+      {
+        "net": "I2S_BCLK",
+        "x": 71.22,
+        "y": 46.8,
+        "label": "I2S_BCLK",
+        "orientation": "left",
+        "anchor_x": 71.12,
+        "anchor_y": 50.8,
+        "component_id": "U1",
+        "pin_name": "BCLK"
+      },
+      {
+        "net": "I2S_LRCLK",
+        "x": 71.22,
+        "y": 56.55,
+        "label": "I2S_LRCLK",
+        "orientation": "left",
+        "anchor_x": 71.12,
+        "anchor_y": 55.88,
+        "component_id": "U1",
+        "pin_name": "LRCLK"
+      },
+      {
+        "net": "I2S_MCLK",
+        "x": 71.22,
+        "y": 68.74,
+        "label": "I2S_MCLK",
+        "orientation": "left",
+        "anchor_x": 71.12,
+        "anchor_y": 71.12,
+        "component_id": "U1",
+        "pin_name": "MCLK"
+      },
+      {
+        "net": "I2S_SDIN",
+        "x": 71.22,
+        "y": 58.81,
+        "label": "I2S_SDIN",
+        "orientation": "left",
+        "anchor_x": 71.12,
+        "anchor_y": 60.96,
+        "component_id": "U1",
+        "pin_name": "SDIN"
+      },
+      {
+        "net": "I2S_SDOUT",
+        "x": 71.22,
+        "y": 64.81,
+        "label": "I2S_SDOUT",
+        "orientation": "left",
+        "anchor_x": 71.12,
+        "anchor_y": 66.03999999999999,
+        "component_id": "U1",
+        "pin_name": "SDOUT"
+      },
+      {
+        "net": "LINE_IN_L",
+        "x": -3.28,
+        "y": 43.42,
+        "label": "LINE_IN_L",
+        "orientation": "left",
+        "anchor_x": -12.7,
+        "anchor_y": 43.18,
+        "component_id": "J_LINE_IN",
+        "pin_name": "TIP"
+      },
+      {
+        "net": "LINE_IN_L",
+        "x": 38.22,
+        "y": 37.19,
+        "label": "LINE_IN_L",
+        "orientation": "left",
+        "anchor_x": 38.1,
+        "anchor_y": 40.64,
+        "component_id": "CIN_L",
+        "pin_name": "1"
+      },
+      {
+        "net": "LINE_IN_R",
+        "x": -7.83,
+        "y": 56.84,
+        "label": "LINE_IN_R",
+        "orientation": "left",
+        "anchor_x": -12.7,
+        "anchor_y": 48.26,
+        "component_id": "J_LINE_IN",
+        "pin_name": "RING"
+      },
+      {
+        "net": "LINE_IN_R",
+        "x": 19.79,
+        "y": 48.26,
+        "label": "LINE_IN_R",
+        "orientation": "left",
+        "anchor_x": 22.86,
+        "anchor_y": 48.26,
+        "component_id": "CIN_R",
+        "pin_name": "1"
+      },
+      {
+        "net": "LINN",
+        "x": -5.28,
+        "y": 45.3,
+        "label": "LINN",
+        "orientation": "right",
+        "anchor_x": -1.7763568394002505e-15,
+        "anchor_y": 48.26,
+        "component_id": "CIN_R",
+        "pin_name": "2"
+      },
+      {
+        "net": "LINP",
+        "x": 2.76,
+        "y": 36.37,
+        "label": "LINP",
+        "orientation": "right",
+        "anchor_x": 15.239999999999998,
+        "anchor_y": 40.64,
+        "component_id": "CIN_L",
+        "pin_name": "2"
+      },
+      {
+        "net": "VMID",
+        "x": -17.9,
+        "y": 60.96,
+        "label": "VMID",
+        "orientation": "right",
+        "anchor_x": -17.78,
+        "anchor_y": 60.96,
+        "component_id": "R_BIAS",
+        "pin_name": "1"
+      }
+    ],
+    "junctions": []
+  }
+}

@@ -1,0 +1,11 @@
+.title KiCad schematic
+.include "diode.lib"
+.save all
+.probe alli
+.tran 1u 10m
+
+D1 /in /out DIODE1 
+R1 /out GND 10k 
+C1 /out GND 10u 
+VSIN1 /in GND SIN( 0 5 1k ) 
+.end

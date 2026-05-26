@@ -1,0 +1,11 @@
+{"episode": 0, "reward": -0.02, "avg_reward": -0.02, "ep_len": 2, "placement": "0.650->0.650", "p_loss": 0.000337, "v_loss": 0.001365, "entropy": 1.6094, "eps_per_sec": 0.2}
+{"episode": 300, "reward": 1.5047, "avg_reward": 0.3428, "ep_len": 4, "placement": "0.600->0.809", "p_loss": -0.004316, "v_loss": 0.934001, "entropy": 1.1267, "eps_per_sec": 3.3}
+{"episode": 600, "reward": -0.4047, "avg_reward": 0.5611, "ep_len": 4, "placement": "0.679->0.606", "p_loss": -0.00128, "v_loss": 0.373102, "entropy": 1.032, "eps_per_sec": 3.3}
+{"episode": 900, "reward": 0.49, "avg_reward": 0.2385, "ep_len": 1, "placement": "1.000->1.000", "p_loss": -0.259045, "v_loss": 0.06528, "entropy": 0.8367, "eps_per_sec": 3.2}
+{"episode": 1200, "reward": 0.49, "avg_reward": 0.3806, "ep_len": 1, "placement": "1.000->1.000", "p_loss": -0.263272, "v_loss": 0.067189, "entropy": 0.8537, "eps_per_sec": 3.1}
+{"episode": 1500, "reward": 0.2915, "avg_reward": 0.2312, "ep_len": 3, "placement": "0.541->0.605", "p_loss": -0.057055, "v_loss": 0.036943, "entropy": 1.1997, "eps_per_sec": 3.1}
+{"episode": 1800, "reward": 0.2884, "avg_reward": 0.2846, "ep_len": 3, "placement": "0.685->0.749", "p_loss": -0.013396, "v_loss": 0.033904, "entropy": 1.0518, "eps_per_sec": 3.2}
+{"episode": 2100, "reward": 1.5478, "avg_reward": 0.2326, "ep_len": 5, "placement": "0.230->0.549", "p_loss": -0.069608, "v_loss": 0.769584, "entropy": 1.3067, "eps_per_sec": 3.1}
+{"episode": 2400, "reward": 0.7341, "avg_reward": 0.3056, "ep_len": 3, "placement": "0.622->0.775", "p_loss": 0.003495, "v_loss": 0.377435, "entropy": 0.9577, "eps_per_sec": 3.1}
+{"episode": 2700, "reward": -0.2392, "avg_reward": 0.2793, "ep_len": 3, "placement": "0.626->0.584", "p_loss": -0.065401, "v_loss": 0.053489, "entropy": 1.206, "eps_per_sec": 3.1}
+{"episode": 2999, "reward": 1.4389, "avg_reward": 0.2949, "ep_len": 3, "placement": "0.443->0.737", "p_loss": -0.035681, "v_loss": 0.879826, "entropy": 1.3062, "eps_per_sec": 3.2}

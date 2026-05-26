@@ -1,0 +1,40 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Packaging artifacts
+build/
+dist/
+*.egg-info/
+
+# Training outputs
+checkpoints/
+logs/
+artifacts/
+runs/
+
+# Scraped KiCad fixtures
+data/scraped_schematics/
+
+# KiCad project files (avoid checking in large dumps)
+**/*.kicad_pcb
+**/*.kicad_sch
+**/*.kicad_pro
+**/*.kicad_prl
+**/*.kicad_sym
+**/*.kicad_mod
+**/*.kicad_sch-bak
+**/*.kicad_pcb-bak
+**/*.kicad_pro-bak

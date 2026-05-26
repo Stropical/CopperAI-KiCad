@@ -1,0 +1,28 @@
+{
+  "name": "kicad-vision-loop-agent",
+  "description": "Iteratively assembles KiCad circuits from JSON definitions using a vision-thinking loop. Supports building new circuits and fixing existing ones.",
+  "url": "http://localhost:8000",
+  "version": "1.0.0",
+  "protocolVersion": "0.2.6",
+  "defaultInputModes": ["application/json"],
+  "defaultOutputModes": ["application/json"],
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "supportsAuthenticatedExtendedCard": false,
+  "skills": [
+    {
+      "id": "assemble_circuit",
+      "name": "Circuit Assembly",
+      "description": "Assembles a complete KiCad schematic from a JSON circuit definition containing components and nets. Uses iterative place-wire-verify loop with vision verification.",
+      "tags": ["kicad", "circuit", "assembly", "schematic", "vision"]
+    },
+    {
+      "id": "fix_circuit",
+      "name": "Circuit Repair",
+      "description": "Inspects an existing KiCad schematic, compares it to a target JSON circuit definition, and iteratively fixes discrepancies (missing components, broken wires, misplaced parts).",
+      "tags": ["kicad", "circuit", "repair", "fix", "vision"]
+    }
+  ]
+}

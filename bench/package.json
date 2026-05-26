@@ -1,0 +1,54 @@
+{
+  "name": "kicad-agent-bench",
+  "version": "0.1.0",
+  "description": "Benchmarking suite for KiCad circuit design agents",
+  "type": "module",
+  "main": "dist/src/benchmark-runner.js",
+  "bin": {
+    "circuit-bench": "dist/src/cli.js",
+    "circuit-bench-real": "dist/src/cli-real.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node dist/src/cli.js --help",
+    "bench": "node dist/src/cli.js",
+    "bench:easy": "node dist/src/cli.js --difficulty easy",
+    "bench:moderate": "node dist/src/cli.js --difficulty moderate",
+    "bench:hard": "node dist/src/cli.js --difficulty hard",
+    "bench:led": "node dist/src/cli.js --circuit led_blink.kicad_sch",
+    "bench:uart": "node dist/src/cli.js --circuit uart_interface.kicad_sch",
+    "bench:power": "node dist/src/cli.js --circuit voltage_regulator.kicad_sch",
+    "bench:matrix": "node dist/src/cli.js --circuit led_matrix.kicad_sch",
+    "bench:planner": "node dist/src/cli.js --agents planner",
+    "bench:executor": "node dist/src/cli.js --agents executor",
+    "bench:verifier": "node dist/src/cli.js --agents verifier",
+    "bench:pipeline": "node dist/src/cli.js --agents pipeline",
+    "bench:verbose": "node dist/src/cli.js --verbose",
+    "bench:save": "node dist/src/cli.js --output results.json",
+    "bench:real": "node dist/src/cli-real.js",
+    "bench:real:easy": "node dist/src/cli-real.js --difficulty easy",
+    "bench:real:mistral": "node dist/src/cli-real.js --model mistral",
+    "bench:real:tiny": "node dist/src/cli-real.js --model tinyllama",
+    "bench:real:verbose": "node dist/src/cli-real.js --verbose",
+    "bench:real:save": "node dist/src/cli-real.js --output real-results.json",
+    "bench:real:report": "node dist/src/cli-real.js --output results.json --output-html report.html",
+    "bench:real:easy:report": "node dist/src/cli-real.js --difficulty easy --output-html report-easy.html"
+  },
+  "keywords": [
+    "kicad",
+    "circuit-design",
+    "benchmarking",
+    "agents",
+    "ai"
+  ],
+  "author": "KiCad Project",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "langfuse": "^2.0.0",
+    "ollama": "^0.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

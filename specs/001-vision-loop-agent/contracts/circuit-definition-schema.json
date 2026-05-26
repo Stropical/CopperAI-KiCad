@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CircuitDefinition",
+  "description": "Input schema for the vision-loop agent. Describes a complete circuit to assemble or verify in KiCad.",
+  "type": "object",
+  "required": ["components", "nets"],
+  "properties": {
+    "components": {
+      "type": "array",
+      "description": "List of components to place on the schematic",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["library", "symbol", "reference"],
+        "properties": {
+          "library": {
+            "type": "string",
+            "description": "KiCad library nickname (e.g., 'Device', 'Connector')"
+          },
+          "symbol": {
+            "type": "string",
+            "description": "Symbol name within the library (e.g., 'R', 'C', 'LED')"
+          },
+          "reference": {
+            "type": "string",
+            "description": "Unique reference designator (e.g., 'R1', 'U1', 'C3')",
+            "pattern": "^[A-Z]+[0-9]+$"
+          },
+          "value": {
+            "type": "string",
+            "description": "Component value (e.g., '10k', '100nF', '3.3V')",
+            "default": ""
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "nets": {
+      "type": "array",
+      "description": "List of nets connecting component pins",
+      "items": {
+        "type": "object",
+        "required": ["name", "connections"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Net name (e.g., 'VCC', 'GND', 'SIG_OUT')"
+          },
+          "connections": {
+            "type": "array",
+            "description": "Pins connected to this net",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["reference", "pin"],
+              "properties": {
+                "reference": {
+                  "type": "string",
+                  "description": "Component reference designator"
+                },
+                "pin": {
+                  "type": "string",
+                  "description": "Pin number or name on the component"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

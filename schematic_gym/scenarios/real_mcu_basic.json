@@ -1,0 +1,35 @@
+{
+  "scenario_id": "real_mcu_basic",
+  "name": "Basic MCU Circuit (Arduino-style)",
+  "description": "An 8-pin MCU with power decoupling, an LED on PA0, and a pull-up resistor on PA1. Must wire VCC, GND, bypass cap, LED resistor, and pull-up.",
+  "initial_state": {
+    "instances": [
+      {"symbol_id": "MCU_8PIN", "reference": "U1", "value": "ATtiny85", "x": 130.0, "y": 65.0, "rotation": 0},
+      {"symbol_id": "C", "reference": "C1", "value": "100nF", "x": 105.0, "y": 55.0, "rotation": 0},
+      {"symbol_id": "R", "reference": "R1", "value": "330", "x": 165.0, "y": 55.0, "rotation": 0},
+      {"symbol_id": "R", "reference": "R2", "value": "10k", "x": 165.0, "y": 75.0, "rotation": 0}
+    ],
+    "power_symbols": [
+      {"symbol_id": "power:VCC", "x": 105.0, "y": 45.0, "rotation": 0},
+      {"symbol_id": "power:GND", "x": 105.0, "y": 90.0, "rotation": 0}
+    ]
+  },
+  "objectives": [
+    {
+      "type": "connect_all",
+      "required_connections": [
+        {"pin_a": "U1.1", "pin_b": "VCC.1", "net_name": "VCC"},
+        {"pin_a": "U1.8", "pin_b": "GND.1", "net_name": "GND"},
+        {"pin_a": "C1.1", "pin_b": "VCC.1", "net_name": "VCC"},
+        {"pin_a": "C1.2", "pin_b": "GND.1", "net_name": "GND"},
+        {"pin_a": "U1.2", "pin_b": "R1.1", "net_name": "LED"},
+        {"pin_a": "U1.3", "pin_b": "R2.1", "net_name": "BUTTON"},
+        {"pin_a": "R2.2", "pin_b": "VCC.1", "net_name": "VCC"}
+      ],
+      "step_budget": 60,
+      "target_readability": 0.7
+    }
+  ],
+  "net_names": ["VCC", "GND", "LED", "BUTTON"],
+  "curriculum_level": 8
+}

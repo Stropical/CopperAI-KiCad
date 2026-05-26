@@ -1,0 +1,1010 @@
+{
+  "placements": [
+    {
+      "id": "U1",
+      "x": 40.64,
+      "y": 40.64,
+      "rotation": 0,
+      "width": 25.4,
+      "height": 55.879999999999995
+    },
+    {
+      "id": "C1",
+      "x": 12.7,
+      "y": 40.64,
+      "rotation": 0,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "C2",
+      "x": -2.54,
+      "y": 40.64,
+      "rotation": 0,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "C3",
+      "x": -22.86,
+      "y": 43.18,
+      "rotation": 90,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "R1",
+      "x": -15.24,
+      "y": 17.78,
+      "rotation": 180,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "R2",
+      "x": 0.0,
+      "y": 15.24,
+      "rotation": 180,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "C4",
+      "x": 15.24,
+      "y": 12.7,
+      "rotation": 0,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "C5",
+      "x": -15.24,
+      "y": -2.54,
+      "rotation": 0,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "C6",
+      "x": -35.56,
+      "y": 17.78,
+      "rotation": 270,
+      "width": 5.08,
+      "height": 12.7
+    },
+    {
+      "id": "Y1",
+      "x": 0.0,
+      "y": -7.62,
+      "rotation": 180,
+      "width": 7.62,
+      "height": 10.16
+    },
+    {
+      "id": "J1",
+      "x": 73.66,
+      "y": 40.64,
+      "rotation": 0,
+      "width": 7.62,
+      "height": 20.32
+    }
+  ],
+  "routes": [
+    {
+      "net": "VDD",
+      "points": [
+        {
+          "x": -27.939999999999998,
+          "y": 35.56
+        },
+        {
+          "x": 55.879999999999995,
+          "y": 35.56
+        }
+      ]
+    },
+    {
+      "net": "VDD",
+      "points": [
+        {
+          "x": -27.939999999999998,
+          "y": 45.72
+        },
+        {
+          "x": -27.939999999999998,
+          "y": 35.56
+        }
+      ]
+    },
+    {
+      "net": "VDD",
+      "points": [
+        {
+          "x": 2.54,
+          "y": 33.02
+        },
+        {
+          "x": 2.54,
+          "y": 35.56
+        }
+      ]
+    },
+    {
+      "net": "OSC_IN",
+      "points": [
+        {
+          "x": -12.7,
+          "y": 55.88
+        },
+        {
+          "x": 35.56,
+          "y": 55.88
+        }
+      ]
+    },
+    {
+      "net": "OSC_IN",
+      "points": [
+        {
+          "x": -5.079999999999999,
+          "y": 0.0
+        },
+        {
+          "x": -5.079999999999999,
+          "y": 55.88
+        }
+      ]
+    },
+    {
+      "net": "OSC_IN",
+      "points": [
+        {
+          "x": -12.7,
+          "y": -7.62
+        },
+        {
+          "x": -7.619999999999999,
+          "y": -7.62
+        },
+        {
+          "x": -7.619999999999999,
+          "y": 55.88
+        }
+      ]
+    },
+    {
+      "net": "OSC_OUT",
+      "points": [
+        {
+          "x": -17.78,
+          "y": 60.96
+        },
+        {
+          "x": 35.56,
+          "y": 60.96
+        }
+      ]
+    },
+    {
+      "net": "OSC_OUT",
+      "points": [
+        {
+          "x": -5.079999999999999,
+          "y": -5.08
+        },
+        {
+          "x": -5.079999999999999,
+          "y": 60.96
+        }
+      ]
+    },
+    {
+      "net": "OSC_OUT",
+      "points": [
+        {
+          "x": -17.78,
+          "y": 20.32
+        },
+        {
+          "x": -25.400000000000002,
+          "y": 20.32
+        },
+        {
+          "x": -25.400000000000002,
+          "y": 60.96
+        }
+      ]
+    },
+    {
+      "net": "VDDA",
+      "points": [
+        {
+          "x": 60.96,
+          "y": 35.56
+        },
+        {
+          "x": 17.78,
+          "y": 35.56
+        },
+        {
+          "x": 17.78,
+          "y": 7.619999999999999
+        }
+      ]
+    },
+    {
+      "net": "NRST",
+      "points": [
+        {
+          "x": 35.56,
+          "y": 45.72
+        },
+        {
+          "x": 35.56,
+          "y": 12.7
+        },
+        {
+          "x": -12.7,
+          "y": 12.7
+        }
+      ]
+    },
+    {
+      "net": "BOOT0",
+      "points": [
+        {
+          "x": 35.56,
+          "y": 50.8
+        },
+        {
+          "x": 35.56,
+          "y": 10.159999999999998
+        },
+        {
+          "x": 2.54,
+          "y": 10.159999999999998
+        }
+      ]
+    },
+    {
+      "net": "SWDIO",
+      "points": [
+        {
+          "x": 71.12,
+          "y": 71.12
+        },
+        {
+          "x": 86.36,
+          "y": 71.12
+        },
+        {
+          "x": 86.36,
+          "y": 48.26
+        }
+      ]
+    },
+    {
+      "net": "SWCLK",
+      "points": [
+        {
+          "x": 71.12,
+          "y": 66.03999999999999
+        },
+        {
+          "x": 86.36,
+          "y": 66.03999999999999
+        },
+        {
+          "x": 86.36,
+          "y": 53.34
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "points": [
+        {
+          "x": -40.64,
+          "y": 101.6
+        },
+        {
+          "x": 58.42,
+          "y": 101.6
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "points": [
+        {
+          "x": 15.239999999999998,
+          "y": 58.42
+        },
+        {
+          "x": 15.239999999999998,
+          "y": 101.6
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "points": [
+        {
+          "x": 0.0,
+          "y": 58.42
+        },
+        {
+          "x": 0.0,
+          "y": 101.6
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "points": [
+        {
+          "x": -5.079999999999998,
+          "y": 45.72
+        },
+        {
+          "x": -5.079999999999998,
+          "y": 101.6
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "points": [
+        {
+          "x": 17.78,
+          "y": 30.48
+        },
+        {
+          "x": 20.32,
+          "y": 30.48
+        },
+        {
+          "x": 20.32,
+          "y": 101.6
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "points": [
+        {
+          "x": -12.7,
+          "y": 15.240000000000002
+        },
+        {
+          "x": -7.619999999999999,
+          "y": 15.240000000000002
+        },
+        {
+          "x": -7.619999999999999,
+          "y": 101.6
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "points": [
+        {
+          "x": -40.64,
+          "y": 20.32
+        },
+        {
+          "x": -40.64,
+          "y": 101.6
+        }
+      ]
+    }
+  ],
+  "pin_anchors": [
+    {
+      "component_id": "U1",
+      "pin_name": "VDD1",
+      "x": 45.72,
+      "y": 35.56
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "VDD2",
+      "x": 50.8,
+      "y": 35.56
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "VDD3",
+      "x": 55.879999999999995,
+      "y": 35.56
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "VDDA",
+      "x": 60.96,
+      "y": 35.56
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "VSS1",
+      "x": 48.26,
+      "y": 101.6
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "VSS2",
+      "x": 53.34,
+      "y": 101.6
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "VSSA",
+      "x": 58.42,
+      "y": 101.6
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "NRST",
+      "x": 35.56,
+      "y": 45.72
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "PA0",
+      "x": 71.12,
+      "y": 45.72
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "PA1",
+      "x": 71.12,
+      "y": 50.8
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "PA2",
+      "x": 71.12,
+      "y": 55.88
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "PA3",
+      "x": 71.12,
+      "y": 60.96
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "PA4",
+      "x": 71.12,
+      "y": 66.03999999999999
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "PA5",
+      "x": 71.12,
+      "y": 71.12
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "PB0",
+      "x": 71.12,
+      "y": 76.2
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "PB1",
+      "x": 71.12,
+      "y": 81.28
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "PB6",
+      "x": 71.12,
+      "y": 86.36
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "PB7",
+      "x": 71.12,
+      "y": 91.44
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "BOOT0",
+      "x": 35.56,
+      "y": 50.8
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "OSC_IN",
+      "x": 35.56,
+      "y": 55.88
+    },
+    {
+      "component_id": "U1",
+      "pin_name": "OSC_OUT",
+      "x": 35.56,
+      "y": 60.96
+    },
+    {
+      "component_id": "C1",
+      "pin_name": "1",
+      "x": 15.239999999999998,
+      "y": 35.56
+    },
+    {
+      "component_id": "C1",
+      "pin_name": "2",
+      "x": 15.239999999999998,
+      "y": 58.42
+    },
+    {
+      "component_id": "C2",
+      "pin_name": "1",
+      "x": 0.0,
+      "y": 35.56
+    },
+    {
+      "component_id": "C2",
+      "pin_name": "2",
+      "x": 0.0,
+      "y": 58.42
+    },
+    {
+      "component_id": "C3",
+      "pin_name": "1",
+      "x": -27.939999999999998,
+      "y": 45.72
+    },
+    {
+      "component_id": "C3",
+      "pin_name": "2",
+      "x": -5.079999999999998,
+      "y": 45.72
+    },
+    {
+      "component_id": "C4",
+      "pin_name": "1",
+      "x": 17.78,
+      "y": 7.619999999999999
+    },
+    {
+      "component_id": "C4",
+      "pin_name": "2",
+      "x": 17.78,
+      "y": 30.48
+    },
+    {
+      "component_id": "R1",
+      "pin_name": "1",
+      "x": -12.7,
+      "y": 35.56
+    },
+    {
+      "component_id": "R1",
+      "pin_name": "2",
+      "x": -12.7,
+      "y": 12.7
+    },
+    {
+      "component_id": "R2",
+      "pin_name": "1",
+      "x": 2.54,
+      "y": 33.02
+    },
+    {
+      "component_id": "R2",
+      "pin_name": "2",
+      "x": 2.54,
+      "y": 10.159999999999998
+    },
+    {
+      "component_id": "Y1",
+      "pin_name": "1",
+      "x": -5.079999999999999,
+      "y": 0.0
+    },
+    {
+      "component_id": "Y1",
+      "pin_name": "2",
+      "x": -5.079999999999999,
+      "y": -5.08
+    },
+    {
+      "component_id": "C5",
+      "pin_name": "1",
+      "x": -12.7,
+      "y": -7.62
+    },
+    {
+      "component_id": "C5",
+      "pin_name": "2",
+      "x": -12.7,
+      "y": 15.240000000000002
+    },
+    {
+      "component_id": "C6",
+      "pin_name": "1",
+      "x": -17.78,
+      "y": 20.32
+    },
+    {
+      "component_id": "C6",
+      "pin_name": "2",
+      "x": -40.64,
+      "y": 20.32
+    },
+    {
+      "component_id": "J1",
+      "pin_name": "1",
+      "x": 86.36,
+      "y": 43.18
+    },
+    {
+      "component_id": "J1",
+      "pin_name": "2",
+      "x": 86.36,
+      "y": 48.26
+    },
+    {
+      "component_id": "J1",
+      "pin_name": "3",
+      "x": 86.36,
+      "y": 53.34
+    },
+    {
+      "component_id": "J1",
+      "pin_name": "4",
+      "x": 86.36,
+      "y": 58.42
+    }
+  ],
+  "score": {
+    "total": 2058.0599999999977,
+    "overlaps": 0,
+    "crossings": 0,
+    "wire_length": 805.1799999999998,
+    "bends": 24,
+    "fb_loop_distance": 0.0,
+    "flow_violations": 0,
+    "cin_distance": 0.0,
+    "cout_distance": 0.0,
+    "spacing_penalty": 22.65759999999996
+  },
+  "schematic": {
+    "wires": [
+      {
+        "net": "OSC_IN",
+        "points": [
+          {
+            "x": -12.7,
+            "y": -7.62
+          },
+          {
+            "x": -5.079999999999999,
+            "y": -7.62
+          },
+          {
+            "x": -5.079999999999999,
+            "y": 0.0
+          }
+        ]
+      }
+    ],
+    "power_symbols": [
+      {
+        "net": "VDD",
+        "x": 39.1,
+        "y": 30.64,
+        "kind": "vcc",
+        "label": "VDD"
+      },
+      {
+        "net": "VDD",
+        "x": 46.99,
+        "y": 30.64,
+        "kind": "vcc",
+        "label": "VDD"
+      },
+      {
+        "net": "VDD",
+        "x": 54.87,
+        "y": 30.64,
+        "kind": "vcc",
+        "label": "VDD"
+      },
+      {
+        "net": "VDD",
+        "x": 12.86,
+        "y": 30.64,
+        "kind": "vcc",
+        "label": "VDD"
+      },
+      {
+        "net": "VDD",
+        "x": -3.08,
+        "y": 30.64,
+        "kind": "vcc",
+        "label": "VDD"
+      },
+      {
+        "net": "VDD",
+        "x": -27.94,
+        "y": 45.6,
+        "kind": "vcc",
+        "label": "VDD"
+      },
+      {
+        "net": "VDD",
+        "x": -12.7,
+        "y": 32.43,
+        "kind": "vcc",
+        "label": "VDD"
+      },
+      {
+        "net": "VDD",
+        "x": 4.92,
+        "y": 30.64,
+        "kind": "vcc",
+        "label": "VDD"
+      },
+      {
+        "net": "VDDA",
+        "x": 62.87,
+        "y": 30.64,
+        "kind": "vcc",
+        "label": "VDDA"
+      },
+      {
+        "net": "VDDA",
+        "x": 17.78,
+        "y": 2.7,
+        "kind": "vcc",
+        "label": "VDDA"
+      },
+      {
+        "net": "GND",
+        "x": 45.36,
+        "y": 106.52,
+        "kind": "gnd",
+        "label": "GND"
+      },
+      {
+        "net": "GND",
+        "x": 53.33,
+        "y": 106.52,
+        "kind": "gnd",
+        "label": "GND"
+      },
+      {
+        "net": "GND",
+        "x": 61.33,
+        "y": 106.52,
+        "kind": "gnd",
+        "label": "GND"
+      },
+      {
+        "net": "GND",
+        "x": 15.24,
+        "y": 63.34,
+        "kind": "gnd",
+        "label": "GND"
+      },
+      {
+        "net": "GND",
+        "x": 0.0,
+        "y": 63.34,
+        "kind": "gnd",
+        "label": "GND"
+      },
+      {
+        "net": "GND",
+        "x": -5.16,
+        "y": 50.43,
+        "kind": "gnd",
+        "label": "GND"
+      },
+      {
+        "net": "GND",
+        "x": 20.86,
+        "y": 35.4,
+        "kind": "gnd",
+        "label": "GND"
+      },
+      {
+        "net": "GND",
+        "x": -13.16,
+        "y": 20.18,
+        "kind": "gnd",
+        "label": "GND"
+      },
+      {
+        "net": "GND",
+        "x": -40.64,
+        "y": 20.44,
+        "kind": "gnd",
+        "label": "GND"
+      }
+    ],
+    "net_labels": [
+      {
+        "net": "ADC_IN0",
+        "x": 69.76,
+        "y": 45.62,
+        "label": "ADC_IN0",
+        "orientation": "down",
+        "anchor_x": 71.12,
+        "anchor_y": 45.72,
+        "component_id": "U1",
+        "pin_name": "PA0"
+      },
+      {
+        "net": "ADC_IN1",
+        "x": 83.28,
+        "y": 48.04,
+        "label": "ADC_IN1",
+        "orientation": "left",
+        "anchor_x": 71.12,
+        "anchor_y": 50.8,
+        "component_id": "U1",
+        "pin_name": "PA1"
+      },
+      {
+        "net": "BOOT0",
+        "x": -1.58,
+        "y": 7.27,
+        "label": "BOOT0",
+        "orientation": "down",
+        "anchor_x": 2.54,
+        "anchor_y": 10.159999999999998,
+        "component_id": "R2",
+        "pin_name": "2"
+      },
+      {
+        "net": "GPIO_0",
+        "x": 71.22,
+        "y": 75.29,
+        "label": "GPIO_0",
+        "orientation": "left",
+        "anchor_x": 71.12,
+        "anchor_y": 76.2,
+        "component_id": "U1",
+        "pin_name": "PB0"
+      },
+      {
+        "net": "GPIO_1",
+        "x": 71.22,
+        "y": 81.28,
+        "label": "GPIO_1",
+        "orientation": "left",
+        "anchor_x": 71.12,
+        "anchor_y": 81.28,
+        "component_id": "U1",
+        "pin_name": "PB1"
+      },
+      {
+        "net": "I2C_SCL",
+        "x": 71.22,
+        "y": 87.28,
+        "label": "I2C_SCL",
+        "orientation": "left",
+        "anchor_x": 71.12,
+        "anchor_y": 86.36,
+        "component_id": "U1",
+        "pin_name": "PB6"
+      },
+      {
+        "net": "I2C_SDA",
+        "x": 71.12,
+        "y": 91.54,
+        "label": "I2C_SDA",
+        "orientation": "up",
+        "anchor_x": 71.12,
+        "anchor_y": 91.44,
+        "component_id": "U1",
+        "pin_name": "PB7"
+      },
+      {
+        "net": "NRST",
+        "x": -19.24,
+        "y": 10.18,
+        "label": "NRST",
+        "orientation": "down",
+        "anchor_x": -12.7,
+        "anchor_y": 12.7,
+        "component_id": "R1",
+        "pin_name": "2"
+      },
+      {
+        "net": "OSC_OUT",
+        "x": -14.2,
+        "y": -6.54,
+        "label": "OSC_OUT",
+        "orientation": "right",
+        "anchor_x": -5.079999999999999,
+        "anchor_y": -5.08,
+        "component_id": "Y1",
+        "pin_name": "2"
+      },
+      {
+        "net": "OSC_OUT",
+        "x": -8.16,
+        "y": 11.27,
+        "label": "OSC_OUT",
+        "orientation": "left",
+        "anchor_x": -17.78,
+        "anchor_y": 20.32,
+        "component_id": "C6",
+        "pin_name": "1"
+      },
+      {
+        "net": "SWCLK",
+        "x": 86.48,
+        "y": 53.74,
+        "label": "SWCLK",
+        "orientation": "left",
+        "anchor_x": 86.36,
+        "anchor_y": 53.34,
+        "component_id": "J1",
+        "pin_name": "3"
+      },
+      {
+        "net": "SWDIO",
+        "x": 86.48,
+        "y": 42.11,
+        "label": "SWDIO",
+        "orientation": "left",
+        "anchor_x": 86.36,
+        "anchor_y": 48.26,
+        "component_id": "J1",
+        "pin_name": "2"
+      },
+      {
+        "net": "SWD_GND",
+        "x": 87.62,
+        "y": 65.67,
+        "label": "SWD_GND",
+        "orientation": "left",
+        "anchor_x": 86.36,
+        "anchor_y": 58.42,
+        "component_id": "J1",
+        "pin_name": "4"
+      },
+      {
+        "net": "SWD_VDD",
+        "x": 86.48,
+        "y": 36.11,
+        "label": "SWD_VDD",
+        "orientation": "left",
+        "anchor_x": 86.36,
+        "anchor_y": 43.18,
+        "component_id": "J1",
+        "pin_name": "1"
+      },
+      {
+        "net": "UART_RX",
+        "x": 70.07,
+        "y": 65.62,
+        "label": "UART_RX",
+        "orientation": "left",
+        "anchor_x": 71.12,
+        "anchor_y": 60.96,
+        "component_id": "U1",
+        "pin_name": "PA3"
+      },
+      {
+        "net": "UART_TX",
+        "x": 83.28,
+        "y": 59.62,
+        "label": "UART_TX",
+        "orientation": "left",
+        "anchor_x": 71.12,
+        "anchor_y": 55.88,
+        "component_id": "U1",
+        "pin_name": "PA2"
+      }
+    ],
+    "junctions": []
+  }
+}

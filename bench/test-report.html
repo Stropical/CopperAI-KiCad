@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuit Benchmark Report - gemma3:4b</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: #f5f5f5;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .summary-card {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #4ecdc4;
+        }
+
+        .summary-card.success {
+            border-left-color: #26de81;
+        }
+
+        .summary-card.warning {
+            border-left-color: #f7b731;
+        }
+
+        .summary-card.error {
+            border-left-color: #ff6b6b;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .agent-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .agent-card {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .agent-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: capitalize;
+        }
+
+        .success-bar {
+            width: 100%;
+            height: 24px;
+            background-color: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .success-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #26de81, #20c997);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .stats {
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        .results-section {
+            background-color: #f5f5f5;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+        }
+
+        .results-section h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .result-item {
+            background-color: #ffffff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            transform: translateX(5px);
+            border-left-color: #4ecdc4;
+        }
+
+        .result-item.success {
+            border-left-color: #26de81;
+        }
+
+        .result-item.failed {
+            border-left-color: #ff6b6b;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .result-title {
+            font-weight: bold;
+        }
+
+        .result-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            background-color: #4ecdc4;
+            color: white;
+        }
+
+        .result-badge.failed {
+            background-color: #ff6b6b;
+        }
+
+        .result-details {
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        .circuit-container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid #ddd;
+        }
+
+        .circuit-container.active {
+            display: block;
+        }
+
+        .circuit-svg {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            background-color: #ffffff;
+        }
+
+        .circuit-text {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            overflow-x: auto;
+            margin-top: 10px;
+            white-space: pre;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Circuit Benchmark Report - gemma3:4b</h1>
+            <p class="subtitle">Generated on 3/16/2026, 6:34:10 PM</p>
+
+            <div class="summary-grid">
+                <div class="summary-card success">
+                    <div class="metric-label">Total Tests</div>
+                    <div class="metric-value">12</div>
+                </div>
+                <div class="summary-card success">
+                    <div class="metric-label">Passed</div>
+                    <div class="metric-value">0</div>
+                </div>
+                <div class="summary-card error">
+                    <div class="metric-label">Failed</div>
+                    <div class="metric-value">12</div>
+                </div>
+                <div class="summary-card">
+                    <div class="metric-label">Success Rate</div>
+                    <div class="metric-value">0.0%</div>
+                </div>
+                <div class="summary-card">
+                    <div class="metric-label">Avg Tokens</div>
+                    <div class="metric-value">274</div>
+                </div>
+                <div class="summary-card">
+                    <div class="metric-label">Tool Success</div>
+                    <div class="metric-value">10.0%</div>
+                </div>
+            </div>
+        </header>
+
+        <section class="results-section">
+            <h2>🤖 Agent Mode Performance</h2>
+            <div class="agent-breakdown">
+                <div class="agent-card">
+                    <div class="agent-name">planner</div>
+                    <div class="success-bar">
+                        <div class="success-fill" style="width: 0%">0/3</div>
+                    </div>
+                    <div class="stats">
+                        <strong>0.0%</strong> success<br>
+                        <strong>232</strong> avg tokens
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-name">executor</div>
+                    <div class="success-bar">
+                        <div class="success-fill" style="width: 0%">0/3</div>
+                    </div>
+                    <div class="stats">
+                        <strong>0.0%</strong> success<br>
+                        <strong>137</strong> avg tokens
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-name">verifier</div>
+                    <div class="success-bar">
+                        <div class="success-fill" style="width: 0%">0/3</div>
+                    </div>
+                    <div class="stats">
+                        <strong>0.0%</strong> success<br>
+                        <strong>201</strong> avg tokens
+                    </div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-name">pipeline</div>
+                    <div class="success-bar">
+                        <div class="success-fill" style="width: 0%">0/3</div>
+                    </div>
+                    <div class="stats">
+                        <strong>0.0%</strong> success<br>
+                        <strong>527</strong> avg tokens
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="results-section">
+            <h2>📊 Test Results</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Agent</th>
+                        <th>Status</th>
+                        <th>Criteria</th>
+                        <th>Tokens</th>
+                        <th>Duration</th>
+                        <th>Tools</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="result-item failed" onclick="toggleCircuit('led_blink_power-planner')">
+                        <td><strong>led_blink_power</strong></td>
+                        <td>planner</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>218</td>
+                        <td>38684ms</td>
+                        <td>0/0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-led_blink_power-planner">
+                                <h3>Circuit State: led_blink_power</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">led_blink.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="389.59999999999997" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="U1"/>
+  <text x="403.99999999999994" y="102.2" text-anchor="middle" class="component-label">U1</text>
+  <text x="403.99999999999994" y="101.8" text-anchor="middle" class="component-value">ATmega328P</text>
+  <circle cx="389.59999999999997" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="389.59999999999997" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="395.35999999999996" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="395.35999999999996" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="401.11999999999995" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="401.11999999999995" y="118.39999999999999" text-anchor="middle" class="pin-label">19</text>
+  <circle cx="406.87999999999994" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="406.87999999999994" y="118.39999999999999" text-anchor="middle" class="pin-label">20</text>
+  <circle cx="412.64" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="412.64" y="118.39999999999999" text-anchor="middle" class="pin-label">7</text>
+  <rect x="869.5999999999999" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="LED1"/>
+  <text x="883.9999999999999" y="102.2" text-anchor="middle" class="component-label">LED1</text>
+  <text x="883.9999999999999" y="101.8" text-anchor="middle" class="component-value">RED_LED</text>
+  <circle cx="869.5999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="869.5999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="883.9999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="883.9999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">-</text>
+  <rect x="629.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="R1"/>
+  <text x="644" y="102.2" text-anchor="middle" class="component-label">R1</text>
+  <text x="644" y="101.8" text-anchor="middle" class="component-value">220Ω</text>
+  <circle cx="629.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="629.6" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="644" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="644" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <rect x="101.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="J1"/>
+  <text x="115.99999999999999" y="102.2" text-anchor="middle" class="component-label">J1</text>
+  <text x="115.99999999999999" y="101.8" text-anchor="middle" class="component-value">USB_POWER</text>
+  <circle cx="101.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="101.6" y="118.39999999999999" text-anchor="middle" class="pin-label">VCC</text>
+  <circle cx="116" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="116" y="118.39999999999999" text-anchor="middle" class="pin-label">GND</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="result-item failed" onclick="toggleCircuit('led_blink_power-executor')">
+                        <td><strong>led_blink_power</strong></td>
+                        <td>executor</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>36</td>
+                        <td>57920ms</td>
+                        <td>0/0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-led_blink_power-executor">
+                                <h3>Circuit State: led_blink_power</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">led_blink.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="389.59999999999997" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="U1"/>
+  <text x="403.99999999999994" y="102.2" text-anchor="middle" class="component-label">U1</text>
+  <text x="403.99999999999994" y="101.8" text-anchor="middle" class="component-value">ATmega328P</text>
+  <circle cx="389.59999999999997" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="389.59999999999997" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="395.35999999999996" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="395.35999999999996" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="401.11999999999995" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="401.11999999999995" y="118.39999999999999" text-anchor="middle" class="pin-label">19</text>
+  <circle cx="406.87999999999994" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="406.87999999999994" y="118.39999999999999" text-anchor="middle" class="pin-label">20</text>
+  <circle cx="412.64" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="412.64" y="118.39999999999999" text-anchor="middle" class="pin-label">7</text>
+  <rect x="869.5999999999999" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="LED1"/>
+  <text x="883.9999999999999" y="102.2" text-anchor="middle" class="component-label">LED1</text>
+  <text x="883.9999999999999" y="101.8" text-anchor="middle" class="component-value">RED_LED</text>
+  <circle cx="869.5999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="869.5999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="883.9999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="883.9999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">-</text>
+  <rect x="629.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="R1"/>
+  <text x="644" y="102.2" text-anchor="middle" class="component-label">R1</text>
+  <text x="644" y="101.8" text-anchor="middle" class="component-value">220Ω</text>
+  <circle cx="629.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="629.6" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="644" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="644" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <rect x="101.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="J1"/>
+  <text x="115.99999999999999" y="102.2" text-anchor="middle" class="component-label">J1</text>
+  <text x="115.99999999999999" y="101.8" text-anchor="middle" class="component-value">USB_POWER</text>
+  <circle cx="101.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="101.6" y="118.39999999999999" text-anchor="middle" class="pin-label">VCC</text>
+  <circle cx="116" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="116" y="118.39999999999999" text-anchor="middle" class="pin-label">GND</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="result-item failed" onclick="toggleCircuit('led_blink_power-verifier')">
+                        <td><strong>led_blink_power</strong></td>
+                        <td>verifier</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>207</td>
+                        <td>87528ms</td>
+                        <td>0/0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-led_blink_power-verifier">
+                                <h3>Circuit State: led_blink_power</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">led_blink.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="389.59999999999997" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="U1"/>
+  <text x="403.99999999999994" y="102.2" text-anchor="middle" class="component-label">U1</text>
+  <text x="403.99999999999994" y="101.8" text-anchor="middle" class="component-value">ATmega328P</text>
+  <circle cx="389.59999999999997" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="389.59999999999997" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="395.35999999999996" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="395.35999999999996" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="401.11999999999995" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="401.11999999999995" y="118.39999999999999" text-anchor="middle" class="pin-label">19</text>
+  <circle cx="406.87999999999994" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="406.87999999999994" y="118.39999999999999" text-anchor="middle" class="pin-label">20</text>
+  <circle cx="412.64" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="412.64" y="118.39999999999999" text-anchor="middle" class="pin-label">7</text>
+  <rect x="869.5999999999999" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="LED1"/>
+  <text x="883.9999999999999" y="102.2" text-anchor="middle" class="component-label">LED1</text>
+  <text x="883.9999999999999" y="101.8" text-anchor="middle" class="component-value">RED_LED</text>
+  <circle cx="869.5999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="869.5999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="883.9999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="883.9999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">-</text>
+  <rect x="629.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="R1"/>
+  <text x="644" y="102.2" text-anchor="middle" class="component-label">R1</text>
+  <text x="644" y="101.8" text-anchor="middle" class="component-value">220Ω</text>
+  <circle cx="629.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="629.6" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="644" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="644" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <rect x="101.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="J1"/>
+  <text x="115.99999999999999" y="102.2" text-anchor="middle" class="component-label">J1</text>
+  <text x="115.99999999999999" y="101.8" text-anchor="middle" class="component-value">USB_POWER</text>
+  <circle cx="101.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="101.6" y="118.39999999999999" text-anchor="middle" class="pin-label">VCC</text>
+  <circle cx="116" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="116" y="118.39999999999999" text-anchor="middle" class="pin-label">GND</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="result-item failed" onclick="toggleCircuit('led_blink_power-pipeline')">
+                        <td><strong>led_blink_power</strong></td>
+                        <td>pipeline</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>559</td>
+                        <td>174356ms</td>
+                        <td>0/2</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-led_blink_power-pipeline">
+                                <h3>Circuit State: led_blink_power</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">led_blink.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="389.59999999999997" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="U1"/>
+  <text x="403.99999999999994" y="102.2" text-anchor="middle" class="component-label">U1</text>
+  <text x="403.99999999999994" y="101.8" text-anchor="middle" class="component-value">ATmega328P</text>
+  <circle cx="389.59999999999997" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="389.59999999999997" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="395.35999999999996" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="395.35999999999996" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="401.11999999999995" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="401.11999999999995" y="118.39999999999999" text-anchor="middle" class="pin-label">19</text>
+  <circle cx="406.87999999999994" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="406.87999999999994" y="118.39999999999999" text-anchor="middle" class="pin-label">20</text>
+  <circle cx="412.64" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="412.64" y="118.39999999999999" text-anchor="middle" class="pin-label">7</text>
+  <rect x="869.5999999999999" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="LED1"/>
+  <text x="883.9999999999999" y="102.2" text-anchor="middle" class="component-label">LED1</text>
+  <text x="883.9999999999999" y="101.8" text-anchor="middle" class="component-value">RED_LED</text>
+  <circle cx="869.5999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="869.5999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="883.9999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="883.9999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">-</text>
+  <rect x="629.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="R1"/>
+  <text x="644" y="102.2" text-anchor="middle" class="component-label">R1</text>
+  <text x="644" y="101.8" text-anchor="middle" class="component-value">220Ω</text>
+  <circle cx="629.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="629.6" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="644" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="644" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <rect x="101.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="J1"/>
+  <text x="115.99999999999999" y="102.2" text-anchor="middle" class="component-label">J1</text>
+  <text x="115.99999999999999" y="101.8" text-anchor="middle" class="component-value">USB_POWER</text>
+  <circle cx="101.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="101.6" y="118.39999999999999" text-anchor="middle" class="pin-label">VCC</text>
+  <circle cx="116" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="116" y="118.39999999999999" text-anchor="middle" class="pin-label">GND</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="result-item failed" onclick="toggleCircuit('led_blink_gpio-planner')">
+                        <td><strong>led_blink_gpio</strong></td>
+                        <td>planner</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>243</td>
+                        <td>169902ms</td>
+                        <td>0/0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-led_blink_gpio-planner">
+                                <h3>Circuit State: led_blink_gpio</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">led_blink.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="389.59999999999997" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="U1"/>
+  <text x="403.99999999999994" y="102.2" text-anchor="middle" class="component-label">U1</text>
+  <text x="403.99999999999994" y="101.8" text-anchor="middle" class="component-value">ATmega328P</text>
+  <circle cx="389.59999999999997" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="389.59999999999997" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="395.35999999999996" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="395.35999999999996" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="401.11999999999995" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="401.11999999999995" y="118.39999999999999" text-anchor="middle" class="pin-label">19</text>
+  <circle cx="406.87999999999994" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="406.87999999999994" y="118.39999999999999" text-anchor="middle" class="pin-label">20</text>
+  <circle cx="412.64" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="412.64" y="118.39999999999999" text-anchor="middle" class="pin-label">7</text>
+  <rect x="869.5999999999999" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="LED1"/>
+  <text x="883.9999999999999" y="102.2" text-anchor="middle" class="component-label">LED1</text>
+  <text x="883.9999999999999" y="101.8" text-anchor="middle" class="component-value">RED_LED</text>
+  <circle cx="869.5999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="869.5999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="883.9999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="883.9999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">-</text>
+  <rect x="629.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="R1"/>
+  <text x="644" y="102.2" text-anchor="middle" class="component-label">R1</text>
+  <text x="644" y="101.8" text-anchor="middle" class="component-value">220Ω</text>
+  <circle cx="629.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="629.6" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="644" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="644" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <rect x="101.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="J1"/>
+  <text x="115.99999999999999" y="102.2" text-anchor="middle" class="component-label">J1</text>
+  <text x="115.99999999999999" y="101.8" text-anchor="middle" class="component-value">USB_POWER</text>
+  <circle cx="101.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="101.6" y="118.39999999999999" text-anchor="middle" class="pin-label">VCC</text>
+  <circle cx="116" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="116" y="118.39999999999999" text-anchor="middle" class="pin-label">GND</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="result-item failed" onclick="toggleCircuit('led_blink_gpio-executor')">
+                        <td><strong>led_blink_gpio</strong></td>
+                        <td>executor</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>334</td>
+                        <td>182135ms</td>
+                        <td>0/0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-led_blink_gpio-executor">
+                                <h3>Circuit State: led_blink_gpio</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">led_blink.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="389.59999999999997" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="U1"/>
+  <text x="403.99999999999994" y="102.2" text-anchor="middle" class="component-label">U1</text>
+  <text x="403.99999999999994" y="101.8" text-anchor="middle" class="component-value">ATmega328P</text>
+  <circle cx="389.59999999999997" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="389.59999999999997" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="395.35999999999996" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="395.35999999999996" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="401.11999999999995" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="401.11999999999995" y="118.39999999999999" text-anchor="middle" class="pin-label">19</text>
+  <circle cx="406.87999999999994" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="406.87999999999994" y="118.39999999999999" text-anchor="middle" class="pin-label">20</text>
+  <circle cx="412.64" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="412.64" y="118.39999999999999" text-anchor="middle" class="pin-label">7</text>
+  <rect x="869.5999999999999" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="LED1"/>
+  <text x="883.9999999999999" y="102.2" text-anchor="middle" class="component-label">LED1</text>
+  <text x="883.9999999999999" y="101.8" text-anchor="middle" class="component-value">RED_LED</text>
+  <circle cx="869.5999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="869.5999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="883.9999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="883.9999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">-</text>
+  <rect x="629.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="R1"/>
+  <text x="644" y="102.2" text-anchor="middle" class="component-label">R1</text>
+  <text x="644" y="101.8" text-anchor="middle" class="component-value">220Ω</text>
+  <circle cx="629.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="629.6" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="644" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="644" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <rect x="101.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="J1"/>
+  <text x="115.99999999999999" y="102.2" text-anchor="middle" class="component-label">J1</text>
+  <text x="115.99999999999999" y="101.8" text-anchor="middle" class="component-value">USB_POWER</text>
+  <circle cx="101.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="101.6" y="118.39999999999999" text-anchor="middle" class="pin-label">VCC</text>
+  <circle cx="116" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="116" y="118.39999999999999" text-anchor="middle" class="pin-label">GND</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="result-item failed" onclick="toggleCircuit('led_blink_gpio-verifier')">
+                        <td><strong>led_blink_gpio</strong></td>
+                        <td>verifier</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>261</td>
+                        <td>113139ms</td>
+                        <td>1/1</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-led_blink_gpio-verifier">
+                                <h3>Circuit State: led_blink_gpio</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">led_blink.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="389.59999999999997" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="U1"/>
+  <text x="403.99999999999994" y="102.2" text-anchor="middle" class="component-label">U1</text>
+  <text x="403.99999999999994" y="101.8" text-anchor="middle" class="component-value">ATmega328P</text>
+  <circle cx="389.59999999999997" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="389.59999999999997" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="395.35999999999996" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="395.35999999999996" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="401.11999999999995" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="401.11999999999995" y="118.39999999999999" text-anchor="middle" class="pin-label">19</text>
+  <circle cx="406.87999999999994" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="406.87999999999994" y="118.39999999999999" text-anchor="middle" class="pin-label">20</text>
+  <circle cx="412.64" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="412.64" y="118.39999999999999" text-anchor="middle" class="pin-label">7</text>
+  <rect x="869.5999999999999" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="LED1"/>
+  <text x="883.9999999999999" y="102.2" text-anchor="middle" class="component-label">LED1</text>
+  <text x="883.9999999999999" y="101.8" text-anchor="middle" class="component-value">RED_LED</text>
+  <circle cx="869.5999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="869.5999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="883.9999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="883.9999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">-</text>
+  <rect x="629.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="R1"/>
+  <text x="644" y="102.2" text-anchor="middle" class="component-label">R1</text>
+  <text x="644" y="101.8" text-anchor="middle" class="component-value">220Ω</text>
+  <circle cx="629.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="629.6" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="644" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="644" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <rect x="101.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="J1"/>
+  <text x="115.99999999999999" y="102.2" text-anchor="middle" class="component-label">J1</text>
+  <text x="115.99999999999999" y="101.8" text-anchor="middle" class="component-value">USB_POWER</text>
+  <circle cx="101.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="101.6" y="118.39999999999999" text-anchor="middle" class="pin-label">VCC</text>
+  <circle cx="116" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="116" y="118.39999999999999" text-anchor="middle" class="pin-label">GND</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="result-item failed" onclick="toggleCircuit('led_blink_gpio-pipeline')">
+                        <td><strong>led_blink_gpio</strong></td>
+                        <td>pipeline</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>441</td>
+                        <td>175823ms</td>
+                        <td>0/1</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-led_blink_gpio-pipeline">
+                                <h3>Circuit State: led_blink_gpio</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">led_blink.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="389.59999999999997" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="U1"/>
+  <text x="403.99999999999994" y="102.2" text-anchor="middle" class="component-label">U1</text>
+  <text x="403.99999999999994" y="101.8" text-anchor="middle" class="component-value">ATmega328P</text>
+  <circle cx="389.59999999999997" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="389.59999999999997" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="395.35999999999996" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="395.35999999999996" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="401.11999999999995" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="401.11999999999995" y="118.39999999999999" text-anchor="middle" class="pin-label">19</text>
+  <circle cx="406.87999999999994" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="406.87999999999994" y="118.39999999999999" text-anchor="middle" class="pin-label">20</text>
+  <circle cx="412.64" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="412.64" y="118.39999999999999" text-anchor="middle" class="pin-label">7</text>
+  <rect x="869.5999999999999" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="LED1"/>
+  <text x="883.9999999999999" y="102.2" text-anchor="middle" class="component-label">LED1</text>
+  <text x="883.9999999999999" y="101.8" text-anchor="middle" class="component-value">RED_LED</text>
+  <circle cx="869.5999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="869.5999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="883.9999999999999" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="883.9999999999999" y="118.39999999999999" text-anchor="middle" class="pin-label">-</text>
+  <rect x="629.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="R1"/>
+  <text x="644" y="102.2" text-anchor="middle" class="component-label">R1</text>
+  <text x="644" y="101.8" text-anchor="middle" class="component-value">220Ω</text>
+  <circle cx="629.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="629.6" y="118.39999999999999" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="644" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="644" y="118.39999999999999" text-anchor="middle" class="pin-label">2</text>
+  <rect x="101.6" y="87.2" width="28.799999999999997" height="19.2" class="component-box" data-component="J1"/>
+  <text x="115.99999999999999" y="102.2" text-anchor="middle" class="component-label">J1</text>
+  <text x="115.99999999999999" y="101.8" text-anchor="middle" class="component-value">USB_POWER</text>
+  <circle cx="101.6" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="101.6" y="118.39999999999999" text-anchor="middle" class="pin-label">VCC</text>
+  <circle cx="116" cy="106.39999999999999" r="3" class="pin" fill="#ccc"/>
+  <text x="116" y="118.39999999999999" text-anchor="middle" class="pin-label">GND</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="result-item failed" onclick="toggleCircuit('voltage_reg_input-planner')">
+                        <td><strong>voltage_reg_input</strong></td>
+                        <td>planner</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>234</td>
+                        <td>162247ms</td>
+                        <td>0/0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-voltage_reg_input-planner">
+                                <h3>Circuit State: voltage_reg_input</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">voltage_regulator.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="123.47826086956523" y="348.69565217391306" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="J1"/>
+  <text x="141.73913043478262" y="363.69565217391306" text-anchor="middle" class="component-label">J1</text>
+  <text x="141.73913043478262" y="365.8695652173913" text-anchor="middle" class="component-value">DC_JACK</text>
+  <circle cx="123.47826086956523" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="123.47826086956523" y="385.04347826086956" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="141.73913043478262" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="141.73913043478262" y="385.04347826086956" text-anchor="middle" class="pin-label">-</text>
+  <rect x="610.4347826086956" y="470.4347826086956" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="U1"/>
+  <text x="628.695652173913" y="485.4347826086956" text-anchor="middle" class="component-label">U1</text>
+  <text x="628.695652173913" y="487.6086956521739" text-anchor="middle" class="component-value">LM7805</text>
+  <circle cx="610.4347826086956" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="610.4347826086956" y="506.78260869565213" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="622.6086956521739" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="622.6086956521739" y="506.78260869565213" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="634.7826086956521" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="634.7826086956521" y="506.78260869565213" text-anchor="middle" class="pin-label">3</text>
+  <rect x="610.4347826086956" y="105.21739130434781" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="U2"/>
+  <text x="628.695652173913" y="120.21739130434781" text-anchor="middle" class="component-label">U2</text>
+  <text x="628.695652173913" y="122.39130434782608" text-anchor="middle" class="component-value">AMS1117-3.3</text>
+  <circle cx="610.4347826086956" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="610.4347826086956" y="141.56521739130434" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="622.6086956521739" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="622.6086956521739" y="141.56521739130434" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="634.7826086956521" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="634.7826086956521" y="141.56521739130434" text-anchor="middle" class="pin-label">3</text>
+  <rect x="427.82608695652175" y="348.69565217391306" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C1"/>
+  <text x="446.0869565217391" y="363.69565217391306" text-anchor="middle" class="component-label">C1</text>
+  <text x="446.0869565217391" y="365.8695652173913" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="427.82608695652175" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="427.82608695652175" y="385.04347826086956" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="446.0869565217391" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="446.0869565217391" y="385.04347826086956" text-anchor="middle" class="pin-label">-</text>
+  <rect x="793.0434782608696" y="470.4347826086956" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C2"/>
+  <text x="811.304347826087" y="485.4347826086956" text-anchor="middle" class="component-label">C2</text>
+  <text x="811.304347826087" y="487.6086956521739" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="793.0434782608696" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="793.0434782608696" y="506.78260869565213" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="811.304347826087" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="811.304347826087" y="506.78260869565213" text-anchor="middle" class="pin-label">-</text>
+  <rect x="793.0434782608696" y="105.21739130434781" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C3"/>
+  <text x="811.304347826087" y="120.21739130434781" text-anchor="middle" class="component-label">C3</text>
+  <text x="811.304347826087" y="122.39130434782608" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="793.0434782608696" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="793.0434782608696" y="141.56521739130434" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="811.304347826087" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="811.304347826087" y="141.56521739130434" text-anchor="middle" class="pin-label">-</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="result-item failed" onclick="toggleCircuit('voltage_reg_input-executor')">
+                        <td><strong>voltage_reg_input</strong></td>
+                        <td>executor</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>40</td>
+                        <td>5344ms</td>
+                        <td>0/0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-voltage_reg_input-executor">
+                                <h3>Circuit State: voltage_reg_input</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">voltage_regulator.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="123.47826086956523" y="348.69565217391306" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="J1"/>
+  <text x="141.73913043478262" y="363.69565217391306" text-anchor="middle" class="component-label">J1</text>
+  <text x="141.73913043478262" y="365.8695652173913" text-anchor="middle" class="component-value">DC_JACK</text>
+  <circle cx="123.47826086956523" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="123.47826086956523" y="385.04347826086956" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="141.73913043478262" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="141.73913043478262" y="385.04347826086956" text-anchor="middle" class="pin-label">-</text>
+  <rect x="610.4347826086956" y="470.4347826086956" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="U1"/>
+  <text x="628.695652173913" y="485.4347826086956" text-anchor="middle" class="component-label">U1</text>
+  <text x="628.695652173913" y="487.6086956521739" text-anchor="middle" class="component-value">LM7805</text>
+  <circle cx="610.4347826086956" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="610.4347826086956" y="506.78260869565213" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="622.6086956521739" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="622.6086956521739" y="506.78260869565213" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="634.7826086956521" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="634.7826086956521" y="506.78260869565213" text-anchor="middle" class="pin-label">3</text>
+  <rect x="610.4347826086956" y="105.21739130434781" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="U2"/>
+  <text x="628.695652173913" y="120.21739130434781" text-anchor="middle" class="component-label">U2</text>
+  <text x="628.695652173913" y="122.39130434782608" text-anchor="middle" class="component-value">AMS1117-3.3</text>
+  <circle cx="610.4347826086956" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="610.4347826086956" y="141.56521739130434" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="622.6086956521739" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="622.6086956521739" y="141.56521739130434" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="634.7826086956521" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="634.7826086956521" y="141.56521739130434" text-anchor="middle" class="pin-label">3</text>
+  <rect x="427.82608695652175" y="348.69565217391306" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C1"/>
+  <text x="446.0869565217391" y="363.69565217391306" text-anchor="middle" class="component-label">C1</text>
+  <text x="446.0869565217391" y="365.8695652173913" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="427.82608695652175" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="427.82608695652175" y="385.04347826086956" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="446.0869565217391" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="446.0869565217391" y="385.04347826086956" text-anchor="middle" class="pin-label">-</text>
+  <rect x="793.0434782608696" y="470.4347826086956" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C2"/>
+  <text x="811.304347826087" y="485.4347826086956" text-anchor="middle" class="component-label">C2</text>
+  <text x="811.304347826087" y="487.6086956521739" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="793.0434782608696" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="793.0434782608696" y="506.78260869565213" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="811.304347826087" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="811.304347826087" y="506.78260869565213" text-anchor="middle" class="pin-label">-</text>
+  <rect x="793.0434782608696" y="105.21739130434781" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C3"/>
+  <text x="811.304347826087" y="120.21739130434781" text-anchor="middle" class="component-label">C3</text>
+  <text x="811.304347826087" y="122.39130434782608" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="793.0434782608696" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="793.0434782608696" y="141.56521739130434" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="811.304347826087" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="811.304347826087" y="141.56521739130434" text-anchor="middle" class="pin-label">-</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="result-item failed" onclick="toggleCircuit('voltage_reg_input-verifier')">
+                        <td><strong>voltage_reg_input</strong></td>
+                        <td>verifier</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>135</td>
+                        <td>18072ms</td>
+                        <td>0/0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-voltage_reg_input-verifier">
+                                <h3>Circuit State: voltage_reg_input</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">voltage_regulator.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="123.47826086956523" y="348.69565217391306" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="J1"/>
+  <text x="141.73913043478262" y="363.69565217391306" text-anchor="middle" class="component-label">J1</text>
+  <text x="141.73913043478262" y="365.8695652173913" text-anchor="middle" class="component-value">DC_JACK</text>
+  <circle cx="123.47826086956523" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="123.47826086956523" y="385.04347826086956" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="141.73913043478262" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="141.73913043478262" y="385.04347826086956" text-anchor="middle" class="pin-label">-</text>
+  <rect x="610.4347826086956" y="470.4347826086956" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="U1"/>
+  <text x="628.695652173913" y="485.4347826086956" text-anchor="middle" class="component-label">U1</text>
+  <text x="628.695652173913" y="487.6086956521739" text-anchor="middle" class="component-value">LM7805</text>
+  <circle cx="610.4347826086956" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="610.4347826086956" y="506.78260869565213" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="622.6086956521739" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="622.6086956521739" y="506.78260869565213" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="634.7826086956521" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="634.7826086956521" y="506.78260869565213" text-anchor="middle" class="pin-label">3</text>
+  <rect x="610.4347826086956" y="105.21739130434781" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="U2"/>
+  <text x="628.695652173913" y="120.21739130434781" text-anchor="middle" class="component-label">U2</text>
+  <text x="628.695652173913" y="122.39130434782608" text-anchor="middle" class="component-value">AMS1117-3.3</text>
+  <circle cx="610.4347826086956" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="610.4347826086956" y="141.56521739130434" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="622.6086956521739" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="622.6086956521739" y="141.56521739130434" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="634.7826086956521" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="634.7826086956521" y="141.56521739130434" text-anchor="middle" class="pin-label">3</text>
+  <rect x="427.82608695652175" y="348.69565217391306" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C1"/>
+  <text x="446.0869565217391" y="363.69565217391306" text-anchor="middle" class="component-label">C1</text>
+  <text x="446.0869565217391" y="365.8695652173913" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="427.82608695652175" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="427.82608695652175" y="385.04347826086956" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="446.0869565217391" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="446.0869565217391" y="385.04347826086956" text-anchor="middle" class="pin-label">-</text>
+  <rect x="793.0434782608696" y="470.4347826086956" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C2"/>
+  <text x="811.304347826087" y="485.4347826086956" text-anchor="middle" class="component-label">C2</text>
+  <text x="811.304347826087" y="487.6086956521739" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="793.0434782608696" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="793.0434782608696" y="506.78260869565213" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="811.304347826087" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="811.304347826087" y="506.78260869565213" text-anchor="middle" class="pin-label">-</text>
+  <rect x="793.0434782608696" y="105.21739130434781" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C3"/>
+  <text x="811.304347826087" y="120.21739130434781" text-anchor="middle" class="component-label">C3</text>
+  <text x="811.304347826087" y="122.39130434782608" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="793.0434782608696" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="793.0434782608696" y="141.56521739130434" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="811.304347826087" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="811.304347826087" y="141.56521739130434" text-anchor="middle" class="pin-label">-</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="result-item failed" onclick="toggleCircuit('voltage_reg_input-pipeline')">
+                        <td><strong>voltage_reg_input</strong></td>
+                        <td>pipeline</td>
+                        <td>❌</td>
+                        <td>0/4</td>
+                        <td>581</td>
+                        <td>64983ms</td>
+                        <td>0/6</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <div class="circuit-container" id="circuit-voltage_reg_input-pipeline">
+                                <h3>Circuit State: voltage_reg_input</h3>
+                                <div class="circuit-svg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="600" viewBox="0 0 1000 600">
+  <defs>
+    <style>
+      .component-box { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
+      .component-label { font-size: 12px; font-weight: bold; fill: #000; }
+      .component-value { font-size: 10px; fill: #666; }
+      .pin { fill: #ff6b6b; }
+      .pin-label { font-size: 8px; fill: #000; }
+      .net-line { stroke-width: 2; fill: none; }
+      .net-label { font-size: 10px; font-weight: bold; }
+      .title { font-size: 16px; font-weight: bold; fill: #000; }
+      .legend { font-size: 10px; fill: #666; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="600" fill="white"/>
+
+  <!-- Title -->
+  <text x="20" y="25" class="title">voltage_regulator.kicad_sch</text>
+
+  <!-- Draw nets (wires) first -->
+  <rect x="123.47826086956523" y="348.69565217391306" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="J1"/>
+  <text x="141.73913043478262" y="363.69565217391306" text-anchor="middle" class="component-label">J1</text>
+  <text x="141.73913043478262" y="365.8695652173913" text-anchor="middle" class="component-value">DC_JACK</text>
+  <circle cx="123.47826086956523" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="123.47826086956523" y="385.04347826086956" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="141.73913043478262" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="141.73913043478262" y="385.04347826086956" text-anchor="middle" class="pin-label">-</text>
+  <rect x="610.4347826086956" y="470.4347826086956" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="U1"/>
+  <text x="628.695652173913" y="485.4347826086956" text-anchor="middle" class="component-label">U1</text>
+  <text x="628.695652173913" y="487.6086956521739" text-anchor="middle" class="component-value">LM7805</text>
+  <circle cx="610.4347826086956" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="610.4347826086956" y="506.78260869565213" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="622.6086956521739" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="622.6086956521739" y="506.78260869565213" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="634.7826086956521" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="634.7826086956521" y="506.78260869565213" text-anchor="middle" class="pin-label">3</text>
+  <rect x="610.4347826086956" y="105.21739130434781" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="U2"/>
+  <text x="628.695652173913" y="120.21739130434781" text-anchor="middle" class="component-label">U2</text>
+  <text x="628.695652173913" y="122.39130434782608" text-anchor="middle" class="component-value">AMS1117-3.3</text>
+  <circle cx="610.4347826086956" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="610.4347826086956" y="141.56521739130434" text-anchor="middle" class="pin-label">1</text>
+  <circle cx="622.6086956521739" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="622.6086956521739" y="141.56521739130434" text-anchor="middle" class="pin-label">2</text>
+  <circle cx="634.7826086956521" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="634.7826086956521" y="141.56521739130434" text-anchor="middle" class="pin-label">3</text>
+  <rect x="427.82608695652175" y="348.69565217391306" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C1"/>
+  <text x="446.0869565217391" y="363.69565217391306" text-anchor="middle" class="component-label">C1</text>
+  <text x="446.0869565217391" y="365.8695652173913" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="427.82608695652175" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="427.82608695652175" y="385.04347826086956" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="446.0869565217391" cy="373.04347826086956" r="3" class="pin" fill="#ccc"/>
+  <text x="446.0869565217391" y="385.04347826086956" text-anchor="middle" class="pin-label">-</text>
+  <rect x="793.0434782608696" y="470.4347826086956" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C2"/>
+  <text x="811.304347826087" y="485.4347826086956" text-anchor="middle" class="component-label">C2</text>
+  <text x="811.304347826087" y="487.6086956521739" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="793.0434782608696" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="793.0434782608696" y="506.78260869565213" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="811.304347826087" cy="494.78260869565213" r="3" class="pin" fill="#ccc"/>
+  <text x="811.304347826087" y="506.78260869565213" text-anchor="middle" class="pin-label">-</text>
+  <rect x="793.0434782608696" y="105.21739130434781" width="36.52173913043478" height="24.34782608695652" class="component-box" data-component="C3"/>
+  <text x="811.304347826087" y="120.21739130434781" text-anchor="middle" class="component-label">C3</text>
+  <text x="811.304347826087" y="122.39130434782608" text-anchor="middle" class="component-value">10µF</text>
+  <circle cx="793.0434782608696" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="793.0434782608696" y="141.56521739130434" text-anchor="middle" class="pin-label">+</text>
+  <circle cx="811.304347826087" cy="129.56521739130434" r="3" class="pin" fill="#ccc"/>
+  <text x="811.304347826087" y="141.56521739130434" text-anchor="middle" class="pin-label">-</text>
+  <g id="legend">
+  </g>
+</svg></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <footer>
+            <p>🤖 Powered by Ollama + Langfuse | Circuit Benchmark Suite</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleCircuit(id) {
+            const element = document.getElementById('circuit-' + id);
+            if (element) {
+                element.classList.toggle('active');
+            }
+        }
+    </script>
+</body>
+</html>

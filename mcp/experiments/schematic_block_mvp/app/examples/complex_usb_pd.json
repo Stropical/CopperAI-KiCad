@@ -1,0 +1,47 @@
+{
+  "block_type": "buck_regulator",
+  "components": [
+    {
+      "id": "U1", "kind": "regulator_ic",
+      "pins": ["VBUS", "VIN", "SW", "BST", "FB", "EN", "GND", "PGOOD", "COMP", "SS"],
+      "value": "TPS65987D"
+    },
+    { "id": "J1", "kind": "generic", "pins": ["VBUS", "CC1", "CC2", "D+", "D-", "GND", "SHIELD"], "value": "USB-C" },
+    { "id": "CIN1", "kind": "input_cap", "pins": ["1", "2"], "value": "10uF" },
+    { "id": "CIN2", "kind": "input_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "L1", "kind": "inductor", "pins": ["1", "2"], "value": "4.7uH" },
+    { "id": "COUT1", "kind": "output_cap", "pins": ["1", "2"], "value": "22uF" },
+    { "id": "COUT2", "kind": "output_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "R_TOP", "kind": "fb_top", "pins": ["1", "2"], "value": "100k" },
+    { "id": "R_BOT", "kind": "fb_bottom", "pins": ["1", "2"], "value": "47k" },
+    { "id": "C_BST", "kind": "bootstrap_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "C_SS", "kind": "bypass_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "R_COMP", "kind": "feedback_resistor", "pins": ["1", "2"], "value": "10k" },
+    { "id": "C_COMP", "kind": "bypass_cap", "pins": ["1", "2"], "value": "2.2nF" },
+    { "id": "R_PG", "kind": "enable_resistor", "pins": ["1", "2"], "value": "100k" },
+    { "id": "D1", "kind": "diode", "pins": ["A", "K"], "value": "ESD7004" }
+  ],
+  "nets": [
+    { "name": "VBUS", "members": ["J1.VBUS", "U1.VBUS", "CIN1.1", "CIN2.1", "D1.K"] },
+    { "name": "VIN", "members": ["U1.VIN", "R_PG.1"] },
+    { "name": "SW", "members": ["U1.SW", "L1.1", "C_BST.2"] },
+    { "name": "BST", "members": ["U1.BST", "C_BST.1"] },
+    { "name": "VOUT_5V", "members": ["L1.2", "COUT1.1", "COUT2.1", "R_TOP.1"] },
+    { "name": "FB", "members": ["U1.FB", "R_TOP.2", "R_BOT.1"] },
+    { "name": "COMP", "members": ["U1.COMP", "R_COMP.1", "C_COMP.1"] },
+    { "name": "SS", "members": ["U1.SS", "C_SS.1"] },
+    { "name": "PGOOD", "members": ["U1.PGOOD", "R_PG.2"] },
+    { "name": "EN", "members": ["U1.EN"] },
+    { "name": "GND", "members": ["J1.GND", "U1.GND", "CIN1.2", "CIN2.2", "COUT1.2", "COUT2.2", "R_BOT.2", "C_SS.2", "C_COMP.2", "D1.A"] },
+    { "name": "USB_DP", "members": ["J1.D+"] },
+    { "name": "USB_DN", "members": ["J1.D-"] },
+    { "name": "CC1", "members": ["J1.CC1"] },
+    { "name": "CC2", "members": ["J1.CC2"] },
+    { "name": "SHIELD", "members": ["J1.SHIELD"] }
+  ],
+  "constraints": {
+    "flow": "left_to_right",
+    "power_top_ground_bottom": true,
+    "compact_feedback_loop": true
+  }
+}

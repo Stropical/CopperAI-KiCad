@@ -1,0 +1,27 @@
+{
+  "block_type": "buck_regulator",
+  "components": [
+    { "id": "U1", "kind": "regulator_ic", "pins": ["VIN", "SW", "FB", "EN", "GND", "BST"], "value": "TPS54331" },
+    { "id": "CIN", "kind": "input_cap", "pins": ["1", "2"], "value": "10uF" },
+    { "id": "L1", "kind": "inductor", "pins": ["1", "2"], "value": "4.7uH" },
+    { "id": "COUT", "kind": "output_cap", "pins": ["1", "2"], "value": "47uF" },
+    { "id": "C_BST", "kind": "bootstrap_cap", "pins": ["1", "2"], "value": "100nF" },
+    { "id": "R_TOP", "kind": "fb_top", "pins": ["1", "2"], "value": "51.1k" },
+    { "id": "R_BOT", "kind": "fb_bottom", "pins": ["1", "2"], "value": "10k" },
+    { "id": "R_EN", "kind": "enable_resistor", "pins": ["1", "2"], "value": "100k" }
+  ],
+  "nets": [
+    { "name": "VIN", "members": ["U1.VIN", "CIN.1", "R_EN.1"] },
+    { "name": "EN", "members": ["U1.EN", "R_EN.2"] },
+    { "name": "BST", "members": ["U1.BST", "C_BST.1"] },
+    { "name": "SW", "members": ["U1.SW", "L1.1", "C_BST.2"] },
+    { "name": "VOUT_3V3", "members": ["L1.2", "COUT.1", "R_TOP.1"] },
+    { "name": "FB", "members": ["U1.FB", "R_TOP.2", "R_BOT.1"] },
+    { "name": "GND", "members": ["U1.GND", "CIN.2", "COUT.2", "R_BOT.2"] }
+  ],
+  "constraints": {
+    "flow": "left_to_right",
+    "power_top_ground_bottom": true,
+    "compact_feedback_loop": true
+  }
+}

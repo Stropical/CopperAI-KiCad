@@ -1,0 +1,13 @@
+# Exclude data and outputs from build context
+data/
+output/
+*.pt
+*.jsonl
+.git
+.gitignore
+*.md
+docs/
+__pycache__
+.pytest_cache
+*.egg-info
+.ruff_cache

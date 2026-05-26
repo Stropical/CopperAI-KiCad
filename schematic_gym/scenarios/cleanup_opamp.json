@@ -1,0 +1,74 @@
+{
+  "scenario_id": "cleanup_opamp",
+  "name": "Cleanup Op-Amp Circuit",
+  "description": "LM358 op-amp with feedback (R1) and input (R2) resistors, pre-wired but with bad placement: components are cramped (<5mm spacing) and signal flows right-to-left. Rearrange for readability without breaking connectivity.",
+  "sheet": {
+    "width": 297,
+    "height": 210,
+    "paper": "A4"
+  },
+  "symbol_catalog": [
+    "Amplifier_Operational:LM358",
+    "Device:R"
+  ],
+  "initial_state": {
+    "instances": [
+      {
+        "symbol_id": "Amplifier_Operational:LM358",
+        "reference": "U1",
+        "value": "LM358",
+        "x": 155.0,
+        "y": 100.0,
+        "rotation": 0
+      },
+      {
+        "symbol_id": "Device:R",
+        "reference": "R1",
+        "value": "100k",
+        "x": 157.0,
+        "y": 96.0,
+        "rotation": 0
+      },
+      {
+        "symbol_id": "Device:R",
+        "reference": "R2",
+        "value": "10k",
+        "x": 158.0,
+        "y": 102.0,
+        "rotation": 270
+      }
+    ],
+    "wires": [
+      {"x1": 155.0, "y1": 97.46, "x2": 155.0, "y2": 96.0},
+      {"x1": 155.0, "y1": 96.0, "x2": 157.0, "y2": 96.0},
+      {"x1": 157.0, "y1": 93.46, "x2": 160.0, "y2": 93.46},
+      {"x1": 160.0, "y1": 93.46, "x2": 160.0, "y2": 100.0},
+      {"x1": 160.0, "y1": 100.0, "x2": 157.54, "y2": 100.0},
+      {"x1": 155.46, "y1": 102.0, "x2": 155.0, "y2": 102.0},
+      {"x1": 155.0, "y1": 102.0, "x2": 155.0, "y2": 102.54}
+    ],
+    "junctions": [
+      {"x": 155.0, "y": 96.0}
+    ],
+    "labels": [
+      {"name": "VIN", "x": 160.46, "y": 102.0, "rotation": 0},
+      {"name": "VOUT", "x": 160.0, "y": 100.0, "rotation": 0}
+    ],
+    "power_symbols": []
+  },
+  "objectives": [
+    {
+      "type": "cleanup",
+      "required_connections": [
+        {"pin_a": "R2.2", "pin_b": "U1.3", "net_name": "IN_MINUS"},
+        {"pin_a": "R1.1", "pin_b": "U1.3", "net_name": "IN_MINUS"},
+        {"pin_a": "R1.2", "pin_b": "U1.1", "net_name": "VOUT"}
+      ],
+      "target_readability": 0.6,
+      "step_budget": 50
+    }
+  ],
+  "net_names": ["VIN", "VOUT", "IN_MINUS"],
+  "scoring_overrides": {},
+  "curriculum_level": 4
+}

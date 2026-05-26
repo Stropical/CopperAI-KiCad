@@ -1,0 +1,30 @@
+{
+  "scenario_id": "01_place_resistor",
+  "name": "Place a Resistor",
+  "description": "Place a single resistor at approximately (150, 100) on an empty A4 sheet.",
+  "sheet": {
+    "width": 297,
+    "height": 210,
+    "paper": "A4"
+  },
+  "symbol_catalog": [
+    "Device:R"
+  ],
+  "initial_state": {
+    "instances": [],
+    "wires": [],
+    "junctions": [],
+    "labels": [],
+    "power_symbols": []
+  },
+  "objectives": [
+    {
+      "type": "place_and_wire",
+      "step_budget": 10,
+      "target_readability": 0.5
+    }
+  ],
+  "net_names": [],
+  "scoring_overrides": {},
+  "curriculum_level": 1
+}

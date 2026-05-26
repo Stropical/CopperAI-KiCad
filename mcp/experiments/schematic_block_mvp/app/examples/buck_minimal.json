@@ -1,0 +1,23 @@
+{
+  "block_type": "buck_regulator",
+  "components": [
+    { "id": "U1", "kind": "regulator_ic", "pins": ["VIN", "SW", "FB", "GND"] },
+    { "id": "C1", "kind": "input_cap", "pins": ["1", "2"], "value": "22uF" },
+    { "id": "L1", "kind": "inductor", "pins": ["1", "2"], "value": "2.2uH" },
+    { "id": "C2", "kind": "output_cap", "pins": ["1", "2"], "value": "47uF" },
+    { "id": "R1", "kind": "fb_top", "pins": ["1", "2"], "value": "200k" },
+    { "id": "R2", "kind": "fb_bottom", "pins": ["1", "2"], "value": "100k" }
+  ],
+  "nets": [
+    { "name": "VIN_5V", "members": ["U1.VIN", "C1.1"] },
+    { "name": "SW_NODE", "members": ["U1.SW", "L1.1"] },
+    { "name": "VOUT_1V8", "members": ["L1.2", "C2.1", "R1.1"] },
+    { "name": "FB_DIV", "members": ["U1.FB", "R1.2", "R2.1"] },
+    { "name": "GND", "members": ["U1.GND", "C1.2", "C2.2", "R2.2"] }
+  ],
+  "constraints": {
+    "flow": "left_to_right",
+    "power_top_ground_bottom": true,
+    "compact_feedback_loop": true
+  }
+}

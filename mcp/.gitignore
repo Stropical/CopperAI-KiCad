@@ -1,0 +1,21 @@
+# Local environment and secrets
+.env
+.env.local
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# C/C++ / CMake local build outputs
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+
+# Logs and OS/editor noise
+*.log
+.DS_Store

@@ -1,0 +1,44 @@
+{
+  "scenario_id": "09_regulator_schematic",
+  "name": "LM7805 Voltage Regulator",
+  "description": "Build a complete LM7805 voltage regulator circuit with input and output filter capacitors. Connect VIN through the input cap to the regulator input, regulator output through the output cap, and all grounds together.",
+  "sheet": {
+    "width": 297,
+    "height": 210,
+    "paper": "A4"
+  },
+  "symbol_catalog": ["LM7805", "C", "VCC", "GND", "+5V"],
+  "initial_state": {
+    "instances": [
+      {"symbol_id": "C",      "reference": "C1", "value": "100n",   "x": 100.0, "y": 100.0, "rotation": 0},
+      {"symbol_id": "LM7805", "reference": "U1", "value": "LM7805", "x": 130.0, "y": 90.0,  "rotation": 0},
+      {"symbol_id": "C",      "reference": "C2", "value": "100n",   "x": 160.0, "y": 100.0, "rotation": 0}
+    ],
+    "wires": [],
+    "junctions": [],
+    "labels": [],
+    "power_symbols": [
+      {"symbol_id": "VCC",  "x": 100.0, "y": 75.0,  "rotation": 0},
+      {"symbol_id": "+5V",  "x": 160.0, "y": 75.0,  "rotation": 0},
+      {"symbol_id": "GND",  "x": 130.0, "y": 115.0, "rotation": 0}
+    ]
+  },
+  "objectives": [
+    {
+      "type": "connect_all",
+      "required_connections": [
+        {"pin_a": "VCC.1",  "pin_b": "C1.1",  "net_name": "VIN"},
+        {"pin_a": "C1.1",   "pin_b": "U1.1",  "net_name": "VIN"},
+        {"pin_a": "U1.3",   "pin_b": "C2.1",  "net_name": "VOUT"},
+        {"pin_a": "C2.1",   "pin_b": "+5V.1", "net_name": "VOUT"},
+        {"pin_a": "C1.2",   "pin_b": "U1.2",  "net_name": "GND"},
+        {"pin_a": "U1.2",   "pin_b": "C2.2",  "net_name": "GND"},
+        {"pin_a": "C2.2",   "pin_b": "GND.1", "net_name": "GND"}
+      ],
+      "step_budget": 60
+    }
+  ],
+  "net_names": ["VIN", "VOUT", "GND"],
+  "scoring_overrides": {},
+  "curriculum_level": 9
+}

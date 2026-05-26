@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "kicad": {
+      "httpUrl": "http://127.0.0.1:8080/mcp",
+      "timeout": 60000,
+      "trust": true
+    },
+    "layout": {
+      "httpUrl": "http://localhost:3001/mcp",
+      "timeout": 60000,
+      "trust": true
+    }
+  },
+  "security": {
+    "auth": {
+      "selectedType": "gemini-api-key"
+    }
+  }
+}

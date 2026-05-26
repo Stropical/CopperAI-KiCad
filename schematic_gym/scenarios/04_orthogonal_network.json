@@ -1,0 +1,38 @@
+{
+  "scenario_id": "04_orthogonal_network",
+  "name": "Orthogonal RC Network",
+  "description": "Connect four pre-placed components (R1, R2, C1, C2) arranged in a 2x2 grid into an RC filter network. Wire them so signals flow left-to-right without diagonal routes.",
+  "sheet": {
+    "width": 297,
+    "height": 210,
+    "paper": "A4"
+  },
+  "symbol_catalog": ["R", "C"],
+  "initial_state": {
+    "instances": [
+      {"symbol_id": "R", "reference": "R1", "value": "1k",  "x": 100.0, "y": 80.0,  "rotation": 0},
+      {"symbol_id": "R", "reference": "R2", "value": "1k",  "x": 140.0, "y": 80.0,  "rotation": 0},
+      {"symbol_id": "C", "reference": "C1", "value": "100n", "x": 100.0, "y": 110.0, "rotation": 0},
+      {"symbol_id": "C", "reference": "C2", "value": "100n", "x": 140.0, "y": 110.0, "rotation": 0}
+    ],
+    "wires": [],
+    "junctions": [],
+    "labels": [],
+    "power_symbols": []
+  },
+  "objectives": [
+    {
+      "type": "connect_all",
+      "required_connections": [
+        {"pin_a": "R1.2", "pin_b": "C1.1", "net_name": "N1"},
+        {"pin_a": "R1.2", "pin_b": "R2.1", "net_name": "N1"},
+        {"pin_a": "R2.2", "pin_b": "C2.1", "net_name": "N2"},
+        {"pin_a": "C1.2", "pin_b": "C2.2", "net_name": "GND_NET"}
+      ],
+      "step_budget": 40
+    }
+  ],
+  "net_names": ["IN", "N1", "N2", "OUT", "GND_NET"],
+  "scoring_overrides": {},
+  "curriculum_level": 4
+}

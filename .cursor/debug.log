@@ -1,0 +1,102 @@
+{"hypothesisId":"F","location":"sch_edit_frame.cpp:ctor","message":"After FinishAUIInitialization, deferring WebView init with CallAfter","timestamp":1769559709}
+{"hypothesisId":"F","location":"sch_edit_frame.cpp:CallAfter","message":"Deferred WebView init starting","timestamp":1769559710}
+{"hypothesisId":"F","location":"sch_edit_frame.cpp:CallAfter","message":"Creating WebView panel (deferred)","timestamp":1769559710}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"WEBVIEW_PANEL ctor started","timestamp":1769559710}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to call wxWebView::New()","timestamp":1769559710}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"wxWebView::New() returned, m_browser=valid","timestamp":1769559710}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to bind webview events","timestamp":1769559710}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"WEBVIEW_PANEL ctor completed successfully","timestamp":1769559710}
+{"hypothesisId":"F","location":"sch_edit_frame.cpp:CallAfter","message":"About to LoadURL","timestamp":1769559710}
+{"hypothesisId":"F","location":"sch_edit_frame.cpp:CallAfter","message":"WebView init completed successfully (deferred)","timestamp":1769559710}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769559710}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: about:blank","timestamp":1769559710}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"External URL, m_handleExternalLinks=true","timestamp":1769559710}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation handler END","timestamp":1769559710}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnWebViewLoaded","message":"Loaded event received","timestamp":1769559710}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnScriptResult","message":"ScriptResult event received","timestamp":1769559710}
+{"hypothesisId":"F","location":"sch_edit_frame.cpp:ctor","message":"After FinishAUIInitialization, deferring WebView init with CallAfter","timestamp":1769575750}
+{"hypothesisId":"F","location":"sch_edit_frame.cpp:CallAfter","message":"Deferred WebView init starting","timestamp":1769575750}
+{"hypothesisId":"F","location":"sch_edit_frame.cpp:CallAfter","message":"Creating WebView panel (deferred)","timestamp":1769575750}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"WEBVIEW_PANEL ctor started","timestamp":1769575750}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to call wxWebView::New()","timestamp":1769575750}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"wxWebView::New() returned, m_browser=valid","timestamp":1769575751}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to bind webview events","timestamp":1769575751}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"WEBVIEW_PANEL ctor completed successfully","timestamp":1769575751}
+{"hypothesisId":"F","location":"sch_edit_frame.cpp:CallAfter","message":"About to LoadURL","timestamp":1769575751}
+{"hypothesisId":"F","location":"sch_edit_frame.cpp:CallAfter","message":"WebView init completed successfully (deferred)","timestamp":1769575751}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769575751}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: about:blank","timestamp":1769575751}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"External URL, m_handleExternalLinks=true","timestamp":1769575751}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation handler END","timestamp":1769575751}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnWebViewLoaded","message":"Loaded event received","timestamp":1769575751}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnScriptResult","message":"ScriptResult event received","timestamp":1769575751}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769575751}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: http://localhost:3000/","timestamp":1769575751}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"localhost URL allowed","timestamp":1769575751}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to bind webview events","timestamp":1769575940}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769575941}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: about:blank","timestamp":1769575941}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"External URL, m_handleExternalLinks=true","timestamp":1769575941}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation handler END","timestamp":1769575941}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnWebViewLoaded","message":"Loaded event received","timestamp":1769575941}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnScriptResult","message":"ScriptResult event received","timestamp":1769575941}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769575941}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: http://localhost:3000/","timestamp":1769575941}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"localhost URL allowed","timestamp":1769575941}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to bind webview events","timestamp":1769576674}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769576674}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: about:blank","timestamp":1769576674}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"External URL, m_handleExternalLinks=true","timestamp":1769576674}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation handler END","timestamp":1769576674}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnWebViewLoaded","message":"Loaded event received","timestamp":1769576674}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnScriptResult","message":"ScriptResult event received","timestamp":1769576674}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769576674}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: http://localhost:3000/","timestamp":1769576674}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"localhost URL allowed","timestamp":1769576674}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to bind webview events","timestamp":1769577757}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769577757}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: about:blank","timestamp":1769577757}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"External URL, m_handleExternalLinks=true","timestamp":1769577757}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation handler END","timestamp":1769577757}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnWebViewLoaded","message":"Loaded event received","timestamp":1769577758}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnScriptResult","message":"ScriptResult event received","timestamp":1769577758}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to bind webview events","timestamp":1769579498}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769579498}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: about:blank","timestamp":1769579498}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"External URL, m_handleExternalLinks=true","timestamp":1769579498}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation handler END","timestamp":1769579498}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnWebViewLoaded","message":"Loaded event received","timestamp":1769579498}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnScriptResult","message":"ScriptResult event received","timestamp":1769579498}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to bind webview events","timestamp":1769579645}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769579645}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: about:blank","timestamp":1769579645}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"External URL, m_handleExternalLinks=true","timestamp":1769579645}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation handler END","timestamp":1769579645}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnWebViewLoaded","message":"Loaded event received","timestamp":1769579645}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnScriptResult","message":"ScriptResult event received","timestamp":1769579645}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to bind webview events","timestamp":1769579991}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769579992}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: about:blank","timestamp":1769579992}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"External URL, m_handleExternalLinks=true","timestamp":1769579992}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation handler END","timestamp":1769579992}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnWebViewLoaded","message":"Loaded event received","timestamp":1769579992}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnScriptResult","message":"ScriptResult event received","timestamp":1769579992}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769579992}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: http://localhost:3000/","timestamp":1769579992}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"localhost URL allowed","timestamp":1769579992}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to bind webview events","timestamp":1769580196}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769580196}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: about:blank","timestamp":1769580196}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"External URL, m_handleExternalLinks=true","timestamp":1769580196}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation handler END","timestamp":1769580196}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnWebViewLoaded","message":"Loaded event received","timestamp":1769580196}
+{"hypothesisId":"A","location":"webview_panel.cpp:ctor","message":"About to bind webview events","timestamp":1769581621}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769581622}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: about:blank","timestamp":1769581622}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"External URL, m_handleExternalLinks=true","timestamp":1769581622}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation handler END","timestamp":1769581622}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnWebViewLoaded","message":"Loaded event received","timestamp":1769581622}
+{"hypothesisId":"G","location":"webview_panel.cpp:OnScriptResult","message":"ScriptResult event received","timestamp":1769581622}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"Navigation event START","timestamp":1769581622}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"URL: http://localhost:3000/","timestamp":1769581622}
+{"hypothesisId":"H","location":"webview_panel.cpp:OnNavigationRequest","message":"localhost URL allowed","timestamp":1769581622}

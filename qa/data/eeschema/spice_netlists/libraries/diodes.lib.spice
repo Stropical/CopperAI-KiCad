@@ -1,0 +1,225 @@
+*
+* diodes.lib
+*
+
+* Some diode models to test if reading Spice libraries works.
+
+* Not really 1N4148, just shoddily based on some values in datasheet.
+.MODEL 1N4148 D (BV=100 CJO=4p IBV=100u IS=4n M=0.33 N=2
++ RS=0.5 TT=10n VJ=0.8)
+
+* The below models have made up values - I didn't bother to check if they are physically correct.
+
+
+.model D1 D(Is=1.23n N=1.23 Rs=.7890 Ikf=12.34m Xti=3 Eg=1.23 Cjo=.90p
++           M=.56 Vj=.78 Fc=.9 Isr=12.34n Nr=2.345 Bv=100 Ibv=100u Tt=12.34n)
+
+* This line has a single trailing space.
+* DUsual* models always have the same values to save space on test asserts.
+.model D2_Usual D(BV=1.1U CJO=2.2M IBV=3.3 IS=4.4K M=5.5MEG N=6.6G) 
+
+* Trailing spaces, and an (empty) continuation.
+.model D3_Usual D(BV=1.1U CJO=2.2M IBV=3.3 IS=4.4K M=5.5MEG N=6.6G 
++) 
+
+.model D4  D( Is=0.1p 
++             Rs=2 
++             CJO=3p 
++             Tt=45n ; Test comment
++             Bv=678 
++             Ibv=0.1p )
+* (Has trailing spaces after each parameter value)
+
+.model D5_Empty D () ; Empty model
+
+* Parentheses are optional.
+.model D6_Empty D
+
+.model D7_Empty D ; Empty model, no parentheses, ending with a comment.
+
+.model D8_Empty D
+
+.model D9_Empty D;
+
+* Several parameters, no parentheses.
+.model D10_Usual D BV=1.1U CJO=2.2M IBV=3.3 IS=4.4K M=5.5MEG N=6.6G
+
+* Several parameters, no parentheses, multiple lines, backslash continuations.
+.model D11_Usual D BV=1.1U \\  
+                  CJO=2.2M
++                  IBV=3.3;
++                  IS=4.4K ; Test comment
++                  M=5.5MEG\\
+                   N=6.6G
+
+.model D12_Usual D
++BV=1.1U 
+ +CJO=2.2M 
+  +IBV=3.3;
+ +IS=4.4K;
++M=5.5MEG 
+ +N=6.6G 
+
+* Test some parameter synonyms.
+.model D13_Usual D
++ BV=1.1U
++ CJ0=2.2M
++ IBV=3.3
++ JS=4.4K
++ MJ=5.5MEG
++ N=6.6G
+.model D14_Usual D
++ BV=1.1U
++ CJ=2.2M
++ IBV=3.3
++ JS=4.4K
++ MJ=5.5MEG
++ N=6.6G
+
+* Two spaces as a separator everywhere, two leading, two trailing spaces.
+  .model  D15_Usual  D  (  BV=1.1U  CJ=2.2M  IBV=3.3  JS=4.4K  MJ=5.5MEG  N=6.6G  )  
+
+* Spaces aligning param names and values.
+* Leading tab.
+	.model D16_Usual D
++ BV  = 1.1U
++ CJ0 = 2.2M
++ IBV = 3.3
++ JS  = 4.4K
++ MJ  = 5.5MEG
++ N   = 6.6G
+
+* Parameters intermingled with garbage characters. Spice allows that, so we should too.
+.model D17_Usual D ( ()  	 ) , =
++ BV ==== 	 +1.1E-6,
++ CJ0 ,, ,, +2.2e-03 ,
++ 	IBV 3.3E-00
++ JS = = 4.4e+03
++ 	MJ +5.5MEG,;,
++ 	 N = 6.6G ;
+
+* All valid combinations of + - signs.
+* Non-alphanumeric characters in model name.
+.model D<>/?:\|[]!@#$%^&-_18 D
++ N -1.1, MJ +2.2, JS -3.3e-3, IBV +4.4e+4, CJ0 5.5e-5, BV 6.6e+6
+
+* Multiple empty-line continuations.
+* TODO
+.model D19_Usual D
+* Comment 1
+* Comment 2
++ BV=1.1U
++
++ CJ=2.2M\\
+\\
+
++
+* Comment 3
++
++ IBV=3.3
++ 
++ 
++ JS=4.4K
+* Comment 4
+ * Comment 5
++
+* Comment 8
++ MJ=5.5MEG
++
+(),= 	* Comment 9
++ N=6.6G
+
+* Garbage suffixes.
+*.model D20_Usual D(BV=1.1uV CJ=2.2MF IBV=3.3A JS=4.4KA MJ=5.5MEG N=6.6Ggarbage)
+.model D20_Usual D(BV=1.1uV CJ=2.2MF IBV=3.3A JS=4.4K MJ=5.5MEG N=6.6G)
+
+* No newline at the end of file.
+.model D21_Usual D(BV=1.1U CJ=2.2M IBV=3.3 JS=4.4K MJ=5.5MEG N=6.6G)
+
+* Base for AKO model.
+.model D22 D(is=11.1n n=2.2 rs=33.3m ikf=99.9 xti=3 eg=1.1)
+
+* AKO model.
+.model D23 ako: D22 D(ikf=111.1 eg=2.2 m=.3)
+
+* AKO model, LTspice parameters.
+.model D24 ako: D22 D(n=1.1 mfg=KiCad type=Silicon)
+
+* Model with all parameters set (except for a few ones like `level` that are not actually parameters) in the original order.
+.model D25 D
+*level
++is=000.000E+07
+*js
++jsw=100.001E+07
++tnom=200.002E+07
+*tref
++rs=300.003E+07
++trs=400.004E+07
+*trs1
++trs2=500.005E+07
++n=600.006E+07
++ns=700.007E+07
++tt=800.008E+07
++ttt1=900.009E+07
++ttt2=000.000E+07
++cjo=100.001E+07
+*cj0
+*cj
++vj=200.002E+07
+*pb
++m=300.003E+07
+*mj
++tm1=400.004E+07
++tm2=500.005E+07
++cjp=600.006E+07
+*cjsw
++php=700.007E+07
++mjsw=800.008E+07
++ikf=900.009E+07
+*ik
++ikr=000.000E+07
++nbv=100.001E+07
++area=200.002E+07
++pj=300.003E+07
++tlev=4 ;400.004E+07
++tlevc=5 ;500.005E+07
++eg=600.006E+07
++xti=700.007E+07
++cta=800.008E+07
+*ctc
++ctp=900.009E+07
++tpb=000.000E+07
+*tvj
++tphp=100.001E+07
++jtun=200.002E+07
++jtunsw=300.003E+07
++ntun=400.004E+07
++xtitun=500.005E+07
++keg=600.006E+07
++kf=700.007E+07
++af=800.008E+07
++fc=900.009E+07
++fcs=000.000E+07
++bv=100.001E+07
++ibv=200.002E+07
+*ib
++tcv=300.003E+07
++cond=400.004E+07
++isr=500.005E+07
++nr=600.006E+07
++fv_max=700.007E+07
++bv_max=800.008E+07
++id_max=900.009E+07
++te_max=000.000E+07
++pd_max=100.001E+07
++rth0=200.002E+07
++cth0=300.003E+07
++lm=400.004E+07
++lp=500.005E+07
++wm=600.006E+07
++wp=700.007E+07
++xom=800.008E+07
++xoi=900.009E+07
++xm=000.000E+07
++xp=100.001E+07
+*d

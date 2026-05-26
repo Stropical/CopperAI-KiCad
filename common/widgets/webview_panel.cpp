@@ -1,0 +1,926 @@
+/*
+ * This program source code file is part of KiCad, a free EDA CAD application.
+ *
+ * Copyright (C) 2024 KiCad Developers, see AUTHORS.txt for contributors.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, you may find one here:
+ * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * or you may search the http://www.gnu.org website for the version 2 license,
+ * or you may write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+ */
+
+#include <widgets/webview_panel.h>
+#include <clipboard.h>
+#include <kiplatform/ui.h>
+#include <widgets/ui_common.h>
+#include <nlohmann/json.hpp>
+#include <wx/sizer.h>
+#include <wx/log.h>
+#include <wx/button.h>
+#include <wx/toolbar.h>
+
+using json = nlohmann::json;
+
+namespace
+{
+wxString ToJsStringLiteral( const wxString& aValue )
+{
+    return wxString::FromUTF8( json( std::string( aValue.utf8_str() ) ).dump() );
+}
+}
+
+
+wxString WEBVIEW_PANEL::NormalizeUrlForLock( const wxString& aUrl )
+{
+    wxString normalized = aUrl;
+    normalized.Trim( true ).Trim( false );
+
+    // Ignore in-page fragment changes for lock checks.
+    int hashIdx = normalized.Find( '#' );
+    if( hashIdx != wxNOT_FOUND )
+    {
+        if( hashIdx == 0 )
+            normalized.clear();
+        else
+            normalized = normalized.SubString( 0, hashIdx - 1 );
+    }
+
+    // Keep trailing slash normalization simple and deterministic.
+    if( normalized.Length() > 1 && normalized.EndsWith( "/" ) )
+        normalized.RemoveLast();
+
+    return normalized;
+}
+
+
+bool WEBVIEW_PANEL::IsNavigationToLockedUrl( const wxString& aUrl ) const
+{
+    if( !m_lockNavigation || m_lockedUrl.IsEmpty() )
+        return true;
+
+    return NormalizeUrlForLock( aUrl ) == m_lockedUrl;
+}
+
+
+void WEBVIEW_PANEL::ShowAgentConnectionErrorPage()
+{
+    if( !m_browser )
+        return;
+
+    wxString html =
+            wxS( "<!DOCTYPE html>"
+                 "<html><head><meta charset='UTF-8'></head>"
+                 "<body style='margin:0;display:flex;align-items:center;justify-content:center;"
+                 "height:100vh;background:#0A0A0A;color:#E5E5E5;font-family:system-ui,sans-serif;'>"
+                 "<div style='font-size:20px;font-weight:600;'>Agent can't connect</div>"
+                 "</body></html>" );
+
+    m_browser->SetPage( html, "about:blank" );
+}
+
+
+void WEBVIEW_PANEL::SendApiCallback( const wxString& aCallbackId, bool aIsError,
+                                     const wxString& aJsonData )
+{
+    if( !m_browser || aCallbackId.IsEmpty() )
+        return;
+
+    const wxString script = wxString::Format(
+            wxS( "(function() {"
+                 "  if (window.kicad && window.kicad.api && typeof "
+                 "window.kicad.api._handleResponse === 'function') {"
+                 "    window.kicad.api._handleResponse(%s, %s, %s);"
+                 "  }"
+                 "})();" ),
+            ToJsStringLiteral( aCallbackId ),
+            aIsError ? wxS( "true" ) : wxS( "false" ),
+            ToJsStringLiteral( aJsonData ) );
+
+    RunScriptAsync( script );
+}
+
+
+void WEBVIEW_PANEL::RegisterBuiltInMessageHandlers()
+{
+    AddMessageHandler(
+            wxS( "clipboard_read_text" ),
+            [this]( const wxString& aMessage )
+            {
+                wxString callbackId;
+
+                try
+                {
+                    json payload = json::parse( std::string( aMessage.utf8_str() ) );
+
+                    if( payload.contains( "callbackId" ) && payload["callbackId"].is_string() )
+                        callbackId = wxString::FromUTF8( payload["callbackId"].get<std::string>() );
+                    else if( payload.contains( "callback_id" ) && payload["callback_id"].is_string() )
+                        callbackId = wxString::FromUTF8( payload["callback_id"].get<std::string>() );
+
+                    if( callbackId.IsEmpty() )
+                        return;
+
+                    json response;
+                    response["text"] = GetClipboardUTF8();
+                    SendApiCallback( callbackId, false,
+                                     wxString::FromUTF8( response.dump() ) );
+                }
+                catch( const std::exception& e )
+                {
+                    SendApiCallback( callbackId, true, wxString::FromUTF8( e.what() ) );
+                }
+            } );
+
+    AddMessageHandler(
+            wxS( "clipboard_write_text" ),
+            [this]( const wxString& aMessage )
+            {
+                wxString callbackId;
+
+                try
+                {
+                    json payload = json::parse( std::string( aMessage.utf8_str() ) );
+
+                    if( payload.contains( "callbackId" ) && payload["callbackId"].is_string() )
+                        callbackId = wxString::FromUTF8( payload["callbackId"].get<std::string>() );
+                    else if( payload.contains( "callback_id" ) && payload["callback_id"].is_string() )
+                        callbackId = wxString::FromUTF8( payload["callback_id"].get<std::string>() );
+
+                    if( callbackId.IsEmpty() )
+                        return;
+
+                    std::string text;
+
+                    if( payload.contains( "data" ) && payload["data"].is_object() )
+                    {
+                        const json& data = payload["data"];
+
+                        if( data.contains( "text" ) && data["text"].is_string() )
+                            text = data["text"].get<std::string>();
+                    }
+
+                    if( !SaveClipboard( text ) )
+                    {
+                        SendApiCallback( callbackId, true,
+                                         wxS( "Failed to write clipboard text." ) );
+                        return;
+                    }
+
+                    json response;
+                    response["ok"] = true;
+                    SendApiCallback( callbackId, false,
+                                     wxString::FromUTF8( response.dump() ) );
+                }
+                catch( const std::exception& e )
+                {
+                    SendApiCallback( callbackId, true, wxString::FromUTF8( e.what() ) );
+                }
+            } );
+}
+
+
+bool WEBVIEW_PANEL::HandleEditCommand( int aCommandId )
+{
+    if( !m_browser )
+        return false;
+
+    wxString command;
+
+    switch( aCommandId )
+    {
+    case wxID_CUT:
+        command = wxS( "cut" );
+        break;
+
+    case wxID_COPY:
+        command = wxS( "copy" );
+        break;
+
+    case wxID_PASTE:
+        command = wxS( "paste" );
+        break;
+
+    default:
+        return false;
+    }
+
+    const wxString script = wxString::Format(
+            wxS( "(function() {"
+                 "  const command = %s;"
+                 "  const promptBridge = window.__kicadPromptClipboard;"
+                 "  const runBridge = function(method, arg) {"
+                 "    if (!promptBridge || typeof promptBridge[method] !== 'function')"
+                 "      return false;"
+                 "    try {"
+                 "      Promise.resolve(promptBridge[method](arg)).catch(() => {});"
+                 "      return true;"
+                 "    } catch (e) {"
+                 "      return false;"
+                 "    }"
+                 "  };"
+                 "  "
+                 "  if (command === 'copy' && runBridge('copySelection'))"
+                 "    return;"
+                 "  if (command === 'cut' && runBridge('cutSelection'))"
+                 "    return;"
+                 "  if (command === 'paste' && window.kicad && window.kicad.api"
+                 "      && typeof window.kicad.api.readClipboardText === 'function') {"
+                 "    window.kicad.api.readClipboardText()"
+                 "      .then((result) => {"
+                 "        const text = result && typeof result.text === 'string' ? result.text : '';"
+                 "        if (!text)"
+                 "          return;"
+                 "        if (runBridge('pasteText', text))"
+                 "          return;"
+                 "        const active = document.activeElement;"
+                 "        const isTextControl = active &&"
+                 "          (active.tagName === 'TEXTAREA'"
+                 "            || (active.tagName === 'INPUT' && typeof active.value === 'string'));"
+                 "        if (!isTextControl)"
+                 "          return;"
+                 "        const start = typeof active.selectionStart === 'number'"
+                 "          ? active.selectionStart : active.value.length;"
+                 "        const end = typeof active.selectionEnd === 'number'"
+                 "          ? active.selectionEnd : start;"
+                 "        active.focus();"
+                 "        active.setRangeText(text, start, end, 'end');"
+                 "        active.dispatchEvent(new Event('input', { bubbles: true }));"
+                 "      })"
+                 "      .catch(() => {});"
+                 "    return;"
+                 "  }"
+                 "  "
+                 "  if ((command === 'copy' || command === 'cut') && window.kicad && window.kicad.api"
+                 "      && typeof window.kicad.api.writeClipboardText === 'function') {"
+                 "    const active = document.activeElement;"
+                 "    const isTextControl = active &&"
+                 "      (active.tagName === 'TEXTAREA'"
+                 "        || (active.tagName === 'INPUT' && typeof active.value === 'string'));"
+                 "    if (!isTextControl)"
+                 "      return;"
+                 "    const start = typeof active.selectionStart === 'number' ? active.selectionStart : 0;"
+                 "    const end = typeof active.selectionEnd === 'number' ? active.selectionEnd : start;"
+                 "    if (start === end)"
+                 "      return;"
+                 "    const text = active.value.slice(start, end);"
+                 "    window.kicad.api.writeClipboardText(text)"
+                 "      .then(() => {"
+                 "        if (command !== 'cut')"
+                 "          return;"
+                 "        active.focus();"
+                 "        active.setRangeText('', start, end, 'start');"
+                 "        active.dispatchEvent(new Event('input', { bubbles: true }));"
+                 "      })"
+                 "      .catch(() => {});"
+                 "  }"
+                 "})();" ),
+            ToJsStringLiteral( command ) );
+
+    RunScriptAsync( script );
+    return true;
+}
+
+
+WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& aPos,
+                              const wxSize& aSize ) :
+        wxPanel( aParent, aId, aPos, aSize ), m_browser( nullptr ), m_initialized( false ),
+        m_loadError( false ), m_loadedEventBound( false ), m_handleExternalLinks( false ),
+        m_lockNavigation( false ), m_lockedUrl( wxEmptyString ), m_toolbar( nullptr ),
+        m_btnOpenId( wxID_ANY ), m_btnCloseId( wxID_ANY )
+{
+    // Create toolbar with open/close buttons
+    m_toolbar = new wxToolBar( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                               wxTB_HORIZONTAL | wxTB_NODIVIDER );
+
+    wxWindowID openId = wxNewId();
+    wxWindowID closeId = wxNewId();
+
+    m_toolbar->AddTool( openId, wxT( "Open" ), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL,
+                        wxT( "Open WebView" ), wxT( "Show the webview panel" ) );
+    m_toolbar->AddTool( closeId, wxT( "Close" ), wxNullBitmap, wxNullBitmap, wxITEM_NORMAL,
+                        wxT( "Close WebView" ), wxT( "Hide the webview panel" ) );
+
+    m_toolbar->Realize();
+
+    // Store button IDs
+    m_btnOpenId = openId;
+    m_btnCloseId = closeId;
+
+    // Bind toolbar events
+    Bind( wxEVT_COMMAND_TOOL_CLICKED, &WEBVIEW_PANEL::OnToolbarClick, this );
+
+    // Create the WebView
+    m_browser = wxWebView::New( this, wxID_ANY );
+
+    if( !m_browser )
+    {
+        wxLogError( "Failed to create WebView" );
+        return;
+    }
+
+    RegisterBuiltInMessageHandlers();
+
+    // Layout
+    wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
+    sizer->Add( m_toolbar, 0, wxEXPAND );
+    sizer->Add( m_browser, 1, wxEXPAND | wxALL, 0 );
+    SetSizer( sizer );
+
+    // Ensure browser fills the available space
+    if( m_browser )
+    {
+        m_browser->SetSizeHints( -1, -1 );
+    }
+
+    // Bind events
+    Bind( wxEVT_WEBVIEW_NAVIGATING, &WEBVIEW_PANEL::OnNavigationRequest, this, m_browser->GetId() );
+    Bind( wxEVT_WEBVIEW_NEWWINDOW, &WEBVIEW_PANEL::OnNewWindow, this, m_browser->GetId() );
+    Bind( wxEVT_WEBVIEW_SCRIPT_MESSAGE_RECEIVED, &WEBVIEW_PANEL::OnScriptMessage, this,
+          m_browser->GetId() );
+    Bind( wxEVT_WEBVIEW_SCRIPT_RESULT, &WEBVIEW_PANEL::OnScriptResult, this, m_browser->GetId() );
+    Bind( wxEVT_WEBVIEW_ERROR, &WEBVIEW_PANEL::OnError, this, m_browser->GetId() );
+}
+
+
+WEBVIEW_PANEL::~WEBVIEW_PANEL()
+{
+    // Unbind all event handlers before destruction to prevent callbacks
+    // from WebKit during shutdown from trying to process events on a destroyed object
+    if( m_browser )
+    {
+        Unbind( wxEVT_WEBVIEW_NAVIGATING, &WEBVIEW_PANEL::OnNavigationRequest, this,
+                m_browser->GetId() );
+        Unbind( wxEVT_WEBVIEW_NEWWINDOW, &WEBVIEW_PANEL::OnNewWindow, this, m_browser->GetId() );
+        Unbind( wxEVT_WEBVIEW_SCRIPT_MESSAGE_RECEIVED, &WEBVIEW_PANEL::OnScriptMessage, this,
+                m_browser->GetId() );
+        Unbind( wxEVT_WEBVIEW_SCRIPT_RESULT, &WEBVIEW_PANEL::OnScriptResult, this,
+                m_browser->GetId() );
+        Unbind( wxEVT_WEBVIEW_ERROR, &WEBVIEW_PANEL::OnError, this, m_browser->GetId() );
+
+        if( m_loadedEventBound )
+        {
+            Unbind( wxEVT_WEBVIEW_LOADED, &WEBVIEW_PANEL::OnWebViewLoaded, this,
+                    m_browser->GetId() );
+        }
+
+        // Clear message handlers to prevent any pending callbacks
+        ClearMessageHandlers();
+    }
+}
+
+void WEBVIEW_PANEL::BindLoadedEvent()
+{
+    if( m_browser && !m_loadedEventBound )
+    {
+        Bind( wxEVT_WEBVIEW_LOADED, &WEBVIEW_PANEL::OnWebViewLoaded, this, m_browser->GetId() );
+        m_loadedEventBound = true;
+    }
+}
+
+
+void WEBVIEW_PANEL::AddMessageHandler( const wxString&                        aHandlerName,
+                                       std::function<void( const wxString& )> aCallback )
+{
+    m_msgHandlers[aHandlerName] = aCallback;
+
+    // If already initialized, register immediately
+    if( m_initialized && m_browser )
+    {
+        if( !m_browser->AddScriptMessageHandler( aHandlerName ) )
+        {
+            wxLogDebug( "Failed to register message handler: %s", aHandlerName );
+        }
+    }
+}
+
+
+void WEBVIEW_PANEL::ClearMessageHandlers()
+{
+    if( m_browser )
+    {
+        for( const auto& handler : m_msgHandlers )
+        {
+            m_browser->RemoveScriptMessageHandler( handler.first );
+        }
+    }
+    m_msgHandlers.clear();
+}
+
+
+void WEBVIEW_PANEL::LoadURL( const wxString& aUrl, bool aLockNavigation )
+{
+    if( m_browser )
+    {
+        m_loadError = false;
+        m_lockNavigation = aLockNavigation;
+
+        if( m_lockNavigation )
+            m_lockedUrl = NormalizeUrlForLock( aUrl );
+        else
+            m_lockedUrl.clear();
+
+        m_browser->LoadURL( aUrl );
+    }
+}
+
+
+void WEBVIEW_PANEL::SetPage( const wxString& aHtml, const wxString& aBaseUrl )
+{
+    if( m_browser )
+    {
+        m_loadError = false;
+        m_browser->SetPage( aHtml, aBaseUrl );
+    }
+}
+
+
+void WEBVIEW_PANEL::RunScriptAsync( const wxString& aScript )
+{
+    if( m_browser )
+    {
+        if( KIUI::IsModalDialogFocused() )
+        {
+            wxLogTrace( "webview",
+                        "Skipping script execution while modal dialog is active" );
+            return;
+        }
+
+        m_browser->RunScriptAsync( aScript );
+    }
+}
+
+
+void WEBVIEW_PANEL::OnNavigationRequest( wxWebViewEvent& aEvt )
+{
+    // Safety check: ensure the browser is still valid
+    if( !m_browser )
+        return;
+
+    m_loadError = false;
+    wxString url = aEvt.GetURL();
+    wxLogTrace( "webview", "Navigation request to URL: %s", url );
+
+    // Always allow localhost URLs (for development servers)
+    if( url.Contains( "localhost" ) || url.Contains( "127.0.0.1" ) )
+    {
+        return;
+    }
+
+    // Silently block embed/iframe URLs — never open them in the system browser.
+    // This must be checked before any other logic to prevent YouTube embeds,
+    // Vimeo players, etc. from escaping into the external browser.
+    bool isEmbedOrIframe = url.Contains( "youtube.com/embed" )
+                        || url.Contains( "youtube.com/watch" )
+                        || url.Contains( "player.vimeo.com" )
+                        || url.Contains( "/embed" )
+                        || url.Contains( "iframe" );
+
+    if( isEmbedOrIframe )
+    {
+        wxLogTrace( "webview", "Silently blocked embed/iframe URL: %s", url );
+        aEvt.Veto();
+        return;
+    }
+
+    if( !IsNavigationToLockedUrl( url ) )
+    {
+        if( url.StartsWith( "http" ) )
+            wxLaunchDefaultBrowser( url );
+
+        wxLogTrace( "webview", "Blocked navigation away from locked URL: %s", url );
+        aEvt.Veto();
+        return;
+    }
+
+    // Default behavior: open external links in the system browser
+    // unless m_handleExternalLinks is true
+    if( !m_handleExternalLinks && url.StartsWith( "http" ) )
+    {
+        wxLaunchDefaultBrowser( url );
+        aEvt.Veto();
+    }
+}
+
+
+void WEBVIEW_PANEL::OnWebViewLoaded( wxWebViewEvent& aEvt )
+{
+    // Safety check: ensure the browser is still valid
+    if( !m_browser )
+        return;
+
+
+    // On macOS, WKWebView intercepts Cmd+C/V/X via performKeyEquivalent: even
+    // when it doesn't have focus, stealing shortcuts from the schematic canvas.
+    // Patch after first load when the native WKWebView is fully in the view tree.
+    KIPLATFORM::UI::FixupWebViewKeyEquivalents( m_browser );
+
+    // Use CallAfter to defer script execution, avoiding re-entrancy issues if loaded during a modal loop
+    CallAfter(
+            [this]()
+            {
+                if( !m_browser )
+                    return;
+
+                // Ensure proper container sizing without zoom
+                wxString zoomScript =
+                        wxS( "(function() {"
+                             "  var style = document.createElement('style');"
+                             "  style.innerHTML = 'html, body { margin: 0; padding: 0; width: "
+                             "100%; height: "
+                             "100%; overflow: hidden; }';"
+                             "  if (document.head) { document.head.appendChild(style); }"
+                             "  else { document.addEventListener('DOMContentLoaded', function() "
+                             "{ document.head.appendChild(style); }); }"
+                             "})();" );
+                m_browser->RunScriptAsync( zoomScript );
+
+                // Inject wx_msg bridge for C++ communication
+                wxString wxMsgScript = wxS(
+                        "(function() {"
+                        "  if (window.wx_msg) return;" // Already injected
+                        "  "
+                        "  window.wx_msg = {"
+                        "    postMessage: function(handlerName, message) {"
+                        "      if (window.webkit && window.webkit.messageHandlers && "
+                        "window.webkit.messageHandlers[handlerName]) {"
+                        "        window.webkit.messageHandlers[handlerName].postMessage(message);"
+                        "      } else if (window.chrome && window.chrome.webview) {"
+                        "        window.chrome.webview.postMessage(JSON.stringify({ handler: "
+                        "handlerName, "
+                        "message: message }));"
+                        "      } else {"
+                        "        console.warn('[wx_msg] No native bridge available');"
+                        "      }"
+                        "    }"
+                        "  };"
+                        "  "
+                        "  console.log('[KiCad] wx_msg bridge injected successfully');"
+                        "})();" );
+                m_browser->RunScriptAsync( wxMsgScript );
+
+                // Inject window.kicad.api bridge for schematic operations
+                wxString kicadApiScript = wxS(
+                        "(function() {"
+                        "  if (window.kicad) return;" // Already injected
+                        "  "
+                        "  // Create KiCad API bridge that uses wx_msg for communication"
+                        "  window.kicad = {"
+                        "    api: {"
+                        "      // Helper to call C++ handlers via wx_msg"
+                        "      _callHandler: function(handlerName, data) {"
+                        "        return new Promise((resolve, reject) => {"
+                        "          const callbackId = 'cb_' + Date.now() + '_' + Math.random();"
+                        "          "
+                        "          // Store callback"
+                        "          window.kicad.api._callbacks = window.kicad.api._callbacks || {};"
+                        "          window.kicad.api._callbacks[callbackId] = { resolve, reject };"
+                        "          "
+                        "          // Send message to C++"
+                        "          const message = JSON.stringify({ callbackId, data });"
+                        "          window.wx_msg.postMessage(handlerName, message);"
+                        "          "
+                        "          // Timeout after 30 seconds"
+                        "          setTimeout(() => {"
+                        "            if (window.kicad.api._callbacks[callbackId]) {"
+                        "              delete window.kicad.api._callbacks[callbackId];"
+                        "              reject(new Error('API call timeout'));"
+                        "            }"
+                        "          }, 30000);"
+                        "        });"
+                        "      },"
+                        "      "
+                        "      // Handle responses from C++"
+                        "      _handleResponse: function(callbackId, isError, jsonData) {"
+                        "        const callbacks = window.kicad.api._callbacks || {};"
+                        "        if (callbacks[callbackId]) {"
+                        "          const { resolve, reject } = callbacks[callbackId];"
+                        "          delete callbacks[callbackId];"
+                        "          "
+                        "          if (isError) {"
+                        "            reject(new Error(jsonData));"
+                        "          } else {"
+                        "            try {"
+                        "              const response = JSON.parse(jsonData);"
+                        "              resolve(response);"
+                        "            } catch (e) {"
+                        "              resolve(jsonData);"
+                        "            }"
+                        "          }"
+                        "        }"
+                        "      },"
+                        "      "
+                        "      // API methods"
+                        "      ping: function() {"
+                        "        return this._callHandler('api_ping', {});"
+                        "      },"
+                        "      "
+                        "      getVersion: function() {"
+                        "        return this._callHandler('api_getVersion', {});"
+                        "      },"
+                        "      "
+                        "      getNetClasses: function() {"
+                        "        return this._callHandler('api_getNetClasses', {});"
+                        "      },"
+                        "      "
+                        "      request: function(messageType, messageData, typeUrl) {"
+                        "        return this._callHandler('api_request', { messageType, "
+                        "messageData, typeUrl });"
+                        "      },"
+                        "      "
+                        "      readClipboardText: function() {"
+                        "        return this._callHandler('clipboard_read_text', {});"
+                        "      },"
+                        "      "
+                        "      writeClipboardText: function(text) {"
+                        "        return this._callHandler('clipboard_write_text', { text: text "
+                        "|| '' });"
+                        "      }"
+                        "    }"
+                        "  };"
+                        "  "
+                        "  console.log('[KiCad] window.kicad.api bridge injected successfully');"
+                        "})();" );
+                m_browser->RunScriptAsync( kicadApiScript );
+
+                // Inject KaTeX for LaTeX math rendering.
+                // Uses fetch() + blob URLs to bypass CSP restrictions that block
+                // CDN <script> elements. Falls back to <script> tags if fetch fails.
+                // Includes periodic re-render to survive React/SPA DOM reconciliation.
+                wxString katexScript = wxS(
+                        "(function() {"
+                        "  if (window._katexInjected) return;"
+                        "  window._katexInjected = true;"
+                        "  "
+                        "  var KATEX_BASE = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist';"
+                        "  var DELIMITERS = ["
+                        "    {left: '$$', right: '$$', display: true},"
+                        "    {left: '$', right: '$', display: false},"
+                        "    {left: '\\\\(', right: '\\\\)', display: false},"
+                        "    {left: '\\\\[', right: '\\\\]', display: true}"
+                        "  ];"
+                        "  "
+                        "  function doRender(root) {"
+                        "    if (typeof renderMathInElement === 'function') {"
+                        "      try {"
+                        "        renderMathInElement(root, { delimiters: DELIMITERS, throwOnError: false });"
+                        "      } catch(e) { console.warn('[KaTeX] render error:', e); }"
+                        "    }"
+                        "  }"
+                        "  "
+                        "  function startObserver() {"
+                        "    var pending = false;"
+                        "    var observer = new MutationObserver(function() {"
+                        "      if (pending) return;"
+                        "      pending = true;"
+                        "      requestAnimationFrame(function() {"
+                        "        pending = false;"
+                        "        doRender(document.body);"
+                        "      });"
+                        "    });"
+                        "    observer.observe(document.body, "
+                        "      {childList: true, subtree: true, characterData: true});"
+                        "  }"
+                        "  "
+                        "  function onReady() {"
+                        "    console.log('[KaTeX] Loaded successfully');"
+                        "    doRender(document.body);"
+                        "    startObserver();"
+                        "    setInterval(function() { doRender(document.body); }, 3000);"
+                        "  }"
+                        "  "
+                        "  // Inject CSS via fetch + blob to bypass CSP"
+                        "  function loadCSS() {"
+                        "    return fetch(KATEX_BASE + '/katex.min.css')"
+                        "      .then(function(r) { return r.text(); })"
+                        "      .then(function(css) {"
+                        "        var style = document.createElement('style');"
+                        "        style.textContent = css;"
+                        "        document.head.appendChild(style);"
+                        "      })"
+                        "      .catch(function() {"
+                        "        var link = document.createElement('link');"
+                        "        link.rel = 'stylesheet';"
+                        "        link.href = KATEX_BASE + '/katex.min.css';"
+                        "        document.head.appendChild(link);"
+                        "      });"
+                        "  }"
+                        "  "
+                        "  // Load JS via fetch + blob URL to bypass script-src CSP"
+                        "  function loadScript(url) {"
+                        "    return fetch(url)"
+                        "      .then(function(r) { return r.text(); })"
+                        "      .then(function(code) {"
+                        "        var blob = new Blob([code], {type: 'text/javascript'});"
+                        "        var blobUrl = URL.createObjectURL(blob);"
+                        "        return new Promise(function(resolve, reject) {"
+                        "          var s = document.createElement('script');"
+                        "          s.src = blobUrl;"
+                        "          s.onload = function() { URL.revokeObjectURL(blobUrl); resolve(); };"
+                        "          s.onerror = function() { URL.revokeObjectURL(blobUrl); reject(); };"
+                        "          document.head.appendChild(s);"
+                        "        });"
+                        "      })"
+                        "      .catch(function() {"
+                        "        return new Promise(function(resolve, reject) {"
+                        "          var s = document.createElement('script');"
+                        "          s.src = url;"
+                        "          s.crossOrigin = 'anonymous';"
+                        "          s.onload = resolve;"
+                        "          s.onerror = reject;"
+                        "          document.head.appendChild(s);"
+                        "        });"
+                        "      });"
+                        "  }"
+                        "  "
+                        "  loadCSS()"
+                        "    .then(function() { return loadScript(KATEX_BASE + '/katex.min.js'); })"
+                        "    .then(function() { return loadScript(KATEX_BASE + '/contrib/auto-render.min.js'); })"
+                        "    .then(onReady)"
+                        "    .catch(function(e) { console.error('[KaTeX] Failed to load:', e); });"
+                        "  "
+                        "  console.log('[KiCad] KaTeX injection started');"
+                        "})();" );
+                m_browser->RunScriptAsync( katexScript );
+            } );
+
+    if( !m_initialized )
+    {
+        // Defer handler registration to avoid running during modal dialog/yield
+        auto initFunc = [this]()
+        {
+            // Double-check browser is still valid after async callback
+            if( !m_browser )
+                return;
+
+            for( const auto& handler : m_msgHandlers )
+            {
+                if( !m_browser->AddScriptMessageHandler( handler.first ) )
+                {
+                    wxLogDebug( "Failed to register message handler: %s", handler.first );
+                }
+                else
+                {
+                    wxLogTrace( "webview", "Registered message handler: %s", handler.first );
+                }
+            }
+
+            m_initialized = true;
+        };
+
+        // Use CallAfter to defer execution
+        CallAfter( initFunc );
+    }
+
+    wxLogTrace( "webview", "WebView loaded: %s", aEvt.GetURL() );
+}
+
+
+void WEBVIEW_PANEL::OnNewWindow( wxWebViewEvent& aEvt )
+{
+    // Safety check: ensure the browser is still valid
+    if( !m_browser )
+        return;
+
+    wxString url = aEvt.GetURL();
+
+    // Never navigate the embedded view on popup/new-window requests.
+    // Don't open embed/iframe URLs in the browser (e.g. YouTube embeds).
+    bool isEmbed = url.Contains( "youtube.com/embed" )
+                || url.Contains( "player.vimeo.com" )
+                || url.Contains( "/embed" );
+
+    if( url.StartsWith( "http" ) && !isEmbed )
+        wxLaunchDefaultBrowser( url );
+
+    aEvt.Veto(); // Prevent default behavior of opening a new window
+    wxLogTrace( "webview", "New window requested and blocked in panel for URL: %s", url );
+}
+
+
+void WEBVIEW_PANEL::OnScriptMessage( wxWebViewEvent& aEvt )
+{
+    // Safety check: ensure the browser is still valid
+    if( !m_browser )
+        return;
+
+    wxLogTrace( "webview", "Script message received: %s for handler %s", aEvt.GetString(),
+                aEvt.GetMessageHandler() );
+
+    wxString handler = aEvt.GetMessageHandler();
+    handler.Trim( true ).Trim( false );
+
+    auto it = m_msgHandlers.find( handler );
+    if( it != m_msgHandlers.end() )
+    {
+        try
+        {
+            it->second( aEvt.GetString() );
+        }
+        catch( const std::exception& e )
+        {
+            wxLogError( "Exception in message handler '%s': %s", handler, e.what() );
+        }
+        catch( ... )
+        {
+            wxLogError( "Unknown exception in message handler '%s'", handler );
+        }
+    }
+    else
+    {
+        wxLogDebug( "No handler registered for: %s", handler );
+    }
+}
+
+
+void WEBVIEW_PANEL::OnScriptResult( wxWebViewEvent& aEvt )
+{
+    // Safety check: ensure the browser and this object are still valid
+    // This can happen if WebKit calls back during shutdown after the WebView
+    // has been partially destroyed
+    if( !m_browser )
+        return;
+
+    if( aEvt.IsError() )
+        wxLogDebug( "Async script execution failed: %s", aEvt.GetString() );
+}
+
+
+void WEBVIEW_PANEL::OnError( wxWebViewEvent& aEvt )
+{
+    // Safety check: ensure the browser is still valid
+    if( !m_browser )
+        return;
+
+    m_loadError = true;
+    wxLogDebug( "WebView error: %s (url=%s)", aEvt.GetString(), aEvt.GetURL() );
+
+    wxString msg = aEvt.GetString();
+    wxString url = aEvt.GetURL();
+
+    if( !m_lockedUrl.IsEmpty() && IsNavigationToLockedUrl( url ) )
+    {
+        ShowAgentConnectionErrorPage();
+        return;
+    }
+
+    auto escape = []( wxString s )
+    {
+        s.Replace( "&", "&amp;" );
+        s.Replace( "<", "&lt;" );
+        s.Replace( ">", "&gt;" );
+        return s;
+    };
+
+    wxString html;
+    html << wxS( "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body "
+                 "style='background:#0A0A0A;color:#E5E5E5;font-family:system-ui;padding:16px;'>" )
+         << wxS( "<h2 style='margin:0 0 8px 0;'>WebView load error</h2>" )
+         << wxS( "<div style='margin:0 0 8px 0;'><strong>URL:</strong> <code>" ) << escape( url )
+         << wxS( "</code></div>" ) << wxS( "<div><strong>Message:</strong> <code>" )
+         << escape( msg ) << wxS( "</code></div>" ) << wxS( "</body></html>" );
+
+    m_browser->SetPage( html, "file://" );
+}
+
+
+void WEBVIEW_PANEL::OnToolbarClick( wxCommandEvent& aEvt )
+{
+    int id = aEvt.GetId();
+
+    if( id == m_btnOpenId )
+    {
+        ShowBrowser( true );
+    }
+    else if( id == m_btnCloseId )
+    {
+        ShowBrowser( false );
+    }
+}
+
+
+void WEBVIEW_PANEL::ShowBrowser( bool aShow )
+{
+    if( m_browser )
+    {
+        m_browser->Show( aShow );
+        if( aShow )
+        {
+            // Ensure browser fills the available space
+            m_browser->SetSize( GetClientSize() );
+        }
+        Layout();
+        Refresh();
+    }
+}

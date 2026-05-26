@@ -1,0 +1,2979 @@
+{
+  "id": "up3down5",
+  "children": [
+    {
+      "id": "$add$input.v:17$3",
+      "width": 25,
+      "height": 25,
+      "ports": [
+        {
+          "id": "$add$input.v:17$3.A",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 5
+        },
+        {
+          "id": "$add$input.v:17$3.B",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 20
+        },
+        {
+          "id": "$add$input.v:17$3.Y",
+          "width": 0,
+          "height": 0,
+          "x": 26,
+          "y": 12.5
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 16,
+      "x": 188.66666666666666,
+      "y": 135.5
+    },
+    {
+      "id": "$and$input.v:28$5",
+      "width": 30,
+      "height": 25,
+      "ports": [
+        {
+          "id": "$and$input.v:28$5.A",
+          "width": 0,
+          "height": 0,
+          "x": 0,
+          "y": 5
+        },
+        {
+          "id": "$and$input.v:28$5.B",
+          "width": 0,
+          "height": 0,
+          "x": 0,
+          "y": 20
+        },
+        {
+          "id": "$and$input.v:28$5.Y",
+          "width": 0,
+          "height": 0,
+          "x": 30,
+          "y": 12.5
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 283,
+      "x": 659.5,
+      "y": 19.5
+    },
+    {
+      "id": "$and$input.v:29$6",
+      "width": 30,
+      "height": 25,
+      "ports": [
+        {
+          "id": "$and$input.v:29$6.A",
+          "width": 0,
+          "height": 0,
+          "x": 0,
+          "y": 5
+        },
+        {
+          "id": "$and$input.v:29$6.B",
+          "width": 0,
+          "height": 0,
+          "x": 0,
+          "y": 20
+        },
+        {
+          "id": "$and$input.v:29$6.Y",
+          "width": 0,
+          "height": 0,
+          "x": 30,
+          "y": 12.5
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 288,
+      "x": 659.5,
+      "y": 94.5
+    },
+    {
+      "id": "$procdff$40",
+      "width": 34,
+      "height": 44,
+      "ports": [
+        {
+          "id": "$procdff$40.Q",
+          "width": 0,
+          "height": 0,
+          "x": 35,
+          "y": 10
+        },
+        {
+          "id": "$procdff$40.CLK",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 30
+        },
+        {
+          "id": "$procdff$40.C",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 30
+        },
+        {
+          "id": "$procdff$40.D",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 10
+        },
+        {
+          "id": "$procdff$40.ARST",
+          "width": 0,
+          "height": 0,
+          "x": 17,
+          "y": 44
+        },
+        {
+          "id": "$procdff$40.SRST",
+          "width": 0,
+          "height": 0,
+          "x": 17,
+          "y": 44
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 293,
+      "x": 78,
+      "y": 130.5
+    },
+    {
+      "id": "$procdff$41",
+      "width": 30,
+      "height": 40,
+      "ports": [
+        {
+          "id": "$procdff$41.Q",
+          "width": 0,
+          "height": 0,
+          "x": 31,
+          "y": 10
+        },
+        {
+          "id": "$procdff$41.CLK",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 30
+        },
+        {
+          "id": "$procdff$41.C",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 30
+        },
+        {
+          "id": "$procdff$41.D",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 10
+        },
+        {
+          "id": "$procdff$41.ARST",
+          "width": 0,
+          "height": 0,
+          "x": 15,
+          "y": 40
+        },
+        {
+          "id": "$procdff$41.SRST",
+          "width": 0,
+          "height": 0,
+          "x": 15,
+          "y": 40
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 301,
+      "x": 727.5,
+      "y": 22
+    },
+    {
+      "id": "$procdff$42",
+      "width": 30,
+      "height": 40,
+      "ports": [
+        {
+          "id": "$procdff$42.Q",
+          "width": 0,
+          "height": 0,
+          "x": 31,
+          "y": 10
+        },
+        {
+          "id": "$procdff$42.CLK",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 30
+        },
+        {
+          "id": "$procdff$42.C",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 30
+        },
+        {
+          "id": "$procdff$42.D",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 10
+        },
+        {
+          "id": "$procdff$42.ARST",
+          "width": 0,
+          "height": 0,
+          "x": 15,
+          "y": 40
+        },
+        {
+          "id": "$procdff$42.SRST",
+          "width": 0,
+          "height": 0,
+          "x": 15,
+          "y": 40
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 309,
+      "x": 727.5,
+      "y": 97
+    },
+    {
+      "id": "$procdff$43",
+      "width": 30,
+      "height": 40,
+      "ports": [
+        {
+          "id": "$procdff$43.Q",
+          "width": 0,
+          "height": 0,
+          "x": 31,
+          "y": 10
+        },
+        {
+          "id": "$procdff$43.CLK",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 30
+        },
+        {
+          "id": "$procdff$43.C",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 30
+        },
+        {
+          "id": "$procdff$43.D",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 10
+        },
+        {
+          "id": "$procdff$43.ARST",
+          "width": 0,
+          "height": 0,
+          "x": 15,
+          "y": 40
+        },
+        {
+          "id": "$procdff$43.SRST",
+          "width": 0,
+          "height": 0,
+          "x": 15,
+          "y": 40
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 317,
+      "x": 727.5,
+      "y": 632
+    },
+    {
+      "id": "$procmux$36",
+      "width": 24,
+      "height": 40,
+      "ports": [
+        {
+          "id": "$procmux$36.A",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 10
+        },
+        {
+          "id": "$procmux$36.B",
+          "width": 0,
+          "height": 0,
+          "x": -1,
+          "y": 30
+        },
+        {
+          "id": "$procmux$36.S",
+          "width": 0,
+          "height": 0,
+          "x": 12,
+          "y": 38
+        },
+        {
+          "id": "$procmux$36.Y",
+          "width": 0,
+          "height": 0,
+          "x": 24.5,
+          "y": 20
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 325,
+      "x": 560,
+      "y": 326
+    },
+    {
+      "id": "$procmux$37_CMP0",
+      "width": 25,
+      "height": 25,
+      "ports": [
+        {
+          "id": "$procmux$37_CMP0.A",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 5
+        },
+        {
+          "id": "$procmux$37_CMP0.B",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 20
+        },
+        {
+          "id": "$procmux$37_CMP0.Y",
+          "width": 0,
+          "height": 0,
+          "x": 25,
+          "y": 12.5
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 331,
+      "x": 400,
+      "y": 448.5
+    },
+    {
+      "id": "$procmux$38_CMP0",
+      "width": 25,
+      "height": 25,
+      "ports": [
+        {
+          "id": "$procmux$38_CMP0.A",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 5
+        },
+        {
+          "id": "$procmux$38_CMP0.B",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 20
+        },
+        {
+          "id": "$procmux$38_CMP0.Y",
+          "width": 0,
+          "height": 0,
+          "x": 25,
+          "y": 12.5
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 336,
+      "x": 400,
+      "y": 508.5
+    },
+    {
+      "id": "$procmux$39_CMP0",
+      "width": 25,
+      "height": 25,
+      "ports": [
+        {
+          "id": "$procmux$39_CMP0.A",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 5
+        },
+        {
+          "id": "$procmux$39_CMP0.B",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 20
+        },
+        {
+          "id": "$procmux$39_CMP0.Y",
+          "width": 0,
+          "height": 0,
+          "x": 25,
+          "y": 12.5
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 341,
+      "x": 400,
+      "y": 568.5
+    },
+    {
+      "id": "$reduce_xor$input.v:27$4",
+      "width": 33,
+      "height": 25,
+      "ports": [
+        {
+          "id": "$reduce_xor$input.v:27$4.A",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 5
+        },
+        {
+          "id": "$reduce_xor$input.v:27$4.B",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 20
+        },
+        {
+          "id": "$reduce_xor$input.v:27$4.Y",
+          "width": 0,
+          "height": 0,
+          "x": 33,
+          "y": 12.5
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 346,
+      "x": 658.5,
+      "y": 629.5
+    },
+    {
+      "id": "$sub$input.v:16$2",
+      "width": 25,
+      "height": 25,
+      "ports": [
+        {
+          "id": "$sub$input.v:16$2.A",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 5
+        },
+        {
+          "id": "$sub$input.v:16$2.B",
+          "width": 0,
+          "height": 0,
+          "x": 2,
+          "y": 20
+        },
+        {
+          "id": "$sub$input.v:16$2.Y",
+          "width": 0,
+          "height": 0,
+          "x": 25,
+          "y": 12.5
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 351,
+      "x": 188.66666666666666,
+      "y": 312.5
+    },
+    {
+      "id": "clock",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "clock.Y",
+          "width": 0,
+          "height": 0,
+          "x": 30,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "clock.label.ref",
+          "text": "clock",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 30
+        }
+      ],
+      "$H": 356,
+      "x": 12,
+      "y": 44.5
+    },
+    {
+      "id": "data_in",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "data_in.Y",
+          "width": 0,
+          "height": 0,
+          "x": 30,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "data_in.label.ref",
+          "text": "data_in",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 42
+        }
+      ],
+      "$H": 361,
+      "x": 318,
+      "y": 389.5
+    },
+    {
+      "id": "up",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "up.Y",
+          "width": 0,
+          "height": 0,
+          "x": 30,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "up.label.ref",
+          "text": "up",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 12
+        }
+      ],
+      "$H": 365,
+      "x": 187,
+      "y": 205.5
+    },
+    {
+      "id": "down",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "down.Y",
+          "width": 0,
+          "height": 0,
+          "x": 30,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "down.label.ref",
+          "text": "down",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 24
+        }
+      ],
+      "$H": 369,
+      "x": 187,
+      "y": 257.5
+    },
+    {
+      "id": "carry_out",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "carry_out.A",
+          "width": 0,
+          "height": 0,
+          "x": 0,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "carry_out.label.ref",
+          "text": "carry_out",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 54
+        }
+      ],
+      "$H": 373,
+      "x": 793.5,
+      "y": 22
+    },
+    {
+      "id": "borrow_out",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "borrow_out.A",
+          "width": 0,
+          "height": 0,
+          "x": 0,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "borrow_out.label.ref",
+          "text": "borrow_out",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 60
+        }
+      ],
+      "$H": 377,
+      "x": 793.5,
+      "y": 97
+    },
+    {
+      "id": "count_out",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "count_out.A",
+          "width": 0,
+          "height": 0,
+          "x": 0,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "count_out.label.ref",
+          "text": "count_out",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 54
+        }
+      ],
+      "$H": 381,
+      "x": 793.5,
+      "y": 697
+    },
+    {
+      "id": "parity_out",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "parity_out.A",
+          "width": 0,
+          "height": 0,
+          "x": 0,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "parity_out.label.ref",
+          "text": "parity_out",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 60
+        }
+      ],
+      "$H": 385,
+      "x": 793.5,
+      "y": 632
+    },
+    {
+      "id": "11",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "11.Y",
+          "width": 0,
+          "height": 0,
+          "x": 31,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "11.label.ref",
+          "text": "11",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 12
+        }
+      ],
+      "$H": 389,
+      "x": 82,
+      "y": 75.5
+    },
+    {
+      "id": "10",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "10.Y",
+          "width": 0,
+          "height": 0,
+          "x": 31,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "10.label.ref",
+          "text": "10",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 12
+        }
+      ],
+      "$H": 393,
+      "x": 252,
+      "y": 376
+    },
+    {
+      "id": "01",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "01.Y",
+          "width": 0,
+          "height": 0,
+          "x": 31,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "01.label.ref",
+          "text": "01",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 12
+        }
+      ],
+      "$H": 397,
+      "x": 252,
+      "y": 523.5
+    },
+    {
+      "id": "00",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "00.Y",
+          "width": 0,
+          "height": 0,
+          "x": 31,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "00.label.ref",
+          "text": "00",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 12
+        }
+      ],
+      "$H": 401,
+      "x": 252,
+      "y": 588.5
+    },
+    {
+      "id": "101",
+      "width": 30,
+      "height": 20,
+      "ports": [
+        {
+          "id": "101.Y",
+          "width": 0,
+          "height": 0,
+          "x": 31,
+          "y": 10
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [
+        {
+          "id": "101.label.ref",
+          "text": "101",
+          "x": 0,
+          "y": -10,
+          "height": 11,
+          "width": 18
+        }
+      ],
+      "$H": 405,
+      "x": 82,
+      "y": 327.5
+    },
+    {
+      "id": "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,",
+      "width": 4,
+      "height": 60,
+      "ports": [
+        {
+          "id": "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.0:8",
+          "width": 1,
+          "height": 1,
+          "x": 0,
+          "y": 10,
+          "labels": [
+            {
+              "id": "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.0:8.label",
+              "text": "0:8",
+              "x": -19,
+              "y": 2,
+              "width": 18,
+              "height": 11
+            }
+          ]
+        },
+        {
+          "id": "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.9:17",
+          "width": 1,
+          "height": 1,
+          "x": 0,
+          "y": 30
+        },
+        {
+          "id": "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.18:26",
+          "width": 1,
+          "height": 1,
+          "x": 0,
+          "y": 50
+        },
+        {
+          "id": "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.Y",
+          "width": 1,
+          "height": 1,
+          "x": 5,
+          "y": 20
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 409,
+      "x": 479,
+      "y": 347
+    },
+    {
+      "id": "$join$,58,59,60,",
+      "width": 4,
+      "height": 60,
+      "ports": [
+        {
+          "id": "$join$,58,59,60,.0",
+          "width": 1,
+          "height": 1,
+          "x": 0,
+          "y": 10,
+          "labels": [
+            {
+              "id": "$join$,58,59,60,.0.label",
+              "text": "0",
+              "x": -7,
+              "y": 2,
+              "width": 6,
+              "height": 11
+            }
+          ]
+        },
+        {
+          "id": "$join$,58,59,60,.1",
+          "width": 1,
+          "height": 1,
+          "x": 0,
+          "y": 30
+        },
+        {
+          "id": "$join$,58,59,60,.2",
+          "width": 1,
+          "height": 1,
+          "x": 0,
+          "y": 50
+        },
+        {
+          "id": "$join$,58,59,60,.Y",
+          "width": 1,
+          "height": 1,
+          "x": 5,
+          "y": 20
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 416,
+      "x": 474.75,
+      "y": 490.5
+    },
+    {
+      "id": "$join$,13,12,",
+      "width": 4,
+      "height": 40,
+      "ports": [
+        {
+          "id": "$join$,13,12,.0",
+          "width": 1,
+          "height": 1,
+          "x": 0,
+          "y": 10,
+          "labels": [
+            {
+              "id": "$join$,13,12,.0.label",
+              "text": "0",
+              "x": -7,
+              "y": -12,
+              "width": 6,
+              "height": 11
+            }
+          ]
+        },
+        {
+          "id": "$join$,13,12,.1",
+          "width": 1,
+          "height": 1,
+          "x": 0,
+          "y": 30
+        },
+        {
+          "id": "$join$,13,12,.Y",
+          "width": 1,
+          "height": 1,
+          "x": 5,
+          "y": 20
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 423,
+      "x": 263.33333333333337,
+      "y": 433
+    },
+    {
+      "id": "$split$,26,27,28,29,30,31,32,33,34,35,",
+      "width": 5,
+      "height": 40,
+      "ports": [
+        {
+          "id": "$split$,26,27,28,29,30,31,32,33,34,35,.A",
+          "width": 1,
+          "height": 1,
+          "x": 0,
+          "y": 20
+        },
+        {
+          "id": "$split$,26,27,28,29,30,31,32,33,34,35,.9",
+          "width": 1,
+          "height": 1,
+          "x": 4,
+          "y": 10,
+          "labels": [
+            {
+              "id": "$split$,26,27,28,29,30,31,32,33,34,35,.9.label",
+              "text": "9",
+              "x": 2,
+              "y": -12,
+              "width": 6,
+              "height": 11
+            }
+          ]
+        },
+        {
+          "id": "$split$,26,27,28,29,30,31,32,33,34,35,.0:8",
+          "width": 1,
+          "height": 1,
+          "x": 4,
+          "y": 30
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 429,
+      "x": 338.6666666666667,
+      "y": 127.5
+    },
+    {
+      "id": "$split$,49,50,51,52,53,54,55,56,57,37,",
+      "width": 5,
+      "height": 40,
+      "ports": [
+        {
+          "id": "$split$,49,50,51,52,53,54,55,56,57,37,.A",
+          "width": 1,
+          "height": 1,
+          "x": 0,
+          "y": 20
+        },
+        {
+          "id": "$split$,49,50,51,52,53,54,55,56,57,37,.9",
+          "width": 1,
+          "height": 1,
+          "x": 4,
+          "y": 10,
+          "labels": [
+            {
+              "id": "$split$,49,50,51,52,53,54,55,56,57,37,.9.label",
+              "text": "9",
+              "x": 2,
+              "y": -12,
+              "width": 6,
+              "height": 11
+            }
+          ]
+        },
+        {
+          "id": "$split$,49,50,51,52,53,54,55,56,57,37,.0:8",
+          "width": 1,
+          "height": 1,
+          "x": 4,
+          "y": 30
+        }
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_POS"
+      },
+      "labels": [],
+      "$H": 435,
+      "x": 338.6666666666667,
+      "y": 304.5
+    }
+  ],
+  "edges": [
+    {
+      "id": "e0",
+      "labels": [
+        {
+          "id": "",
+          "text": "9",
+          "width": 4,
+          "height": 6,
+          "x": 470.5,
+          "y": 703,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$procdff$40.Q"
+      ],
+      "targets": [
+        "$add$input.v:17$3.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e0_s0",
+          "startPoint": {
+            "x": 113,
+            "y": 140.5
+          },
+          "endPoint": {
+            "x": 190.66666666666666,
+            "y": 140.5
+          },
+          "incomingShape": "$procdff$40.Q",
+          "outgoingShape": "$add$input.v:17$3.A"
+        }
+      ]
+    },
+    {
+      "id": "e1",
+      "labels": [
+        {
+          "id": "",
+          "text": "9",
+          "width": 4,
+          "height": 6,
+          "x": 470.5,
+          "y": 703,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$procdff$40.Q"
+      ],
+      "targets": [
+        "$procmux$36.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e1_s0",
+          "startPoint": {
+            "x": 113,
+            "y": 140.5
+          },
+          "endPoint": {
+            "x": 559,
+            "y": 336
+          },
+          "bendPoints": [
+            {
+              "x": 123,
+              "y": 140.5
+            },
+            {
+              "x": 123,
+              "y": 236.5
+            },
+            {
+              "x": 380,
+              "y": 236.5
+            },
+            {
+              "x": 380,
+              "y": 336
+            }
+          ],
+          "incomingShape": "$procdff$40.Q",
+          "outgoingShape": "$procmux$36.A"
+        }
+      ],
+      "junctionPoints": [
+        {
+          "x": 123,
+          "y": 140.5
+        },
+        {
+          "x": 123,
+          "y": 236.5
+        }
+      ]
+    },
+    {
+      "id": "e2",
+      "labels": [
+        {
+          "id": "",
+          "text": "9",
+          "width": 4,
+          "height": 6,
+          "x": 470.5,
+          "y": 703,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$procdff$40.Q"
+      ],
+      "targets": [
+        "$sub$input.v:16$2.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e2_s0",
+          "startPoint": {
+            "x": 113,
+            "y": 140.5
+          },
+          "endPoint": {
+            "x": 190.66666666666666,
+            "y": 317.5
+          },
+          "bendPoints": [
+            {
+              "x": 123,
+              "y": 140.5
+            },
+            {
+              "x": 123,
+              "y": 317.5
+            }
+          ],
+          "incomingShape": "$procdff$40.Q",
+          "outgoingShape": "$sub$input.v:16$2.A"
+        }
+      ],
+      "junctionPoints": [
+        {
+          "x": 123,
+          "y": 317.5
+        }
+      ]
+    },
+    {
+      "id": "e3",
+      "labels": [
+        {
+          "id": "",
+          "text": "9",
+          "width": 4,
+          "height": 6,
+          "x": 470.5,
+          "y": 703,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$procdff$40.Q"
+      ],
+      "targets": [
+        "count_out.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e3_s0",
+          "startPoint": {
+            "x": 113,
+            "y": 140.5
+          },
+          "endPoint": {
+            "x": 793.5,
+            "y": 707
+          },
+          "bendPoints": [
+            {
+              "x": 123,
+              "y": 140.5
+            },
+            {
+              "x": 123,
+              "y": 707
+            }
+          ],
+          "incomingShape": "$procdff$40.Q",
+          "outgoingShape": "count_out.A"
+        }
+      ]
+    },
+    {
+      "id": "e4",
+      "labels": [
+        {
+          "id": "",
+          "text": "2",
+          "width": 4,
+          "height": 6,
+          "x": 148,
+          "y": 156.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "11.Y"
+      ],
+      "targets": [
+        "$add$input.v:17$3.B"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e4_s0",
+          "startPoint": {
+            "x": 113,
+            "y": 85.5
+          },
+          "endPoint": {
+            "x": 190.66666666666666,
+            "y": 155.5
+          },
+          "bendPoints": [
+            {
+              "x": 133,
+              "y": 85.5
+            },
+            {
+              "x": 133,
+              "y": 160.5
+            },
+            {
+              "x": 162,
+              "y": 160.5
+            },
+            {
+              "x": 162,
+              "y": 155.5
+            }
+          ],
+          "incomingShape": "11.Y",
+          "outgoingShape": "$add$input.v:17$3.B"
+        }
+      ]
+    },
+    {
+      "id": "e5",
+      "sources": [
+        "up.Y"
+      ],
+      "targets": [
+        "$and$input.v:28$5.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e5_s0",
+          "startPoint": {
+            "x": 217,
+            "y": 215.5
+          },
+          "endPoint": {
+            "x": 659.5,
+            "y": 24.5
+          },
+          "bendPoints": [
+            {
+              "x": 227,
+              "y": 215.5
+            },
+            {
+              "x": 227,
+              "y": 24.5
+            }
+          ],
+          "incomingShape": "up.Y",
+          "outgoingShape": "$and$input.v:28$5.A"
+        }
+      ],
+      "junctionPoints": [
+        {
+          "x": 227,
+          "y": 215.5
+        }
+      ]
+    },
+    {
+      "id": "e6",
+      "sources": [
+        "up.Y"
+      ],
+      "targets": [
+        "$join$,13,12,.1"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e6_s0",
+          "startPoint": {
+            "x": 217,
+            "y": 215.5
+          },
+          "endPoint": {
+            "x": 263.33333333333337,
+            "y": 463.5
+          },
+          "bendPoints": [
+            {
+              "x": 227,
+              "y": 215.5
+            },
+            {
+              "x": 227,
+              "y": 463.5
+            }
+          ],
+          "incomingShape": "up.Y",
+          "outgoingShape": "$join$,13,12,.1"
+        }
+      ]
+    },
+    {
+      "id": "e7",
+      "sources": [
+        "$split$,26,27,28,29,30,31,32,33,34,35,.9"
+      ],
+      "targets": [
+        "$and$input.v:28$5.B"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e7_s0",
+          "startPoint": {
+            "x": 343.6666666666667,
+            "y": 138
+          },
+          "endPoint": {
+            "x": 659.5,
+            "y": 39.5
+          },
+          "bendPoints": [
+            {
+              "x": 370,
+              "y": 138
+            },
+            {
+              "x": 370,
+              "y": 39.5
+            }
+          ],
+          "incomingShape": "$split$,26,27,28,29,30,31,32,33,34,35,.9",
+          "outgoingShape": "$and$input.v:28$5.B"
+        }
+      ]
+    },
+    {
+      "id": "e8",
+      "sources": [
+        "down.Y"
+      ],
+      "targets": [
+        "$and$input.v:29$6.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e8_s0",
+          "startPoint": {
+            "x": 217,
+            "y": 267.5
+          },
+          "endPoint": {
+            "x": 659.5,
+            "y": 99.5
+          },
+          "bendPoints": [
+            {
+              "x": 237,
+              "y": 267.5
+            },
+            {
+              "x": 237,
+              "y": 99.5
+            }
+          ],
+          "incomingShape": "down.Y",
+          "outgoingShape": "$and$input.v:29$6.A"
+        }
+      ],
+      "junctionPoints": [
+        {
+          "x": 237,
+          "y": 267.5
+        }
+      ]
+    },
+    {
+      "id": "e9",
+      "sources": [
+        "down.Y"
+      ],
+      "targets": [
+        "$join$,13,12,.0"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e9_s0",
+          "startPoint": {
+            "x": 217,
+            "y": 267.5
+          },
+          "endPoint": {
+            "x": 263.33333333333337,
+            "y": 443.5
+          },
+          "bendPoints": [
+            {
+              "x": 237,
+              "y": 267.5
+            },
+            {
+              "x": 237,
+              "y": 443.5
+            }
+          ],
+          "incomingShape": "down.Y",
+          "outgoingShape": "$join$,13,12,.0"
+        }
+      ]
+    },
+    {
+      "id": "e10",
+      "sources": [
+        "$split$,49,50,51,52,53,54,55,56,57,37,.9"
+      ],
+      "targets": [
+        "$and$input.v:29$6.B"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e10_s0",
+          "startPoint": {
+            "x": 343.6666666666667,
+            "y": 315
+          },
+          "endPoint": {
+            "x": 659.5,
+            "y": 114.5
+          },
+          "bendPoints": [
+            {
+              "x": 633.5,
+              "y": 315
+            },
+            {
+              "x": 633.5,
+              "y": 114.5
+            }
+          ],
+          "incomingShape": "$split$,49,50,51,52,53,54,55,56,57,37,.9",
+          "outgoingShape": "$and$input.v:29$6.B"
+        }
+      ]
+    },
+    {
+      "id": "e11",
+      "sources": [
+        "clock.Y"
+      ],
+      "targets": [
+        "$procdff$40.CLK"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e11_s0",
+          "startPoint": {
+            "x": 42,
+            "y": 54.5
+          },
+          "endPoint": {
+            "x": 77,
+            "y": 160.5
+          },
+          "bendPoints": [
+            {
+              "x": 62,
+              "y": 54.5
+            },
+            {
+              "x": 62,
+              "y": 160.5
+            }
+          ],
+          "incomingShape": "clock.Y",
+          "outgoingShape": "$procdff$40.CLK"
+        }
+      ],
+      "junctionPoints": [
+        {
+          "x": 62,
+          "y": 54.5
+        },
+        {
+          "x": 62,
+          "y": 160.5
+        }
+      ]
+    },
+    {
+      "id": "e12",
+      "sources": [
+        "clock.Y"
+      ],
+      "targets": [
+        "$procdff$41.CLK"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e12_s0",
+          "startPoint": {
+            "x": 42,
+            "y": 54.5
+          },
+          "endPoint": {
+            "x": 726.5,
+            "y": 52
+          },
+          "bendPoints": [
+            {
+              "x": 701.5,
+              "y": 54.5
+            },
+            {
+              "x": 701.5,
+              "y": 52
+            }
+          ],
+          "incomingShape": "clock.Y",
+          "outgoingShape": "$procdff$41.CLK"
+        }
+      ]
+    },
+    {
+      "id": "e13",
+      "sources": [
+        "clock.Y"
+      ],
+      "targets": [
+        "$procdff$42.CLK"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e13_s0",
+          "startPoint": {
+            "x": 42,
+            "y": 54.5
+          },
+          "endPoint": {
+            "x": 726.5,
+            "y": 127
+          },
+          "bendPoints": [
+            {
+              "x": 62,
+              "y": 54.5
+            },
+            {
+              "x": 62,
+              "y": 618.5
+            },
+            {
+              "x": 701.5,
+              "y": 618.5
+            },
+            {
+              "x": 701.5,
+              "y": 127
+            }
+          ],
+          "incomingShape": "clock.Y",
+          "outgoingShape": "$procdff$42.CLK"
+        }
+      ],
+      "junctionPoints": [
+        {
+          "x": 62,
+          "y": 618.5
+        }
+      ]
+    },
+    {
+      "id": "e14",
+      "sources": [
+        "clock.Y"
+      ],
+      "targets": [
+        "$procdff$43.CLK"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e14_s0",
+          "startPoint": {
+            "x": 42,
+            "y": 54.5
+          },
+          "endPoint": {
+            "x": 726.5,
+            "y": 662
+          },
+          "bendPoints": [
+            {
+              "x": 62,
+              "y": 54.5
+            },
+            {
+              "x": 62,
+              "y": 664.5
+            },
+            {
+              "x": 701.5,
+              "y": 664.5
+            },
+            {
+              "x": 701.5,
+              "y": 662
+            }
+          ],
+          "incomingShape": "clock.Y",
+          "outgoingShape": "$procdff$43.CLK"
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "labels": [
+        {
+          "id": "",
+          "text": "9",
+          "width": 4,
+          "height": 6,
+          "x": 619.5,
+          "y": 630.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$procmux$36.Y"
+      ],
+      "targets": [
+        "$procdff$40.D"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e15_s0",
+          "startPoint": {
+            "x": 584.5,
+            "y": 346
+          },
+          "endPoint": {
+            "x": 77,
+            "y": 140.5
+          },
+          "bendPoints": [
+            {
+              "x": 594.5,
+              "y": 346
+            },
+            {
+              "x": 594.5,
+              "y": 633.5
+            },
+            {
+              "x": 52,
+              "y": 633.5
+            },
+            {
+              "x": 52,
+              "y": 140.5
+            }
+          ],
+          "incomingShape": "$procmux$36.Y",
+          "outgoingShape": "$procdff$40.D"
+        }
+      ],
+      "junctionPoints": [
+        {
+          "x": 594.5,
+          "y": 633.5
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "labels": [
+        {
+          "id": "",
+          "text": "9",
+          "width": 4,
+          "height": 6,
+          "x": 619.5,
+          "y": 630.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$procmux$36.Y"
+      ],
+      "targets": [
+        "$reduce_xor$input.v:27$4.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e16_s0",
+          "startPoint": {
+            "x": 584.5,
+            "y": 346
+          },
+          "endPoint": {
+            "x": 660.5,
+            "y": 634.5
+          },
+          "bendPoints": [
+            {
+              "x": 594.5,
+              "y": 346
+            },
+            {
+              "x": 594.5,
+              "y": 634.5
+            }
+          ],
+          "incomingShape": "$procmux$36.Y",
+          "outgoingShape": "$reduce_xor$input.v:27$4.A"
+        }
+      ]
+    },
+    {
+      "id": "e17",
+      "sources": [
+        "$and$input.v:28$5.Y"
+      ],
+      "targets": [
+        "$procdff$41.D"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e17_s0",
+          "startPoint": {
+            "x": 689.5,
+            "y": 32
+          },
+          "endPoint": {
+            "x": 726.5,
+            "y": 32
+          },
+          "incomingShape": "$and$input.v:28$5.Y",
+          "outgoingShape": "$procdff$41.D"
+        }
+      ]
+    },
+    {
+      "id": "e18",
+      "sources": [
+        "$and$input.v:29$6.Y"
+      ],
+      "targets": [
+        "$procdff$42.D"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e18_s0",
+          "startPoint": {
+            "x": 689.5,
+            "y": 107
+          },
+          "endPoint": {
+            "x": 726.5,
+            "y": 107
+          },
+          "incomingShape": "$and$input.v:29$6.Y",
+          "outgoingShape": "$procdff$42.D"
+        }
+      ]
+    },
+    {
+      "id": "e19",
+      "sources": [
+        "$reduce_xor$input.v:27$4.Y"
+      ],
+      "targets": [
+        "$procdff$43.D"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e19_s0",
+          "startPoint": {
+            "x": 691.5,
+            "y": 642
+          },
+          "endPoint": {
+            "x": 726.5,
+            "y": 642
+          },
+          "incomingShape": "$reduce_xor$input.v:27$4.Y",
+          "outgoingShape": "$procdff$43.D"
+        }
+      ]
+    },
+    {
+      "id": "e20",
+      "labels": [
+        {
+          "id": "",
+          "text": "27",
+          "width": 4,
+          "height": 6,
+          "x": 520,
+          "y": 363.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.Y"
+      ],
+      "targets": [
+        "$procmux$36.B"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e20_s0",
+          "startPoint": {
+            "x": 485,
+            "y": 367.5
+          },
+          "endPoint": {
+            "x": 559,
+            "y": 356
+          },
+          "bendPoints": [
+            {
+              "x": 534,
+              "y": 367.5
+            },
+            {
+              "x": 534,
+              "y": 356
+            }
+          ],
+          "incomingShape": "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.Y",
+          "outgoingShape": "$procmux$36.B"
+        }
+      ]
+    },
+    {
+      "id": "e21",
+      "labels": [
+        {
+          "id": "",
+          "text": "3",
+          "width": 4,
+          "height": 6,
+          "x": 520,
+          "y": 507,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$join$,58,59,60,.Y"
+      ],
+      "targets": [
+        "$procmux$36.S"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e21_s0",
+          "startPoint": {
+            "x": 480.75,
+            "y": 511
+          },
+          "endPoint": {
+            "x": 572,
+            "y": 364
+          },
+          "bendPoints": [
+            {
+              "x": 572,
+              "y": 511
+            }
+          ],
+          "incomingShape": "$join$,58,59,60,.Y",
+          "outgoingShape": "$procmux$36.S"
+        }
+      ]
+    },
+    {
+      "id": "e22",
+      "labels": [
+        {
+          "id": "",
+          "text": "2",
+          "width": 4,
+          "height": 6,
+          "x": 337,
+          "y": 569.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$join$,13,12,.Y"
+      ],
+      "targets": [
+        "$procmux$37_CMP0.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e22_s0",
+          "startPoint": {
+            "x": 269.33333333333337,
+            "y": 453.5
+          },
+          "endPoint": {
+            "x": 402,
+            "y": 453.5
+          },
+          "incomingShape": "$join$,13,12,.Y",
+          "outgoingShape": "$procmux$37_CMP0.A"
+        }
+      ]
+    },
+    {
+      "id": "e23",
+      "labels": [
+        {
+          "id": "",
+          "text": "2",
+          "width": 4,
+          "height": 6,
+          "x": 337,
+          "y": 569.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$join$,13,12,.Y"
+      ],
+      "targets": [
+        "$procmux$38_CMP0.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e23_s0",
+          "startPoint": {
+            "x": 269.33333333333337,
+            "y": 453.5
+          },
+          "endPoint": {
+            "x": 402,
+            "y": 513.5
+          },
+          "bendPoints": [
+            {
+              "x": 293,
+              "y": 453.5
+            },
+            {
+              "x": 293,
+              "y": 513.5
+            }
+          ],
+          "incomingShape": "$join$,13,12,.Y",
+          "outgoingShape": "$procmux$38_CMP0.A"
+        }
+      ],
+      "junctionPoints": [
+        {
+          "x": 293,
+          "y": 453.5
+        },
+        {
+          "x": 293,
+          "y": 513.5
+        }
+      ]
+    },
+    {
+      "id": "e24",
+      "labels": [
+        {
+          "id": "",
+          "text": "2",
+          "width": 4,
+          "height": 6,
+          "x": 337,
+          "y": 569.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$join$,13,12,.Y"
+      ],
+      "targets": [
+        "$procmux$39_CMP0.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e24_s0",
+          "startPoint": {
+            "x": 269.33333333333337,
+            "y": 453.5
+          },
+          "endPoint": {
+            "x": 402,
+            "y": 573.5
+          },
+          "bendPoints": [
+            {
+              "x": 293,
+              "y": 453.5
+            },
+            {
+              "x": 293,
+              "y": 573.5
+            }
+          ],
+          "incomingShape": "$join$,13,12,.Y",
+          "outgoingShape": "$procmux$39_CMP0.A"
+        }
+      ]
+    },
+    {
+      "id": "e25",
+      "labels": [
+        {
+          "id": "",
+          "text": "2",
+          "width": 4,
+          "height": 6,
+          "x": 337,
+          "y": 469.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "10.Y"
+      ],
+      "targets": [
+        "$procmux$37_CMP0.B"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e25_s0",
+          "startPoint": {
+            "x": 283,
+            "y": 386
+          },
+          "endPoint": {
+            "x": 402,
+            "y": 468.5
+          },
+          "bendPoints": [
+            {
+              "x": 303,
+              "y": 386
+            },
+            {
+              "x": 303,
+              "y": 473.5
+            },
+            {
+              "x": 370,
+              "y": 473.5
+            },
+            {
+              "x": 370,
+              "y": 468.5
+            }
+          ],
+          "incomingShape": "10.Y",
+          "outgoingShape": "$procmux$37_CMP0.B"
+        }
+      ]
+    },
+    {
+      "id": "e26",
+      "labels": [
+        {
+          "id": "",
+          "text": "2",
+          "width": 4,
+          "height": 6,
+          "x": 337,
+          "y": 529.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "01.Y"
+      ],
+      "targets": [
+        "$procmux$38_CMP0.B"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e26_s0",
+          "startPoint": {
+            "x": 283,
+            "y": 533.5
+          },
+          "endPoint": {
+            "x": 402,
+            "y": 528.5
+          },
+          "bendPoints": [
+            {
+              "x": 370,
+              "y": 533.5
+            },
+            {
+              "x": 370,
+              "y": 528.5
+            }
+          ],
+          "incomingShape": "01.Y",
+          "outgoingShape": "$procmux$38_CMP0.B"
+        }
+      ]
+    },
+    {
+      "id": "e27",
+      "labels": [
+        {
+          "id": "",
+          "text": "2",
+          "width": 4,
+          "height": 6,
+          "x": 337,
+          "y": 594.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "00.Y"
+      ],
+      "targets": [
+        "$procmux$39_CMP0.B"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e27_s0",
+          "startPoint": {
+            "x": 283,
+            "y": 598.5
+          },
+          "endPoint": {
+            "x": 402,
+            "y": 588.5
+          },
+          "bendPoints": [
+            {
+              "x": 370,
+              "y": 598.5
+            },
+            {
+              "x": 370,
+              "y": 588.5
+            }
+          ],
+          "incomingShape": "00.Y",
+          "outgoingShape": "$procmux$39_CMP0.B"
+        }
+      ]
+    },
+    {
+      "id": "e28",
+      "labels": [
+        {
+          "id": "",
+          "text": "3",
+          "width": 4,
+          "height": 6,
+          "x": 148,
+          "y": 333.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "101.Y"
+      ],
+      "targets": [
+        "$sub$input.v:16$2.B"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e28_s0",
+          "startPoint": {
+            "x": 113,
+            "y": 337.5
+          },
+          "endPoint": {
+            "x": 190.66666666666666,
+            "y": 332.5
+          },
+          "bendPoints": [
+            {
+              "x": 162,
+              "y": 337.5
+            },
+            {
+              "x": 162,
+              "y": 332.5
+            }
+          ],
+          "incomingShape": "101.Y",
+          "outgoingShape": "$sub$input.v:16$2.B"
+        }
+      ]
+    },
+    {
+      "id": "e29",
+      "sources": [
+        "$procdff$41.Q"
+      ],
+      "targets": [
+        "carry_out.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e29_s0",
+          "startPoint": {
+            "x": 758.5,
+            "y": 32
+          },
+          "endPoint": {
+            "x": 793.5,
+            "y": 32
+          },
+          "incomingShape": "$procdff$41.Q",
+          "outgoingShape": "carry_out.A"
+        }
+      ]
+    },
+    {
+      "id": "e30",
+      "sources": [
+        "$procdff$42.Q"
+      ],
+      "targets": [
+        "borrow_out.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e30_s0",
+          "startPoint": {
+            "x": 758.5,
+            "y": 107
+          },
+          "endPoint": {
+            "x": 793.5,
+            "y": 107
+          },
+          "incomingShape": "$procdff$42.Q",
+          "outgoingShape": "borrow_out.A"
+        }
+      ]
+    },
+    {
+      "id": "e31",
+      "sources": [
+        "$procdff$43.Q"
+      ],
+      "targets": [
+        "parity_out.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e31_s0",
+          "startPoint": {
+            "x": 758.5,
+            "y": 642
+          },
+          "endPoint": {
+            "x": 793.5,
+            "y": 642
+          },
+          "incomingShape": "$procdff$43.Q",
+          "outgoingShape": "parity_out.A"
+        }
+      ]
+    },
+    {
+      "id": "e32",
+      "labels": [
+        {
+          "id": "",
+          "text": "9",
+          "width": 4,
+          "height": 6,
+          "x": 410.5,
+          "y": 347,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$split$,26,27,28,29,30,31,32,33,34,35,.0:8"
+      ],
+      "targets": [
+        "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.0:8"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e32_s0",
+          "startPoint": {
+            "x": 343.6666666666667,
+            "y": 158
+          },
+          "endPoint": {
+            "x": 479,
+            "y": 357.5
+          },
+          "bendPoints": [
+            {
+              "x": 390,
+              "y": 158
+            },
+            {
+              "x": 390,
+              "y": 351
+            },
+            {
+              "x": 435,
+              "y": 351
+            },
+            {
+              "x": 435,
+              "y": 357.5
+            }
+          ],
+          "incomingShape": "$split$,26,27,28,29,30,31,32,33,34,35,.0:8",
+          "outgoingShape": "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.0:8"
+        }
+      ]
+    },
+    {
+      "id": "e33",
+      "labels": [
+        {
+          "id": "",
+          "text": "9",
+          "width": 4,
+          "height": 6,
+          "x": 410.5,
+          "y": 373.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$split$,49,50,51,52,53,54,55,56,57,37,.0:8"
+      ],
+      "targets": [
+        "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.9:17"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e33_s0",
+          "startPoint": {
+            "x": 343.6666666666667,
+            "y": 335
+          },
+          "endPoint": {
+            "x": 479,
+            "y": 377.5
+          },
+          "bendPoints": [
+            {
+              "x": 370,
+              "y": 335
+            },
+            {
+              "x": 370,
+              "y": 377.5
+            }
+          ],
+          "incomingShape": "$split$,49,50,51,52,53,54,55,56,57,37,.0:8",
+          "outgoingShape": "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.9:17"
+        }
+      ]
+    },
+    {
+      "id": "e34",
+      "labels": [
+        {
+          "id": "",
+          "text": "9",
+          "width": 4,
+          "height": 6,
+          "x": 410.5,
+          "y": 395.5,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "data_in.Y"
+      ],
+      "targets": [
+        "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.18:26"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e34_s0",
+          "startPoint": {
+            "x": 348,
+            "y": 399.5
+          },
+          "endPoint": {
+            "x": 479,
+            "y": 397.5
+          },
+          "bendPoints": [
+            {
+              "x": 435,
+              "y": 399.5
+            },
+            {
+              "x": 435,
+              "y": 397.5
+            }
+          ],
+          "incomingShape": "data_in.Y",
+          "outgoingShape": "$join$,26,27,28,29,30,31,32,33,34,49,50,51,52,53,54,55,56,57,3,4,5,6,7,8,9,10,11,.18:26"
+        }
+      ]
+    },
+    {
+      "id": "e35",
+      "sources": [
+        "$procmux$37_CMP0.Y"
+      ],
+      "targets": [
+        "$join$,58,59,60,.0"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e35_s0",
+          "startPoint": {
+            "x": 425,
+            "y": 461
+          },
+          "endPoint": {
+            "x": 474.75,
+            "y": 501
+          },
+          "bendPoints": [
+            {
+              "x": 435,
+              "y": 461
+            },
+            {
+              "x": 435,
+              "y": 501
+            }
+          ],
+          "incomingShape": "$procmux$37_CMP0.Y",
+          "outgoingShape": "$join$,58,59,60,.0"
+        }
+      ]
+    },
+    {
+      "id": "e36",
+      "sources": [
+        "$procmux$38_CMP0.Y"
+      ],
+      "targets": [
+        "$join$,58,59,60,.1"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e36_s0",
+          "startPoint": {
+            "x": 425,
+            "y": 521
+          },
+          "endPoint": {
+            "x": 474.75,
+            "y": 521
+          },
+          "incomingShape": "$procmux$38_CMP0.Y",
+          "outgoingShape": "$join$,58,59,60,.1"
+        }
+      ]
+    },
+    {
+      "id": "e37",
+      "sources": [
+        "$procmux$39_CMP0.Y"
+      ],
+      "targets": [
+        "$join$,58,59,60,.2"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 1
+      },
+      "sections": [
+        {
+          "id": "e37_s0",
+          "startPoint": {
+            "x": 425,
+            "y": 581
+          },
+          "endPoint": {
+            "x": 474.75,
+            "y": 541
+          },
+          "bendPoints": [
+            {
+              "x": 435,
+              "y": 581
+            },
+            {
+              "x": 435,
+              "y": 541
+            }
+          ],
+          "incomingShape": "$procmux$39_CMP0.Y",
+          "outgoingShape": "$join$,58,59,60,.2"
+        }
+      ]
+    },
+    {
+      "id": "e38",
+      "labels": [
+        {
+          "id": "",
+          "text": "10",
+          "width": 4,
+          "height": 6,
+          "x": 265.5,
+          "y": 144,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$add$input.v:17$3.Y"
+      ],
+      "targets": [
+        "$split$,26,27,28,29,30,31,32,33,34,35,.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e38_s0",
+          "startPoint": {
+            "x": 214.66666666666666,
+            "y": 148
+          },
+          "endPoint": {
+            "x": 338.6666666666667,
+            "y": 148
+          },
+          "incomingShape": "$add$input.v:17$3.Y",
+          "outgoingShape": "$split$,26,27,28,29,30,31,32,33,34,35,.A"
+        }
+      ]
+    },
+    {
+      "id": "e39",
+      "labels": [
+        {
+          "id": "",
+          "text": "10",
+          "width": 4,
+          "height": 6,
+          "x": 265.5,
+          "y": 321,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.inline": true
+          }
+        }
+      ],
+      "sources": [
+        "$sub$input.v:16$2.Y"
+      ],
+      "targets": [
+        "$split$,49,50,51,52,53,54,55,56,57,37,.A"
+      ],
+      "layoutOptions": {
+        "org.eclipse.elk.layered.priority.direction": 10,
+        "org.eclipse.elk.edge.thickness": 2
+      },
+      "sections": [
+        {
+          "id": "e39_s0",
+          "startPoint": {
+            "x": 213.66666666666666,
+            "y": 325
+          },
+          "endPoint": {
+            "x": 338.6666666666667,
+            "y": 325
+          },
+          "incomingShape": "$sub$input.v:16$2.Y",
+          "outgoingShape": "$split$,49,50,51,52,53,54,55,56,57,37,.A"
+        }
+      ]
+    }
+  ],
+  "$H": 13,
+  "x": 0,
+  "y": 0,
+  "width": 865.5,
+  "height": 729
+}

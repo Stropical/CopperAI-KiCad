@@ -1,0 +1,21 @@
+{
+  "block_type": "opamp_noninverting",
+  "components": [
+    { "id": "U1", "kind": "opamp_ic", "pins": ["IN+", "IN-", "OUT", "V+", "V-"] },
+    { "id": "RF", "kind": "feedback_resistor", "pins": ["1", "2"], "value": "100k" },
+    { "id": "RG", "kind": "gain_resistor", "pins": ["1", "2"], "value": "10k" },
+    { "id": "C1", "kind": "bypass_cap", "pins": ["1", "2"], "value": "100nF" }
+  ],
+  "nets": [
+    { "name": "IN+", "members": ["U1.IN+"] },
+    { "name": "OUT", "members": ["U1.OUT", "RF.1"] },
+    { "name": "FB_NET", "members": ["RF.2", "RG.1", "U1.IN-"] },
+    { "name": "GND", "members": ["RG.2", "U1.V-", "C1.2"] },
+    { "name": "VCC", "members": ["U1.V+", "C1.1"] }
+  ],
+  "constraints": {
+    "flow": "left_to_right",
+    "power_top_ground_bottom": true,
+    "compact_feedback_loop": false
+  }
+}

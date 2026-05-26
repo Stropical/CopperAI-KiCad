@@ -1,0 +1,17 @@
+{
+    "curriculum_id": "default_v1",
+    "name": "SchematicGym Default Curriculum",
+    "levels": [
+        {"level": 1, "scenario": "01_place_resistor.json", "pass_threshold": 0.8},
+        {"level": 2, "scenario": "02_passive_network.json", "pass_threshold": 0.8},
+        {"level": 3, "scenario": "03_connect_two_pins.json", "pass_threshold": 0.85},
+        {"level": 4, "scenario": "04_orthogonal_network.json", "pass_threshold": 0.85},
+        {"level": 5, "scenario": "05_avoid_crossings.json", "pass_threshold": 0.8},
+        {"level": 6, "scenario": "06_power_ground.json", "pass_threshold": 0.85},
+        {"level": 7, "scenario": "07_label_nets.json", "pass_threshold": 0.8},
+        {"level": 8, "scenario": "08_organize_block.json", "pass_threshold": 0.75},
+        {"level": 9, "scenario": "09_regulator_schematic.json", "pass_threshold": 0.8},
+        {"level": 10, "scenario": "10_multi_block.json", "pass_threshold": 0.75}
+    ],
+    "advancement_policy": "pass_once"
+}

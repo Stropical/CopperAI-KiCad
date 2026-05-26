@@ -1,0 +1,81 @@
+{
+  "scenario_id": "cleanup_regulator",
+  "name": "Cleanup Voltage Regulator",
+  "description": "LM7805 with input capacitor C1 and output capacitor C2, pre-wired but messy: components are misaligned and wires have unnecessary bends. Rearrange for readability without breaking connectivity.",
+  "sheet": {
+    "width": 297,
+    "height": 210,
+    "paper": "A4"
+  },
+  "symbol_catalog": [
+    "LM7805",
+    "Device:C"
+  ],
+  "initial_state": {
+    "instances": [
+      {
+        "symbol_id": "LM7805",
+        "reference": "U1",
+        "value": "LM7805",
+        "x": 148.0,
+        "y": 100.0,
+        "rotation": 0
+      },
+      {
+        "symbol_id": "Device:C",
+        "reference": "C1",
+        "value": "100nF",
+        "x": 135.0,
+        "y": 108.0,
+        "rotation": 0
+      },
+      {
+        "symbol_id": "Device:C",
+        "reference": "C2",
+        "value": "100nF",
+        "x": 162.0,
+        "y": 105.0,
+        "rotation": 0
+      }
+    ],
+    "wires": [
+      {"x1": 135.0, "y1": 105.46, "x2": 135.0, "y2": 100.0},
+      {"x1": 135.0, "y1": 100.0, "x2": 145.46, "y2": 100.0},
+      {"x1": 150.54, "y1": 100.0, "x2": 155.0, "y2": 100.0},
+      {"x1": 155.0, "y1": 100.0, "x2": 155.0, "y2": 105.0},
+      {"x1": 155.0, "y1": 105.0, "x2": 162.0, "y2": 105.0},
+      {"x1": 162.0, "y1": 105.0, "x2": 162.0, "y2": 102.46},
+      {"x1": 148.0, "y1": 102.54, "x2": 148.0, "y2": 115.0},
+      {"x1": 135.0, "y1": 110.54, "x2": 135.0, "y2": 115.0},
+      {"x1": 135.0, "y1": 115.0, "x2": 148.0, "y2": 115.0},
+      {"x1": 148.0, "y1": 115.0, "x2": 162.0, "y2": 115.0},
+      {"x1": 162.0, "y1": 107.54, "x2": 162.0, "y2": 115.0}
+    ],
+    "junctions": [
+      {"x": 135.0, "y": 100.0},
+      {"x": 162.0, "y": 105.0},
+      {"x": 148.0, "y": 115.0}
+    ],
+    "labels": [],
+    "power_symbols": [
+      {"symbol_id": "power:VCC", "x": 135.0, "y": 95.0, "rotation": 0},
+      {"symbol_id": "power:GND", "x": 148.0, "y": 120.0, "rotation": 0}
+    ]
+  },
+  "objectives": [
+    {
+      "type": "cleanup",
+      "required_connections": [
+        {"pin_a": "C1.1", "pin_b": "U1.1", "net_name": "VIN"},
+        {"pin_a": "U1.3", "pin_b": "C2.1", "net_name": "VOUT"},
+        {"pin_a": "C1.2", "pin_b": "U1.2", "net_name": "GND"},
+        {"pin_a": "C2.2", "pin_b": "U1.2", "net_name": "GND"}
+      ],
+      "target_readability": 0.6,
+      "step_budget": 50
+    }
+  ],
+  "net_names": ["VIN", "VOUT", "GND"],
+  "scoring_overrides": {},
+  "curriculum_level": 4
+}

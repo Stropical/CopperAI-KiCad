@@ -1,0 +1,239 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="585" height="606" viewBox="0 0 585 606">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="1" dy="1" stdDeviation="1.5" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+  <rect width="585" height="606" fill="#FFFFFF"/>
+  <line x1="50.0" y1="0" x2="50.0" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="60.2" y1="0" x2="60.2" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="70.3" y1="0" x2="70.3" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="80.5" y1="0" x2="80.5" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="90.6" y1="0" x2="90.6" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="100.8" y1="0" x2="100.8" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="111.0" y1="0" x2="111.0" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="121.1" y1="0" x2="121.1" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="131.3" y1="0" x2="131.3" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="141.4" y1="0" x2="141.4" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="151.6" y1="0" x2="151.6" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="161.8" y1="0" x2="161.8" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="171.9" y1="0" x2="171.9" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="182.1" y1="0" x2="182.1" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="192.2" y1="0" x2="192.2" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="202.4" y1="0" x2="202.4" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="212.6" y1="0" x2="212.6" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="222.7" y1="0" x2="222.7" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="232.9" y1="0" x2="232.9" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="243.0" y1="0" x2="243.0" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="253.2" y1="0" x2="253.2" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="263.4" y1="0" x2="263.4" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="273.5" y1="0" x2="273.5" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="283.7" y1="0" x2="283.7" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="293.8" y1="0" x2="293.8" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="304.0" y1="0" x2="304.0" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="314.2" y1="0" x2="314.2" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="324.3" y1="0" x2="324.3" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="334.5" y1="0" x2="334.5" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="344.6" y1="0" x2="344.6" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="354.8" y1="0" x2="354.8" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="365.0" y1="0" x2="365.0" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="375.1" y1="0" x2="375.1" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="385.3" y1="0" x2="385.3" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="395.4" y1="0" x2="395.4" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="405.6" y1="0" x2="405.6" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="415.8" y1="0" x2="415.8" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="425.9" y1="0" x2="425.9" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="436.1" y1="0" x2="436.1" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="446.2" y1="0" x2="446.2" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="456.4" y1="0" x2="456.4" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="466.6" y1="0" x2="466.6" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="476.7" y1="0" x2="476.7" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="486.9" y1="0" x2="486.9" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="497.0" y1="0" x2="497.0" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="507.2" y1="0" x2="507.2" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="517.4" y1="0" x2="517.4" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="527.5" y1="0" x2="527.5" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="537.7" y1="0" x2="537.7" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="547.8" y1="0" x2="547.8" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="558.0" y1="0" x2="558.0" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="568.2" y1="0" x2="568.2" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="578.3" y1="0" x2="578.3" y2="606" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="50.0" x2="585" y2="50.0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="60.2" x2="585" y2="60.2" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="70.3" x2="585" y2="70.3" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="80.5" x2="585" y2="80.5" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="90.6" x2="585" y2="90.6" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="100.8" x2="585" y2="100.8" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="111.0" x2="585" y2="111.0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="121.1" x2="585" y2="121.1" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="131.3" x2="585" y2="131.3" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="141.4" x2="585" y2="141.4" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="151.6" x2="585" y2="151.6" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="161.8" x2="585" y2="161.8" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="171.9" x2="585" y2="171.9" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="182.1" x2="585" y2="182.1" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="192.2" x2="585" y2="192.2" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="202.4" x2="585" y2="202.4" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="212.6" x2="585" y2="212.6" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="222.7" x2="585" y2="222.7" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="232.9" x2="585" y2="232.9" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="243.0" x2="585" y2="243.0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="253.2" x2="585" y2="253.2" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="263.4" x2="585" y2="263.4" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="273.5" x2="585" y2="273.5" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="283.7" x2="585" y2="283.7" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="293.8" x2="585" y2="293.8" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="304.0" x2="585" y2="304.0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="314.2" x2="585" y2="314.2" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="324.3" x2="585" y2="324.3" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="334.5" x2="585" y2="334.5" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="344.6" x2="585" y2="344.6" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="354.8" x2="585" y2="354.8" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="365.0" x2="585" y2="365.0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="375.1" x2="585" y2="375.1" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="385.3" x2="585" y2="385.3" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="395.4" x2="585" y2="395.4" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="405.6" x2="585" y2="405.6" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="415.8" x2="585" y2="415.8" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="425.9" x2="585" y2="425.9" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="436.1" x2="585" y2="436.1" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="446.2" x2="585" y2="446.2" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="456.4" x2="585" y2="456.4" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="466.6" x2="585" y2="466.6" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="476.7" x2="585" y2="476.7" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="486.9" x2="585" y2="486.9" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="497.0" x2="585" y2="497.0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="507.2" x2="585" y2="507.2" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="517.4" x2="585" y2="517.4" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="527.5" x2="585" y2="527.5" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="537.7" x2="585" y2="537.7" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="547.8" x2="585" y2="547.8" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="558.0" x2="585" y2="558.0" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="568.2" x2="585" y2="568.2" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="578.3" x2="585" y2="578.3" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="588.5" x2="585" y2="588.5" stroke="#F0F0F0" stroke-width="0.5"/>
+  <line x1="0" y1="598.6" x2="585" y2="598.6" stroke="#F0F0F0" stroke-width="0.5"/>
+  <!-- Wires -->
+  <path d="M 304.0 232.9 L 304.0 232.9" fill="none" stroke="#1A1A2E" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Components -->
+  <g id="ic_U1">
+    <rect x="212.6" y="212.6" width="71.1" height="111.8" fill="#FAFBFC" stroke="#16213E" stroke-width="2.0" rx="3"/>
+    <path d="M 244.1 212.6 A 4 4 0 0 1 252.1 212.6" fill="#FAFBFC" stroke="#16213E" stroke-width="1.5"/>
+    <text x="248.1" y="264.4" font-size="12" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="700" fill="#1A1A2E" text-anchor="middle">U1</text>
+    <line x1="192.2" y1="232.9" x2="212.6" y2="232.9" stroke="#16213E" stroke-width="2.0"/>
+    <circle cx="192.2" cy="232.9" r="1.5" fill="#16213E"/>
+    <text x="220.6" y="236.9" font-size="8" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" fill="#666666" text-anchor="start">VIN</text>
+    <line x1="304.0" y1="232.9" x2="283.7" y2="232.9" stroke="#16213E" stroke-width="2.0"/>
+    <circle cx="304.0" cy="232.9" r="1.5" fill="#16213E"/>
+    <text x="275.7" y="236.9" font-size="8" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" fill="#666666" text-anchor="end">SW</text>
+    <line x1="304.0" y1="304.0" x2="283.7" y2="304.0" stroke="#16213E" stroke-width="2.0"/>
+    <circle cx="304.0" cy="304.0" r="1.5" fill="#16213E"/>
+    <text x="275.7" y="308.0" font-size="8" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" fill="#666666" text-anchor="end">FB</text>
+    <line x1="192.2" y1="263.4" x2="212.6" y2="263.4" stroke="#16213E" stroke-width="2.0"/>
+    <circle cx="192.2" cy="263.4" r="1.5" fill="#16213E"/>
+    <text x="220.6" y="267.4" font-size="8" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" fill="#666666" text-anchor="start">EN</text>
+    <line x1="243.0" y1="344.6" x2="243.0" y2="324.3" stroke="#16213E" stroke-width="2.0"/>
+    <circle cx="243.0" cy="344.6" r="1.5" fill="#16213E"/>
+    <text x="243.0" y="318.3" font-size="8" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" fill="#666666" text-anchor="middle">GND</text>
+    <line x1="304.0" y1="232.9" x2="283.7" y2="232.9" stroke="#16213E" stroke-width="2.0"/>
+    <circle cx="304.0" cy="232.9" r="1.5" fill="#16213E"/>
+    <text x="275.7" y="236.9" font-size="8" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" fill="#666666" text-anchor="end">VOUT</text>
+  </g>
+  <g id="ind_L1">
+    <path d="M 330.8 232.9 A 6.0 6.0 0 0 1 342.8 232.9 A 6.0 6.0 0 0 1 354.8 232.9 A 6.0 6.0 0 0 1 366.8 232.9 A 6.0 6.0 0 0 1 378.8 232.9" fill="none" stroke="#16213E" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="330.8" y1="232.9" x2="304.0" y2="232.9" stroke="#16213E" stroke-width="2.0"/>
+    <line x1="378.8" y1="232.9" x2="405.6" y2="232.9" stroke="#16213E" stroke-width="2.0"/>
+    <text x="354.8" y="214.7" font-size="11" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="600" fill="#1A1A2E" text-anchor="middle">L1</text>
+    <text x="354.8" y="228.7" font-size="10" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" fill="#888888" text-anchor="middle"></text>
+  </g>
+  <g id="cap_CIN">
+    <line x1="165.9" y1="275.6" x2="177.9" y2="275.6" stroke="#16213E" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="165.9" y1="281.6" x2="177.9" y2="281.6" stroke="#16213E" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="171.9" y1="275.6" x2="171.9" y2="232.9" stroke="#16213E" stroke-width="2.0"/>
+    <line x1="171.9" y1="281.6" x2="171.9" y2="324.3" stroke="#16213E" stroke-width="2.0"/>
+    <text x="188.1" y="276.6" font-size="11" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="600" fill="#1A1A2E">CIN</text>
+    <text x="188.1" y="290.6" font-size="10" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" fill="#888888">10uF</text>
+  </g>
+  <g id="cap_COUT">
+    <line x1="336.6" y1="287.8" x2="336.6" y2="299.8" stroke="#16213E" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="342.6" y1="287.8" x2="342.6" y2="299.8" stroke="#16213E" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="336.6" y1="293.8" x2="293.8" y2="293.8" stroke="#16213E" stroke-width="2.0"/>
+    <line x1="342.6" y1="293.8" x2="385.3" y2="293.8" stroke="#16213E" stroke-width="2.0"/>
+    <text x="371.0" y="291.8" font-size="11" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="600" fill="#1A1A2E">COUT</text>
+    <text x="371.0" y="305.8" font-size="10" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" fill="#888888">22uF</text>
+  </g>
+  <g id="res_R_TOP">
+    <rect x="327.6" y="359.0" width="24.0" height="12.0" fill="#FAFBFC" stroke="#16213E" stroke-width="2.0"/>
+    <line x1="327.6" y1="365.0" x2="293.8" y2="365.0" stroke="#16213E" stroke-width="2.0"/>
+    <line x1="351.6" y1="365.0" x2="385.3" y2="365.0" stroke="#16213E" stroke-width="2.0"/>
+    <text x="371.0" y="363.0" font-size="11" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="600" fill="#1A1A2E">R_TOP</text>
+    <text x="371.0" y="377.0" font-size="10" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" fill="#888888">100k</text>
+  </g>
+  <g id="res_R_BOT">
+    <rect x="226.0" y="389.4" width="24.0" height="12.0" fill="#FAFBFC" stroke="#16213E" stroke-width="2.0"/>
+    <line x1="226.0" y1="395.4" x2="192.2" y2="395.4" stroke="#16213E" stroke-width="2.0"/>
+    <line x1="250.0" y1="395.4" x2="283.7" y2="395.4" stroke="#16213E" stroke-width="2.0"/>
+    <text x="269.4" y="393.4" font-size="11" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-weight="600" fill="#1A1A2E">R_BOT</text>
+    <text x="269.4" y="407.4" font-size="10" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" fill="#888888">20k</text>
+  </g>
+  <!-- Power/GND symbols -->
+  <g class="vcc">
+    <line x1="405.6" y1="227.4" x2="405.6" y2="219.4" stroke="#CC3333" stroke-width="2.0"/>
+    <line x1="397.6" y1="219.4" x2="413.6" y2="219.4" stroke="#CC3333" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="405.6" y="214.4" font-size="10" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" font-weight="600" fill="#CC3333" text-anchor="middle">VOUT</text>
+  </g>
+  <g class="vcc">
+    <line x1="294.2" y1="293.4" x2="294.2" y2="285.4" stroke="#CC3333" stroke-width="2.0"/>
+    <line x1="286.2" y1="285.4" x2="302.2" y2="285.4" stroke="#CC3333" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="294.2" y="280.4" font-size="10" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" font-weight="600" fill="#CC3333" text-anchor="middle">VOUT</text>
+  </g>
+  <g class="vcc">
+    <line x1="293.8" y1="344.2" x2="293.8" y2="336.2" stroke="#CC3333" stroke-width="2.0"/>
+    <line x1="285.8" y1="336.2" x2="301.8" y2="336.2" stroke="#CC3333" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="293.8" y="331.2" font-size="10" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" font-weight="600" fill="#CC3333" text-anchor="middle">VOUT</text>
+  </g>
+  <g class="vcc">
+    <line x1="192.7" y1="213.2" x2="192.7" y2="205.2" stroke="#CC3333" stroke-width="2.0"/>
+    <line x1="184.7" y1="205.2" x2="200.7" y2="205.2" stroke="#CC3333" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="192.7" y="200.2" font-size="10" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" font-weight="600" fill="#CC3333" text-anchor="middle">VIN</text>
+  </g>
+  <g class="vcc">
+    <line x1="160.7" y1="213.2" x2="160.7" y2="205.2" stroke="#CC3333" stroke-width="2.0"/>
+    <line x1="152.7" y1="205.2" x2="168.7" y2="205.2" stroke="#CC3333" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="160.7" y="200.2" font-size="10" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" font-weight="600" fill="#CC3333" text-anchor="middle">VIN</text>
+  </g>
+  <g class="gnd">
+    <line x1="243.0" y1="364.3" x2="243.0" y2="372.3" stroke="#333333" stroke-width="2.0"/>
+    <line x1="235.0" y1="372.3" x2="251.0" y2="372.3" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="238.0" y1="376.3" x2="248.0" y2="376.3" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="241.0" y1="380.3" x2="245.0" y2="380.3" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+  </g>
+  <g class="gnd">
+    <line x1="171.9" y1="344.0" x2="171.9" y2="352.0" stroke="#333333" stroke-width="2.0"/>
+    <line x1="163.9" y1="352.0" x2="179.9" y2="352.0" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="166.9" y1="356.0" x2="176.9" y2="356.0" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="169.9" y1="360.0" x2="173.9" y2="360.0" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+  </g>
+  <g class="gnd">
+    <line x1="385.3" y1="299.4" x2="385.3" y2="307.4" stroke="#333333" stroke-width="2.0"/>
+    <line x1="377.3" y1="307.4" x2="393.3" y2="307.4" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="380.3" y1="311.4" x2="390.3" y2="311.4" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="383.3" y1="315.4" x2="387.3" y2="315.4" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+  </g>
+  <g class="gnd">
+    <line x1="283.7" y1="416.2" x2="283.7" y2="424.2" stroke="#333333" stroke-width="2.0"/>
+    <line x1="275.7" y1="424.2" x2="291.7" y2="424.2" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="278.7" y1="428.2" x2="288.7" y2="428.2" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="281.7" y1="432.2" x2="285.7" y2="432.2" stroke="#333333" stroke-width="2.0" stroke-linecap="round"/>
+  </g>
+  <!-- Net labels -->
+  <g class="net-label">
+    <polygon points="156.4,387.4 185.9,387.4 191.9,395.4 185.9,403.4 156.4,403.4" fill="#E8F4E8" stroke="#2D6A2D" stroke-width="1.2"/>
+    <text x="161.4" y="399.4" font-size="10" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" font-weight="600" fill="#1A4D1A" text-anchor="start">FB</text>
+  </g>
+  <g class="net-label">
+    <polygon points="421.1,357.0 391.6,357.0 385.6,365.0 391.6,373.0 421.1,373.0" fill="#E8F4E8" stroke="#2D6A2D" stroke-width="1.2"/>
+    <text x="416.1" y="369.0" font-size="10" font-family="'JetBrains Mono', 'Fira Code', 'Consolas', monospace" font-weight="600" fill="#1A4D1A" text-anchor="end">FB</text>
+  </g>
+  <!-- Junctions -->
+</svg>

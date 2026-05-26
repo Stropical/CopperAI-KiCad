@@ -1,0 +1,305 @@
+/*
+ * This program source code file is part of KiCad, a free EDA CAD application.
+ *
+ * Copyright (C) 2024 KiCad Developers, see AUTHORS.txt for contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+syntax = "proto3";
+
+package kiapi.schematic.types;
+
+import "google/protobuf/any.proto";
+import "common/types/base_types.proto";
+
+// Search symbol libraries
+message SearchSymbols
+{
+  string query  = 1;  // Search term (partial name match)
+  string library = 2; // Optional: specific library to search
+  int32 limit   = 3;  // Max results (default 20)
+}
+
+message SymbolSearchResult
+{
+  string library_nickname = 1;
+  string symbol_name      = 2;
+  string description      = 3;
+  string keywords         = 4;
+  string datasheet        = 5;
+}
+
+message SearchSymbolsResponse
+{
+  repeated SymbolSearchResult results = 1;
+}
+
+// Get component data (schematic symbol by KIID or library symbol by lib_id)
+message GetComponentData
+{
+  kiapi.common.types.KIID            component_id = 1; // For schematic symbols
+  kiapi.common.types.LibraryIdentifier lib_id      = 2; // For library symbols
+}
+
+message GetComponentDataResponse
+{
+  google.protobuf.Any component = 1;
+  string summary = 2;  // Human-readable summary when component Any is not set
+  // Structured data for library symbols (same as SymbolSearchResult)
+  string library_nickname = 3;
+  string symbol_name      = 4;
+  string description      = 5;
+  string keywords         = 6;
+  string datasheet        = 7;
+  // Symbol block size in mm (for layout/spacing)
+  double width_mm  = 8;
+  double height_mm = 9;
+  int32 unit_count = 10;  // Units per package, 1 for single-unit
+  repeated PinSummary pins = 11;  // Pin number and name for wiring (library and schematic symbols)
+}
+
+// Position in millimeters (schematic coordinates)
+message PointMM
+{
+  double x_mm = 1;
+  double y_mm = 2;
+}
+
+// Simplified component placement (within an active commit)
+message AddComponent
+{
+  string library_nickname = 1;
+  string symbol_name     = 2;
+  string reference       = 3;
+  string value           = 4;
+  PointMM position       = 5;
+  double rotation        = 6; // Degrees
+  kiapi.common.types.KIID commit_id = 7;
+}
+
+message AddComponentResponse
+{
+  kiapi.common.types.KIID component_id = 1;
+}
+
+// Resolve (reference, pin_number) to sheet coordinates in mm
+message GetPinPosition
+{
+  string reference  = 1;  // Component reference (e.g. "R1", "U1")
+  string pin_number = 2;  // Pin number as string (e.g. "1", "A2")
+}
+
+message GetPinPositionResponse
+{
+  PointMM position = 1;  // Connection point (body; wire must start here to connect).
+  // Orientation of the pin in degrees (0=right, 90=up, 180=left, 270=down) for label placement.
+  optional double orientation_degrees = 2;
+  // Tip of the pin (end away from symbol body); use for wire end and label. When set, wire body→tip.
+  optional PointMM position_label = 3;
+}
+
+// One dangling (unconnected) endpoint: pin or wire end
+message DanglingItem
+{
+  string reference  = 1;  // Component reference for pins; empty for wire ends
+  string pin_number = 2;  // Pin number for pins; empty for wire ends
+  double x_mm       = 3;
+  double y_mm       = 4;
+  string type       = 5;  // "pin" or "wire_end"
+}
+
+// Report of dangling wires and unconnected pins (lightweight ERC)
+message GetDanglingReport
+{
+}
+
+message GetDanglingReportResponse
+{
+  repeated DanglingItem items = 1;
+}
+
+// Summary of one pin (number, name, and position in mm)
+message PinSummary
+{
+  string number = 1;
+  string name   = 2;
+  double x_mm   = 3;  // Pin position in schematic mm (optional)
+  double y_mm   = 4;
+}
+
+// Axis-aligned bounding box in mm (includes body and pins)
+message BoundingBox
+{
+  double min_x_mm = 1;
+  double min_y_mm = 2;
+  double max_x_mm = 3;
+  double max_y_mm = 4;
+}
+
+// Summary of one component on the current sheet
+message ComponentSummary
+{
+  string reference       = 1;
+  string library_nickname = 2;
+  string symbol_name     = 3;
+  string value           = 4;
+  repeated PinSummary pins = 5;
+  PointMM position       = 6;  // Center position in mm (KiCad schematic coordinates)
+  double rotation        = 7;  // Orientation in degrees (0, 90, 180, 270)
+  BoundingBox bbox       = 8;  // Bounding box in mm (body + pins)
+}
+
+// Get connectivity netlist: net name -> list of (reference, pin_number) for current sheet
+message GetNetlist
+{
+}
+
+message NetPinRef
+{
+  string reference   = 1;  // Component reference (e.g. "R1", "U1")
+  string pin_number  = 2;  // Pin number as string (e.g. "1", "2")
+}
+
+message NetEntry
+{
+  string net_name = 1;
+  repeated NetPinRef pins = 2;
+}
+
+message GetNetlistResponse
+{
+  repeated NetEntry nets = 1;
+}
+
+// Get concise summary of current schematic (components + global nets)
+message GetSchematicSummary
+{
+}
+
+message GetSchematicSummaryResponse
+{
+  string sheet_path = 1;
+  repeated ComponentSummary components = 2;
+  repeated string global_net_names = 3;
+  // Current snapping grid: step in mm (use for placement so items snap). Display string e.g. "0.1 mm" or "100 mils".
+  double grid_step_mm = 4;
+  string grid_display = 5;  // Human-readable grid (units) for agent context
+}
+
+// Capture schematic view centered at (center_x_mm, center_y_mm). Returns PNG as base64.
+message CaptureScreenshot
+{
+  double center_x_mm = 1;
+  double center_y_mm = 2;
+}
+
+// Capture a zoomed-in zone of the schematic centered at (center_x_mm, center_y_mm).
+// width_mm = visible width in mm (default 15); smaller = more zoomed in.
+// max_width_px = if > 0, resize image to this max width (reduces token/file size for vision APIs)
+message CaptureZoneScreenshot
+{
+  double center_x_mm = 1;
+  double center_y_mm = 2;
+  double width_mm = 3;  // Visible width in mm (default 15 for zoomed-in detail view)
+  int32 max_width_px = 4;  // If > 0, resize output to this max width; 0 = no resize
+}
+
+// Capture the entire schematic fitted to view.
+// target_width_px = if > 0, render at this width for better text legibility (larger canvas)
+message CaptureFullSchematic
+{
+  int32 target_width_px = 1;  // If > 0, resize canvas to this width before capture; 0 = use current
+}
+
+// Return currently visible schematic viewport bounds in mm.
+message GetVisibleBounds
+{
+}
+
+message GetVisibleBoundsResponse
+{
+  double min_x_mm = 1;
+  double min_y_mm = 2;
+  double max_x_mm = 3;
+  double max_y_mm = 4;
+  double center_x_mm = 5;
+  double center_y_mm = 6;
+  double width_mm = 7;
+  double height_mm = 8;
+  int32 client_width_px = 9;
+  int32 client_height_px = 10;
+}
+
+message CaptureScreenshotResponse
+{
+  string image_png_base64 = 1;
+}
+
+// Move and optionally rotate an existing component by reference
+message MoveComponent
+{
+  string reference       = 1;  // Component reference (e.g. "R1", "U1")
+  PointMM position       = 2;  // New position in mm (KiCad coordinates)
+  optional double rotation = 3;  // New orientation in degrees (0, 90, 180, 270); omit to keep current
+  kiapi.common.types.KIID commit_id = 4;
+}
+
+message MoveComponentResponse
+{
+}
+
+// Delete a component from the schematic by reference designator (within an active commit)
+message DeleteComponent
+{
+  string reference                   = 1;  // Component reference (e.g. "R1", "U1")
+  kiapi.common.types.KIID commit_id  = 2;
+}
+
+message DeleteComponentResponse
+{
+}
+
+// Reload project sym-lib-table from disk into the running schematic editor and refresh library caches.
+message ReloadProjectSymbolLibraries
+{
+}
+
+message ReloadProjectSymbolLibrariesResponse
+{
+  bool ok = 1;
+  string error_message = 2;
+  string sym_lib_table_path = 3;
+}
+
+// Append one row to the project symbol library table (in-memory + save to sym-lib-table file).
+// URI should use ${KIPRJMOD}/... for project-local assets.
+message AppendProjectSymbolLibraryRow
+{
+  string library_nickname = 1;
+  string uri = 2;
+  string description = 3;
+  // If true and nickname exists, replace the row; if false, skip and set skipped_duplicate.
+  bool replace_existing = 4;
+}
+
+message AppendProjectSymbolLibraryRowResponse
+{
+  bool ok = 1;
+  string error_message = 2;
+  bool skipped_duplicate = 3;
+  bool wrote_file = 4;
+}
+
+

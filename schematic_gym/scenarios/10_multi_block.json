@@ -1,0 +1,47 @@
+{
+  "scenario_id": "10_multi_block",
+  "name": "Multi-Block: Regulator + RC Filter",
+  "description": "Two functional blocks on one sheet: an LM7805 voltage regulator (left) feeding an RC low-pass filter (right). Connect the regulator with input/output caps, then wire the filter's input to the regulator output and its output through the RC network.",
+  "sheet": {
+    "width": 297,
+    "height": 210,
+    "paper": "A4"
+  },
+  "symbol_catalog": ["LM7805", "R", "C", "VCC", "GND", "+5V"],
+  "initial_state": {
+    "instances": [
+      {"symbol_id": "C",      "reference": "C1", "value": "100n",   "x": 70.0,  "y": 100.0, "rotation": 0},
+      {"symbol_id": "LM7805", "reference": "U1", "value": "LM7805", "x": 100.0, "y": 90.0,  "rotation": 0},
+      {"symbol_id": "C",      "reference": "C2", "value": "100n",   "x": 130.0, "y": 100.0, "rotation": 0},
+      {"symbol_id": "R",      "reference": "R1", "value": "1k",     "x": 180.0, "y": 90.0,  "rotation": 90},
+      {"symbol_id": "C",      "reference": "C3", "value": "10n",    "x": 210.0, "y": 100.0, "rotation": 0}
+    ],
+    "wires": [],
+    "junctions": [],
+    "labels": [],
+    "power_symbols": [
+      {"symbol_id": "VCC", "x": 70.0,  "y": 75.0,  "rotation": 0},
+      {"symbol_id": "GND", "x": 100.0, "y": 115.0, "rotation": 0},
+      {"symbol_id": "GND", "x": 210.0, "y": 115.0, "rotation": 0}
+    ]
+  },
+  "objectives": [
+    {
+      "type": "connect_all",
+      "required_connections": [
+        {"pin_a": "VCC.1",  "pin_b": "C1.1",  "net_name": "VIN"},
+        {"pin_a": "C1.1",   "pin_b": "U1.1",  "net_name": "VIN"},
+        {"pin_a": "U1.3",   "pin_b": "C2.1",  "net_name": "+5V"},
+        {"pin_a": "U1.2",   "pin_b": "C1.2",  "net_name": "GND"},
+        {"pin_a": "C2.2",   "pin_b": "U1.2",  "net_name": "GND"},
+        {"pin_a": "C2.1",   "pin_b": "R1.1",  "net_name": "+5V"},
+        {"pin_a": "R1.2",   "pin_b": "C3.1",  "net_name": "FILTERED"},
+        {"pin_a": "C3.2",   "pin_b": "GND.1", "net_name": "GND"}
+      ],
+      "step_budget": 80
+    }
+  ],
+  "net_names": ["VIN", "+5V", "GND", "FILTERED", "OUT"],
+  "scoring_overrides": {},
+  "curriculum_level": 10
+}

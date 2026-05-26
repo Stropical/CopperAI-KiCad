@@ -1,0 +1,28 @@
+{
+  "scenario_id": "03_connect_two_pins",
+  "name": "Connect Resistor Divider",
+  "description": "Wire two pre-placed resistors into a voltage divider with VIN, VOUT, and GND.",
+  "initial_state": {
+    "instances": [
+      {"symbol_id": "Device:R", "reference": "R1", "value": "10k", "x": 120.0, "y": 60.0, "rotation": 0},
+      {"symbol_id": "Device:R", "reference": "R2", "value": "10k", "x": 120.0, "y": 80.0, "rotation": 0}
+    ],
+    "power_symbols": [
+      {"symbol_id": "power:VCC", "x": 120.0, "y": 50.0, "rotation": 0},
+      {"symbol_id": "power:GND", "x": 120.0, "y": 95.0, "rotation": 0}
+    ]
+  },
+  "objectives": [
+    {
+      "type": "connect_all",
+      "required_connections": [
+        {"pin_a": "R1.1", "pin_b": "VCC.1", "net_name": "VCC"},
+        {"pin_a": "R1.2", "pin_b": "R2.1", "net_name": "VOUT"},
+        {"pin_a": "R2.2", "pin_b": "GND.1", "net_name": "GND"}
+      ],
+      "step_budget": 30
+    }
+  ],
+  "net_names": ["VCC", "VOUT", "GND"],
+  "curriculum_level": 3
+}

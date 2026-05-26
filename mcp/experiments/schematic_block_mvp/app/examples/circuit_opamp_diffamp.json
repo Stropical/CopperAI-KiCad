@@ -1,0 +1,25 @@
+{
+  "block_type": "opamp_noninverting",
+  "components": [
+    { "id": "U1", "kind": "opamp_ic", "pins": ["IN+", "IN-", "OUT", "V+", "V-"], "value": "AD8421" },
+    { "id": "R1", "kind": "input_resistor", "pins": ["1", "2"], "value": "10k" },
+    { "id": "R2", "kind": "feedback_resistor", "pins": ["1", "2"], "value": "10k" },
+    { "id": "R3", "kind": "gain_resistor", "pins": ["1", "2"], "value": "10k" },
+    { "id": "R4", "kind": "ground_resistor", "pins": ["1", "2"], "value": "10k" },
+    { "id": "C_BYP", "kind": "bypass_cap", "pins": ["1", "2"], "value": "100nF" }
+  ],
+  "nets": [
+    { "name": "VIN_POS", "members": ["R3.1"] },
+    { "name": "VIN_NEG", "members": ["R1.1"] },
+    { "name": "INV_NODE", "members": ["R1.2", "R2.2", "U1.IN-"] },
+    { "name": "NONINV_NODE", "members": ["R3.2", "R4.1", "U1.IN+"] },
+    { "name": "OUT", "members": ["U1.OUT", "R2.1"] },
+    { "name": "VCC", "members": ["U1.V+", "C_BYP.1"] },
+    { "name": "GND", "members": ["U1.V-", "R4.2", "C_BYP.2"] }
+  ],
+  "constraints": {
+    "flow": "left_to_right",
+    "power_top_ground_bottom": true,
+    "compact_feedback_loop": true
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TaskResult",
+  "description": "Output schema returned by the vision-loop agent upon task completion.",
+  "type": "object",
+  "required": ["status", "components_placed", "nets_wired", "erc_errors", "iterations_used"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "partial_success", "failed"],
+      "description": "Overall task outcome"
+    },
+    "components_placed": {
+      "type": "integer",
+      "description": "Number of components successfully placed"
+    },
+    "components_failed": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Reference designators of components that could not be placed"
+    },
+    "nets_wired": {
+      "type": "integer",
+      "description": "Number of nets successfully wired"
+    },
+    "nets_failed": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Names of nets that could not be wired"
+    },
+    "erc_errors": {
+      "type": "integer",
+      "description": "Final ERC error count (0 = clean)"
+    },
+    "iterations_used": {
+      "type": "integer",
+      "description": "Number of place-wire-verify cycles executed"
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Accumulated error messages from partial failures"
+    }
+  },
+  "additionalProperties": false
+}

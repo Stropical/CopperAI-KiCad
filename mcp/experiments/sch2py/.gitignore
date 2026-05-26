@@ -1,0 +1,9 @@
+converted_schematics/
+blocks/*
+ir/*
+blocks
+__pycache__/
+*.py[cod]
+tmp*.py
+.pytest_cache/
+.DS_Store
