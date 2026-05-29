@@ -28,6 +28,47 @@
 #include <wx/window.h>
 #include <wx/msw/registry.h>
 
+namespace
+{
+enum class PREFERRED_APP_MODE
+{
+    Default,
+    AllowDark,
+    ForceDark,
+    ForceLight,
+    Max
+};
+
+void enableWin32DarkMenus()
+{
+    static bool s_done = false;
+
+    if( s_done )
+        return;
+
+    s_done = true;
+
+    HMODULE uxTheme = LoadLibraryW( L"uxtheme.dll" );
+
+    if( !uxTheme )
+        return;
+
+    using SET_PREFERRED_APP_MODE = PREFERRED_APP_MODE ( WINAPI* )( PREFERRED_APP_MODE );
+    using FLUSH_MENU_THEMES = void ( WINAPI* )();
+
+    auto setPreferredAppMode =
+            reinterpret_cast<SET_PREFERRED_APP_MODE>( GetProcAddress( uxTheme, MAKEINTRESOURCEA( 135 ) ) );
+    auto flushMenuThemes =
+            reinterpret_cast<FLUSH_MENU_THEMES>( GetProcAddress( uxTheme, MAKEINTRESOURCEA( 136 ) ) );
+
+    if( setPreferredAppMode )
+        setPreferredAppMode( PREFERRED_APP_MODE::ForceDark );
+
+    if( flushMenuThemes )
+        flushMenuThemes();
+}
+}
+
 
 bool KIPLATFORM::UI::IsDarkTheme()
 {
@@ -80,6 +121,8 @@ void KIPLATFORM::UI::ApplyDarkFrameTheme( wxWindow* aWindow )
     if( !aWindow )
         return;
 
+    enableWin32DarkMenus();
+
     BOOL dark = TRUE;
     HWND hwnd = aWindow->GetHWND();
 
@@ -87,6 +130,7 @@ void KIPLATFORM::UI::ApplyDarkFrameTheme( wxWindow* aWindow )
     // builds; 19 covers older Windows 10 builds that first shipped the flag.
     DwmSetWindowAttribute( hwnd, 20, &dark, sizeof( dark ) );
     DwmSetWindowAttribute( hwnd, 19, &dark, sizeof( dark ) );
+    SetWindowTheme( hwnd, L"DarkMode_Explorer", nullptr );
 }
 
 

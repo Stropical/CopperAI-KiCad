@@ -73,12 +73,72 @@
 #include <wx/dirdlg.h>
 #include <wx/filedlg.h>
 #include <wx/debug.h>
+#include <wx/dcbuffer.h>
 #include <wx/socket.h>
 
 #include <wx/snglinst.h>
 #include <wx/fdrepdlg.h>
 
 #define FR_HISTORY_LIST_CNT     10   ///< Maximum size of the find/replace history stacks.
+
+namespace
+{
+class DARK_DRAW_STATUSBAR : public wxStatusBar
+{
+public:
+    DARK_DRAW_STATUSBAR( wxWindow* aParent, wxWindowID aId ) :
+            wxStatusBar( aParent, aId )
+    {
+        SetBackgroundStyle( wxBG_STYLE_PAINT );
+        SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+        SetForegroundColour( wxColour( 229, 229, 229 ) );
+        Bind( wxEVT_PAINT, &DARK_DRAW_STATUSBAR::onPaint, this );
+    }
+
+    void SetStatusText( const wxString& aText, int aNumber = 0 )
+    {
+        wxStatusBar::SetStatusText( aText, aNumber );
+        Refresh();
+    }
+
+private:
+    void onPaint( wxPaintEvent& aEvent )
+    {
+        wxAutoBufferedPaintDC dc( this );
+        const wxColour bg = KIPLATFORM::UI::GetPanelBGColour();
+        const wxColour fg( 229, 229, 229 );
+        const wxColour edge( 64, 64, 64 );
+
+        dc.SetPen( *wxTRANSPARENT_PEN );
+        dc.SetBrush( wxBrush( bg ) );
+        dc.DrawRectangle( GetClientRect() );
+
+        dc.SetTextForeground( fg );
+        dc.SetFont( GetFont() );
+        dc.SetPen( wxPen( edge ) );
+
+        for( int ii = 0; ii < GetFieldsCount(); ++ii )
+        {
+            wxRect r;
+
+            if( !GetFieldRect( ii, r ) )
+                continue;
+
+            dc.SetBrush( wxBrush( bg ) );
+            dc.DrawRectangle( r );
+
+            wxString text = GetStatusText( ii );
+
+            if( !text.IsEmpty() )
+            {
+                wxSize ext = dc.GetTextExtent( text );
+                int y = r.GetTop() + std::max( 0, ( r.GetHeight() - ext.y ) / 2 );
+                dc.DrawText( text, r.GetLeft() + FromDIP( 4 ), y );
+            }
+        }
+    }
+};
+}
 
 
 BEGIN_EVENT_TABLE( EDA_DRAW_FRAME, KIWAY_PLAYER )
@@ -132,7 +192,10 @@ EDA_DRAW_FRAME::EDA_DRAW_FRAME( KIWAY* aKiway, wxWindow* aParent, FRAME_T aFrame
 
     if( ( aStyle & wxFRAME_NO_TASKBAR ) == 0 )
     {
-        CreateStatusBar( 8 )->SetDoubleBuffered( true );
+        wxStatusBar* statusBar = new DARK_DRAW_STATUSBAR( this, wxID_ANY );
+        SetStatusBar( statusBar );
+        statusBar->SetFieldsCount( 8 );
+        statusBar->SetDoubleBuffered( true );
 
         GetStatusBar()->SetFont( KIUI::GetStatusFont( this ) );
 
