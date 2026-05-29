@@ -967,6 +967,29 @@ elseif( VCPKG_TOOLCHAIN )
     set( PYTHON_DEST "${CMAKE_INSTALL_PREFIX}/bin/Lib/site-packages"
         CACHE PATH "Python module install path."
         )
+
+    if( WIN32 )
+        get_filename_component( KICAD_PYTHON_RUNTIME_DIR "${PYTHON_EXECUTABLE}" DIRECTORY )
+
+        install( FILES
+            "${KICAD_PYTHON_RUNTIME_DIR}/python.exe"
+            "${KICAD_PYTHON_RUNTIME_DIR}/pythonw.exe"
+            DESTINATION bin
+            OPTIONAL
+            )
+
+        install( DIRECTORY "${KICAD_PYTHON_RUNTIME_DIR}/Lib/"
+            DESTINATION bin/Lib
+            USE_SOURCE_PERMISSIONS
+            PATTERN "__pycache__" EXCLUDE
+            )
+
+        install( DIRECTORY "${KICAD_PYTHON_RUNTIME_DIR}/DLLs/"
+            DESTINATION bin/DLLs
+            USE_SOURCE_PERMISSIONS
+            OPTIONAL
+            )
+    endif()
 else()
     set( PYTHON_DEST "${PYTHON_SITE_PACKAGE_PATH}"
         CACHE PATH "Python module install path."
@@ -1058,10 +1081,14 @@ endif()
 # See line 49 of cmake/FindwxWidgets.cmake
 set( wxWidgets_CONFIG_OPTIONS ${wxWidgets_CONFIG_OPTIONS} --static=no )
 
-find_package( wxWidgets ${wxWidgets_REQ_VERSION} COMPONENTS gl aui adv html core net base propgrid xml stc richtext REQUIRED )
+find_package( wxWidgets ${wxWidgets_REQ_VERSION} COMPONENTS gl aui adv html core net base propgrid xml stc richtext webview REQUIRED )
 
 # Include wxWidgets macros.
 include( ${wxWidgets_USE_FILE} )
+
+if( WIN32 AND WX_webview )
+    list( APPEND wxWidgets_LIBRARIES ${WX_webview} )
+endif()
 
 # Detect wxWidgets port being used
 if( wxWidgets_FIND_STYLE STREQUAL "win32" )

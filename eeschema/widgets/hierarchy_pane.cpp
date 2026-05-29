@@ -30,6 +30,7 @@
 #include <tools/sch_actions.h>
 #include <hierarchy_pane.h>
 #include <kiface_base.h>
+#include <kiplatform/ui.h>
 #include <wx/object.h>
 #include <wx/generic/textdlgg.h>
 #include <wx/menu.h>
@@ -67,10 +68,14 @@ HIERARCHY_PANE::HIERARCHY_PANE( SCH_EDIT_FRAME* aParent ) :
     wxASSERT( dynamic_cast<SCH_EDIT_FRAME*>( aParent ) );
 
     m_frame = aParent;
+    SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    SetForegroundColour( wxColour( 229, 229, 229 ) );
 
     wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
     SetSizer( sizer );
     m_tree = new HIERARCHY_TREE( this );
+    m_tree->SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    m_tree->SetForegroundColour( wxColour( 229, 229, 229 ) );
 
 #ifdef __WXMAC__
     // HiDPI-aware API; will be generally available in wxWidgets 3.4

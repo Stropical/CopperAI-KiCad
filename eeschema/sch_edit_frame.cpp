@@ -108,6 +108,7 @@
 #include <wx/socket.h>
 #include <wx/debug.h>
 #include <wx/sizer.h>
+#include <wx/utils.h>
 #include <widgets/panel_sch_selection_filter.h>
 #include <widgets/wx_aui_utils.h>
 #include <drawing_sheet/ds_proxy_view_item.h>
@@ -2469,6 +2470,15 @@ void SCH_EDIT_FRAME::EnsureOllamaNotebook()
     m_datasheetTabPanel = new wxPanel( m_ollamaAgentNotebook, wxID_ANY, wxDefaultPosition,
                                        wxDefaultSize, wxBORDER_NONE );
 
+    const wxColour bg( 10, 10, 10 );
+    const wxColour fg( 229, 229, 229 );
+    m_ollamaAgentNotebook->SetBackgroundColour( bg );
+    m_ollamaAgentNotebook->SetForegroundColour( fg );
+    m_ollamaAgentTabPanel->SetBackgroundColour( bg );
+    m_ollamaAgentTabPanel->SetForegroundColour( fg );
+    m_datasheetTabPanel->SetBackgroundColour( bg );
+    m_datasheetTabPanel->SetForegroundColour( fg );
+
     m_ollamaAgentTabPanel->SetSizer( new wxBoxSizer( wxVERTICAL ) );
     m_datasheetTabPanel->SetSizer( new wxBoxSizer( wxVERTICAL ) );
 
@@ -2524,7 +2534,10 @@ WEBVIEW_PANEL* SCH_EDIT_FRAME::EnsureDatasheetWebView()
 
 void SCH_EDIT_FRAME::LoadOllamaAgentWebView()
 {
-    static const wxString websiteUrl = wxS( "https://my-v0-project.copperai.workers.dev/chat?copper_client=kicad" );
+    wxString websiteUrl;
+
+    if( !wxGetEnv( wxS( "COPPERAI_AGENT_URL" ), &websiteUrl ) || websiteUrl.IsEmpty() )
+        websiteUrl = wxS( "https://app.copperai.workers.dev/chat?copper_client=kicad" );
 
     if( WEBVIEW_PANEL* panel = EnsureOllamaAgentWebView() )
     {
@@ -2573,7 +2586,7 @@ void SCH_EDIT_FRAME::LoadDatasheetPlaceholder( WEBVIEW_PANEL* aPanel, const wxSt
             wxS( "<!DOCTYPE html>"
                  "<html><body style='margin:0;display:flex;align-items:center;"
                  "justify-content:center;height:100vh;font-family:system-ui,sans-serif;"
-                 "color:#666666;'>%s</body></html>" ),
+                 "background:#0A0A0A;color:#E5E5E5;color-scheme:dark;'>%s</body></html>" ),
             EscapeHTML( aMessage ) );
 
     aPanel->SetPage( html, wxS( "about:blank" ) );

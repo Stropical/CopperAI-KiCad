@@ -25,6 +25,7 @@
 
 #include <bitmaps.h>
 #include <git/kicad_git_common.h>
+#include <kiplatform/ui.h>
 #include <wx/settings.h>
 
 #include "project_tree_item.h"
@@ -54,6 +55,8 @@ PROJECT_TREE::PROJECT_TREE( PROJECT_TREE_PANE* parent ) :
 
     // Make sure the GUI font scales properly on GTK
     SetFont( KIUI::GetControlFont( this ) );
+    SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    SetForegroundColour( wxColour( 229, 229, 229 ) );
 
     LoadIcons();
 }

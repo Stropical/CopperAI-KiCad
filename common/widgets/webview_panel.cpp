@@ -24,10 +24,10 @@
 #include <widgets/webview_panel.h>
 #include <clipboard.h>
 #include <kiplatform/ui.h>
+#include <json_common.h>
 #include <widgets/ui_common.h>
-#include <nlohmann/json.hpp>
-#include <wx/sizer.h>
 #include <wx/log.h>
+#include <wx/sizer.h>
 #include <wx/button.h>
 #include <wx/toolbar.h>
 
@@ -35,6 +35,10 @@ using json = nlohmann::json;
 
 namespace
 {
+const wxColour COPPERAI_DARK_BG( 10, 10, 10 );
+const wxColour COPPERAI_DARK_PANEL_BG( 30, 30, 30 );
+const wxColour COPPERAI_DARK_FG( 229, 229, 229 );
+
 wxString ToJsStringLiteral( const wxString& aValue )
 {
     return wxString::FromUTF8( json( std::string( aValue.utf8_str() ) ).dump() );
@@ -300,9 +304,14 @@ WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& 
         m_lockNavigation( false ), m_lockedUrl( wxEmptyString ), m_toolbar( nullptr ),
         m_btnOpenId( wxID_ANY ), m_btnCloseId( wxID_ANY )
 {
+    SetBackgroundColour( COPPERAI_DARK_BG );
+    SetForegroundColour( COPPERAI_DARK_FG );
+
     // Create toolbar with open/close buttons
     m_toolbar = new wxToolBar( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                wxTB_HORIZONTAL | wxTB_NODIVIDER );
+    m_toolbar->SetBackgroundColour( COPPERAI_DARK_PANEL_BG );
+    m_toolbar->SetForegroundColour( COPPERAI_DARK_FG );
 
     wxWindowID openId = wxNewId();
     wxWindowID closeId = wxNewId();
@@ -329,6 +338,8 @@ WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& 
         wxLogError( "Failed to create WebView" );
         return;
     }
+
+    m_browser->SetBackgroundColour( COPPERAI_DARK_BG );
 
     RegisterBuiltInMessageHandlers();
 
@@ -494,7 +505,10 @@ void WEBVIEW_PANEL::OnNavigationRequest( wxWebViewEvent& aEvt )
         return;
     }
 
-    if( !IsNavigationToLockedUrl( url ) )
+    const bool navigationMatchesLock = IsNavigationToLockedUrl( url );
+    const bool hasLockedUrl = m_lockNavigation && !m_lockedUrl.IsEmpty();
+
+    if( !navigationMatchesLock )
     {
         if( url.StartsWith( "http" ) )
             wxLaunchDefaultBrowser( url );
@@ -506,7 +520,7 @@ void WEBVIEW_PANEL::OnNavigationRequest( wxWebViewEvent& aEvt )
 
     // Default behavior: open external links in the system browser
     // unless m_handleExternalLinks is true
-    if( !m_handleExternalLinks && url.StartsWith( "http" ) )
+    if( !hasLockedUrl && !m_handleExternalLinks && url.StartsWith( "http" ) )
     {
         wxLaunchDefaultBrowser( url );
         aEvt.Veto();
@@ -537,9 +551,10 @@ void WEBVIEW_PANEL::OnWebViewLoaded( wxWebViewEvent& aEvt )
                 wxString zoomScript =
                         wxS( "(function() {"
                              "  var style = document.createElement('style');"
-                             "  style.innerHTML = 'html, body { margin: 0; padding: 0; width: "
-                             "100%; height: "
-                             "100%; overflow: hidden; }';"
+                             "  style.innerHTML = 'html, body, #root, #__next { margin: 0; "
+                             "padding: 0; width: 100%; min-height: 100%; background: #0A0A0A "
+                             "!important; color: #E5E5E5; color-scheme: dark; } body { "
+                             "overflow: hidden; }';"
                              "  if (document.head) { document.head.appendChild(style); }"
                              "  else { document.addEventListener('DOMContentLoaded', function() "
                              "{ document.head.appendChild(style); }); }"

@@ -25,6 +25,7 @@
 #include <eda_item.h>
 #include <import_export.h>
 #include <pgm_base.h>
+#include <kiplatform/ui.h>
 #include <properties/pg_cell_renderer.h>
 
 #include <algorithm>
@@ -46,6 +47,11 @@ PROPERTIES_PANEL::PROPERTIES_PANEL( wxWindow* aParent, EDA_BASE_FRAME* aFrame ) 
         m_frame( aFrame ),
         m_splitter_key_proportion( -1 )
 {
+    const wxColour bg = KIPLATFORM::UI::GetPanelBGColour();
+    const wxColour fg( 229, 229, 229 );
+    SetBackgroundColour( bg );
+    SetForegroundColour( fg );
+
     wxBoxSizer* mainSizer = new wxBoxSizer( wxVERTICAL );
 
     // on some platforms wxPGGlobalVars is initialized automatically,
@@ -75,9 +81,19 @@ PROPERTIES_PANEL::PROPERTIES_PANEL( wxWindow* aParent, EDA_BASE_FRAME* aFrame ) 
     }
 
     m_caption = new wxStaticText( this, wxID_ANY, _( "No objects selected" ) );
+    m_caption->SetBackgroundColour( bg );
+    m_caption->SetForegroundColour( fg );
     mainSizer->Add( m_caption, 0, wxALL | wxEXPAND, 5 );
 
     m_grid = new wxPropertyGrid( this );
+    m_grid->SetBackgroundColour( bg );
+    m_grid->SetForegroundColour( fg );
+    m_grid->SetCellBackgroundColour( bg );
+    m_grid->SetCellTextColour( fg );
+    m_grid->SetCaptionBackgroundColour( wxColour( 24, 24, 24 ) );
+    m_grid->SetCaptionTextColour( wxColour( 245, 245, 245 ) );
+    m_grid->SetEmptySpaceColour( bg );
+    m_grid->SetLineColour( wxColour( 58, 58, 58 ) );
     m_grid->SetUnspecifiedValueAppearance( wxPGCell( wxT( "<...>" ) ) );
     m_grid->SetExtraStyle( wxPG_EX_HELP_AS_TOOLTIPS );
 

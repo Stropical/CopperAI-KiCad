@@ -34,6 +34,7 @@
 #include <wx/stdpaths.h>
 #include <wx/msgdlg.h>
 #include <wx/cmdline.h>
+#include <wx/sysopt.h>
 
 #include <env_vars.h>
 #include <file_history.h>
@@ -468,6 +469,13 @@ struct APP_KICAD : public wxApp
 
     bool OnInit()           override
     {
+        wxSetEnv( wxS( "wx_msw_dark_mode" ), wxS( "2" ) );
+        wxSystemOptions::SetOption( wxS( "msw.dark-mode" ), 2 );
+
+#if wxCHECK_VERSION( 3, 3, 0 )
+        SetAppearance( wxApp::Appearance::Dark );
+#endif
+
 #ifdef NDEBUG
         // These checks generate extra assert noise
         wxSizerFlags::DisableConsistencyChecks();

@@ -21,12 +21,14 @@
 #include <bitmap_store.h>
 #include <kicad_manager_frame.h>
 #include <kiplatform/policy.h>
+#include <kiplatform/ui.h>
 #include <policy_keys.h>
 #include <tool/tool_manager.h>
 #include <tools/kicad_manager_actions.h>
 #include <tools/kicad_manager_control.h>
 #include <widgets/bitmap_button.h>
 #include <wx/stattext.h>
+#include <wx/scrolwin.h>
 
 #include "panel_kicad_launcher.h"
 
@@ -35,6 +37,13 @@ PANEL_KICAD_LAUNCHER::PANEL_KICAD_LAUNCHER( wxWindow* aParent ) :
         PANEL_KICAD_LAUNCHER_BASE( aParent ),
         m_frame( static_cast<KICAD_MANAGER_FRAME*>( aParent->GetParent() ) )
 {
+    const wxColour bg = KIPLATFORM::UI::GetPanelBGColour();
+    const wxColour fg( 229, 229, 229 );
+    SetBackgroundColour( bg );
+    SetForegroundColour( fg );
+    m_scrolledWindow->SetBackgroundColour( bg );
+    m_scrolledWindow->SetForegroundColour( fg );
+
     CreateLaunchers();
 
     Bind( wxEVT_SYS_COLOUR_CHANGED, wxSysColourChangedEventHandler( PANEL_KICAD_LAUNCHER::onThemeChanged ), this );
@@ -113,9 +122,13 @@ void PANEL_KICAD_LAUNCHER::CreateLaunchers()
                 m_scrolledWindow->SetFont( titleFont ); // Use font inheritance to avoid extra SetFont call.
                 wxStaticText* label = new wxStaticText( m_scrolledWindow, wxID_ANY, aAction.GetFriendlyName() );
                 label->SetToolTip( aAction.GetTooltip() );
+                label->SetForegroundColour( wxColour( 245, 245, 245 ) );
+                label->SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
 
                 m_scrolledWindow->SetFont( helpFont ); // Use font inheritance to avoid extra SetFont call.
                 wxStaticText* help = new wxStaticText( m_scrolledWindow, wxID_ANY, aHelpText );
+                help->SetForegroundColour( wxColour( 205, 205, 205 ) );
+                help->SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
 
                 btn->Bind( wxEVT_BUTTON, &PANEL_KICAD_LAUNCHER::onLauncherButtonClick, this );
                 btn->SetClientData( (void*) &aAction );

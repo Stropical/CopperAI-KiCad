@@ -30,32 +30,7 @@
 
 bool KIPLATFORM::UI::IsDarkTheme()
 {
-    // Force dark mode by default on Windows for KiCad
-    // Try to detect system dark mode preference first, but default to dark
-    const wxString lightModeKey = wxT( "AppsUseLightTheme" );
-
-    wxRegKey themeKey( wxRegKey::HKCU,
-                       wxT( "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize" ) );
-
-    if( themeKey.Exists() && themeKey.HasValue( lightModeKey ) )
-    {
-        long val = 0;
-        if( themeKey.QueryValue( lightModeKey, &val ) )
-        {
-            // Return true if system is in dark mode (val == 0)
-            return ( val == 0 );
-        }
-    }
-
-    // Default to dark mode if we can't detect system preference
-    // Also check brightness as fallback
-    wxColour bg = wxSystemSettings::GetColour( wxSYS_COLOUR_WINDOW );
-    double brightness = ( bg.Red() / 255.0 ) * 0.299 +
-        ( bg.Green() / 255.0 ) * 0.587 +
-        ( bg.Blue() / 255.0 ) * 0.117;
-
-    // Default to dark mode (return true) unless system is clearly light
-    return brightness < 0.6;
+    return true;
 }
 
 

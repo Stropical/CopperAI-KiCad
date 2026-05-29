@@ -26,11 +26,11 @@ BEGIN
             VALUE "FileVersion", KICAD_WIN32_RC_FILEVER_STR
             //original filename without extension
             VALUE "InternalName", RC_VER_INTERNALNAME
-            VALUE "LegalCopyright", "Copyright (C) 2024 KiCad Developers"
+            VALUE "LegalCopyright", "Copyright (C) 2026 Stropical"
             // the exe name
             VALUE "OriginalFilename", RC_VER_ORIGINALFILENAME
             // name of distributed package
-            VALUE "ProductName", "KiCad EDA"
+            VALUE "ProductName", "CopperAI"
             VALUE "ProductVersion", KICAD_WIN32_RC_PRODVER_STR
         END
     END

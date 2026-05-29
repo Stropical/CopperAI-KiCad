@@ -23,6 +23,7 @@
 #include <tool/tool_manager.h>
 #include <tools/sch_selection_tool.h>
 #include <widgets/panel_sch_selection_filter.h>
+#include <kiplatform/ui.h>
 
 
 PANEL_SCH_SELECTION_FILTER::PANEL_SCH_SELECTION_FILTER( wxWindow* aParent ) :
@@ -30,6 +31,11 @@ PANEL_SCH_SELECTION_FILTER::PANEL_SCH_SELECTION_FILTER( wxWindow* aParent ) :
         m_frame( dynamic_cast<SCH_BASE_FRAME*>( aParent ) ),
         m_onlyCheckbox( nullptr )
 {
+    const wxColour bg = KIPLATFORM::UI::GetPanelBGColour();
+    const wxColour fg( 229, 229, 229 );
+    SetBackgroundColour( bg );
+    SetForegroundColour( fg );
+
     wxFont font = KIUI::GetInfoFont( this );
     m_cbLockedItems->SetFont( font );
     m_cbSymbols->SetFont( font );
@@ -41,6 +47,13 @@ PANEL_SCH_SELECTION_FILTER::PANEL_SCH_SELECTION_FILTER( wxWindow* aParent ) :
     m_cbImages->SetFont( font );
     m_cbOtherItems->SetFont( font );
     m_cbAllItems->SetFont( font );
+
+    for( wxCheckBox* cb : { m_cbLockedItems, m_cbSymbols, m_cbText, m_cbWires, m_cbLabels,
+                            m_cbPins, m_cbGraphics, m_cbImages, m_cbOtherItems, m_cbAllItems } )
+    {
+        cb->SetBackgroundColour( bg );
+        cb->SetForegroundColour( fg );
+    }
 
     SetBorders( true, false, false, false );
 

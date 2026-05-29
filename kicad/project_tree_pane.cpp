@@ -79,6 +79,7 @@
 
 #include <kiplatform/io.h>
 #include <kiplatform/secrets.h>
+#include <kiplatform/ui.h>
 
 
 /* Note about the project tree build process:
@@ -184,6 +185,9 @@ PROJECT_TREE_PANE::PROJECT_TREE_PANE( KICAD_MANAGER_FRAME* parent ) :
         wxSashLayoutWindow( parent, ID_LEFT_FRAME, wxDefaultPosition, wxDefaultSize,
                             wxNO_BORDER | wxTAB_TRAVERSAL )
 {
+    SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    SetForegroundColour( wxColour( 229, 229, 229 ) );
+
     m_Parent = parent;
     m_TreeProject = nullptr;
     m_isRenaming = false;
