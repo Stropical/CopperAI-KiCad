@@ -58,6 +58,7 @@
 
 #include <kiplatform/app.h>
 #include <kiplatform/environment.h>
+#include <kiplatform/ui.h>
 
 #ifdef KICAD_IPC_API
 #include <api/api_server.h>
@@ -469,6 +470,7 @@ struct APP_KICAD : public wxApp
 
     bool OnInit()           override
     {
+        KIPLATFORM::UI::EnableWin32DarkMode();
         wxSetEnv( wxS( "wx_msw_dark_mode" ), wxS( "2" ) );
         wxSystemOptions::SetOption( wxS( "msw.dark-mode" ), 2 );
 

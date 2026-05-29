@@ -40,6 +40,7 @@ namespace KIPLATFORM
 
         wxColour GetDialogBGColour();
         wxColour GetPanelBGColour();
+        void EnableWin32DarkMode();
         void ApplyDarkFrameTheme( wxWindow* aWindow );
 
         /**

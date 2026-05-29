@@ -53,19 +53,47 @@ void enableWin32DarkMenus()
     if( !uxTheme )
         return;
 
+    using REFRESH_IMMERSIVE_COLOR_POLICY_STATE = void ( WINAPI* )();
     using SET_PREFERRED_APP_MODE = PREFERRED_APP_MODE ( WINAPI* )( PREFERRED_APP_MODE );
     using FLUSH_MENU_THEMES = void ( WINAPI* )();
 
+    auto refreshImmersiveColorPolicyState =
+            reinterpret_cast<REFRESH_IMMERSIVE_COLOR_POLICY_STATE>(
+                    GetProcAddress( uxTheme, MAKEINTRESOURCEA( 104 ) ) );
     auto setPreferredAppMode =
             reinterpret_cast<SET_PREFERRED_APP_MODE>( GetProcAddress( uxTheme, MAKEINTRESOURCEA( 135 ) ) );
     auto flushMenuThemes =
             reinterpret_cast<FLUSH_MENU_THEMES>( GetProcAddress( uxTheme, MAKEINTRESOURCEA( 136 ) ) );
+
+    if( refreshImmersiveColorPolicyState )
+        refreshImmersiveColorPolicyState();
 
     if( setPreferredAppMode )
         setPreferredAppMode( PREFERRED_APP_MODE::ForceDark );
 
     if( flushMenuThemes )
         flushMenuThemes();
+}
+
+
+void allowWindowDarkMode( HWND aHwnd )
+{
+    HMODULE uxTheme = GetModuleHandleW( L"uxtheme.dll" );
+
+    if( !uxTheme )
+        uxTheme = LoadLibraryW( L"uxtheme.dll" );
+
+    if( !uxTheme )
+        return;
+
+    using ALLOW_DARK_MODE_FOR_WINDOW = BOOL ( WINAPI* )( HWND, BOOL );
+
+    auto allowDarkModeForWindow =
+            reinterpret_cast<ALLOW_DARK_MODE_FOR_WINDOW>(
+                    GetProcAddress( uxTheme, MAKEINTRESOURCEA( 133 ) ) );
+
+    if( allowDarkModeForWindow )
+        allowDarkModeForWindow( aHwnd, TRUE );
 }
 }
 
@@ -116,6 +144,12 @@ void KIPLATFORM::UI::GetInfoBarColours( wxColour& aFGColour, wxColour& aBGColour
 }
 
 
+void KIPLATFORM::UI::EnableWin32DarkMode()
+{
+    enableWin32DarkMenus();
+}
+
+
 void KIPLATFORM::UI::ApplyDarkFrameTheme( wxWindow* aWindow )
 {
     if( !aWindow )
@@ -125,6 +159,8 @@ void KIPLATFORM::UI::ApplyDarkFrameTheme( wxWindow* aWindow )
 
     BOOL dark = TRUE;
     HWND hwnd = aWindow->GetHWND();
+
+    allowWindowDarkMode( hwnd );
 
     // DWMWA_USE_IMMERSIVE_DARK_MODE. Attribute 20 is used on current Windows
     // builds; 19 covers older Windows 10 builds that first shipped the flag.
