@@ -28,6 +28,15 @@
 #include <settings/common_settings.h>
 #include <widgets/wx_aui_art_providers.h>
 
+
+static void drawAuiToolbarBackground( wxDC& aDc, const wxRect& aRect )
+{
+    aDc.SetPen( *wxTRANSPARENT_PEN );
+    aDc.SetBrush( wxBrush( KIPLATFORM::UI::GetPanelBGColour() ) );
+    aDc.DrawRectangle( aRect );
+}
+
+
 #if wxCHECK_VERSION( 3, 3, 0 )
 wxSize WX_AUI_TOOLBAR_ART::GetToolSize( wxReadOnlyDC& aDc, wxWindow* aWindow,
                                         const wxAuiToolBarItem& aItem )
@@ -86,9 +95,23 @@ wxSize WX_AUI_TOOLBAR_ART::GetToolSize( wxDC& aDc, wxWindow* aWindow,
 }
 
 
+void WX_AUI_TOOLBAR_ART::DrawBackground( wxDC& aDc, wxWindow* aWindow, const wxRect& aRect )
+{
+    drawAuiToolbarBackground( aDc, aRect );
+}
+
+
+void WX_AUI_TOOLBAR_ART::DrawPlainBackground( wxDC& aDc, wxWindow* aWindow, const wxRect& aRect )
+{
+    drawAuiToolbarBackground( aDc, aRect );
+}
+
+
 void WX_AUI_TOOLBAR_ART::DrawButton( wxDC& aDc, wxWindow* aWindow, const wxAuiToolBarItem& aItem,
                                      const wxRect& aRect )
 {
+    drawAuiToolbarBackground( aDc, aRect );
+
     // Taken from upstream implementation; modified to respect tool size
     wxSize bmpSize = GetToolSize( aDc, aWindow, aItem );
 
@@ -185,6 +208,29 @@ void WX_AUI_TOOLBAR_ART::DrawButton( wxDC& aDc, wxWindow* aWindow, const wxAuiTo
     {
         aDc.DrawText( aItem.GetLabel(), textX, textY );
     }
+}
+
+
+void WX_AUI_TOOLBAR_ART::DrawSeparator( wxDC& aDc, wxWindow* aWindow, const wxRect& aRect )
+{
+    drawAuiToolbarBackground( aDc, aRect );
+
+    wxRect line = aRect;
+    wxColour sepColour( 70, 70, 70 );
+    aDc.SetPen( wxPen( sepColour ) );
+
+    if( aRect.height > aRect.width )
+        aDc.DrawLine( aRect.GetLeft() + aRect.width / 2, aRect.GetTop() + 3,
+                      aRect.GetLeft() + aRect.width / 2, aRect.GetBottom() - 3 );
+    else
+        aDc.DrawLine( aRect.GetLeft() + 3, aRect.GetTop() + aRect.height / 2,
+                      aRect.GetRight() - 3, aRect.GetTop() + aRect.height / 2 );
+}
+
+
+void WX_AUI_TOOLBAR_ART::DrawGripper( wxDC& aDc, wxWindow* aWindow, const wxRect& aRect )
+{
+    drawAuiToolbarBackground( aDc, aRect );
 }
 
 

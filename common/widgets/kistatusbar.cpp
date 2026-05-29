@@ -34,6 +34,7 @@
 #include <notifications_manager.h>
 #include <bitmaps.h>
 #include <kiplatform/ui.h>
+#include <wx/dcbuffer.h>
 #include <wx/dcclient.h>
 
 #define FIELD_OFFSET_BGJOB_TEXT 0
@@ -46,6 +47,7 @@ KISTATUSBAR::KISTATUSBAR( int aNumberFields, wxWindow* parent, wxWindowID id ) :
         wxStatusBar( parent, id ),
         m_normalFieldsCount( aNumberFields )
 {
+    SetBackgroundStyle( wxBG_STYLE_PAINT );
     SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
     SetForegroundColour( wxColour( 229, 229, 229 ) );
 
@@ -106,6 +108,7 @@ KISTATUSBAR::KISTATUSBAR( int aNumberFields, wxWindow* parent, wxWindowID id ) :
 
     m_notificationsButton->Bind( wxEVT_BUTTON, &KISTATUSBAR::onNotificationsIconClick, this );
 
+    Bind( wxEVT_PAINT, &KISTATUSBAR::onPaint, this );
     Bind( wxEVT_SIZE, &KISTATUSBAR::onSize, this );
     m_backgroundProgressBar->Bind( wxEVT_LEFT_DOWN, &KISTATUSBAR::onBackgroundProgressClick, this );
 
@@ -117,9 +120,47 @@ KISTATUSBAR::KISTATUSBAR( int aNumberFields, wxWindow* parent, wxWindowID id ) :
 KISTATUSBAR::~KISTATUSBAR()
 {
     m_notificationsButton->Unbind( wxEVT_BUTTON, &KISTATUSBAR::onNotificationsIconClick, this );
+    Unbind( wxEVT_PAINT, &KISTATUSBAR::onPaint, this );
     Unbind( wxEVT_SIZE, &KISTATUSBAR::onSize, this );
     m_backgroundProgressBar->Unbind( wxEVT_LEFT_DOWN, &KISTATUSBAR::onBackgroundProgressClick,
                                      this );
+}
+
+
+void KISTATUSBAR::onPaint( wxPaintEvent& aEvent )
+{
+    wxAutoBufferedPaintDC dc( this );
+    const wxColour bg = KIPLATFORM::UI::GetPanelBGColour();
+    const wxColour fg( 229, 229, 229 );
+    const wxColour edge( 64, 64, 64 );
+
+    dc.SetPen( *wxTRANSPARENT_PEN );
+    dc.SetBrush( wxBrush( bg ) );
+    dc.DrawRectangle( GetClientRect() );
+
+    dc.SetTextForeground( fg );
+    dc.SetFont( GetFont() );
+    dc.SetPen( wxPen( edge ) );
+
+    for( int ii = 0; ii < GetFieldsCount(); ++ii )
+    {
+        wxRect r;
+
+        if( !GetFieldRect( ii, r ) )
+            continue;
+
+        dc.SetBrush( wxBrush( bg ) );
+        dc.DrawRectangle( r );
+
+        wxString text = GetStatusText( ii );
+
+        if( !text.IsEmpty() )
+        {
+            wxSize ext = dc.GetTextExtent( text );
+            int y = r.GetTop() + std::max( 0, ( r.GetHeight() - ext.y ) / 2 );
+            dc.DrawText( text, r.GetLeft() + FromDIP( 4 ), y );
+        }
+    }
 }
 
 

@@ -40,8 +40,12 @@ public:
     /**
      * Unfortunately we need to re-implement this to actually be able to control the size
      */
+    void DrawBackground( wxDC& aDc, wxWindow* aWindow, const wxRect& aRect ) override;
+    void DrawPlainBackground( wxDC& aDc, wxWindow* aWindow, const wxRect& aRect ) override;
     void DrawButton( wxDC& aDc, wxWindow* aWindow, const wxAuiToolBarItem& aItem,
                      const wxRect& aRect ) override;
+    void DrawSeparator( wxDC& aDc, wxWindow* aWindow, const wxRect& aRect ) override;
+    void DrawGripper( wxDC& aDc, wxWindow* aWindow, const wxRect& aRect ) override;
 };
 
 

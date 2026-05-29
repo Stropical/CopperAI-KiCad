@@ -503,7 +503,16 @@ void EDA_BASE_FRAME::ReCreateMenuBar()
     CallAfter( [this]()
                {
                    if( !m_isClosing )
+                   {
                        doReCreateMenuBar();
+
+                       if( wxMenuBar* menuBar = GetMenuBar() )
+                       {
+                           menuBar->SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+                           menuBar->SetForegroundColour( wxColour( 229, 229, 229 ) );
+                           menuBar->Refresh();
+                       }
+                   }
                } );
 }
 
@@ -565,6 +574,8 @@ void EDA_BASE_FRAME::CommonSettingsChanged( int aFlags )
 
     if( GetMenuBar() )
     {
+        GetMenuBar()->SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+        GetMenuBar()->SetForegroundColour( wxColour( 229, 229, 229 ) );
         // For icons in menus, icon scaling & hotkeys
         ReCreateMenuBar();
         GetMenuBar()->Refresh();
