@@ -579,6 +579,15 @@ add_library( eeschema_kiface_objects OBJECT
     ${EESCHEMA_COMMON_SRCS}
     )
 
+# When KICAD_AGENT_CHAT_URL is unset, schematic "AI Agent" webview default is production (Cloudflare)
+# if this is ON, else http://127.0.0.1:3000/... (local). Env always wins.
+option( KICAD_PRODUCTION_AGENT_CHAT_DEFAULT
+    "Default AI Agent webview to production (Cloudflare) when KICAD_AGENT_CHAT_URL is not set. Leave OFF for local dev."
+    OFF )
+target_compile_definitions( eeschema_kiface_objects
+    PRIVATE
+    $<$<BOOL:${KICAD_PRODUCTION_AGENT_CHAT_DEFAULT}>:KICAD_PRODUCTION_AGENT_CHAT_DEFAULT=1> )
+
 target_include_directories( eeschema_kiface_objects
     PUBLIC
         .

@@ -22,14 +22,23 @@
  */
 
 #include <widgets/webview_panel.h>
+#ifdef KICAD_IPC_API
+#include <api/api_server.h>
+#include <api/common/envelope.pb.h>
+#endif
 #include <clipboard.h>
 #include <kiplatform/ui.h>
+#ifdef KICAD_IPC_API
+#include <pgm_base.h>
+#endif
 #include <widgets/ui_common.h>
 #include <nlohmann/json.hpp>
+#include <wx/base64.h>
 #include <wx/sizer.h>
 #include <wx/log.h>
 #include <wx/button.h>
 #include <wx/toolbar.h>
+#include <wx/timer.h>
 
 using json = nlohmann::json;
 
@@ -65,12 +74,72 @@ wxString WEBVIEW_PANEL::NormalizeUrlForLock( const wxString& aUrl )
 }
 
 
+static wxString UrlOriginForLock( const wxString& aUrl )
+{
+    wxString normalized = aUrl;
+    normalized.Trim( true ).Trim( false );
+
+    int hashIdx = normalized.Find( '#' );
+
+    if( hashIdx != wxNOT_FOUND )
+    {
+        if( hashIdx == 0 )
+            normalized.clear();
+        else
+            normalized = normalized.SubString( 0, hashIdx - 1 );
+    }
+
+    if( normalized.Length() > 1 && normalized.EndsWith( "/" ) )
+        normalized.RemoveLast();
+
+    wxString lower = normalized.Lower();
+    int schemeEnd = lower.Find( wxS( "://" ) );
+
+    if( schemeEnd == wxNOT_FOUND )
+        return wxEmptyString;
+
+    wxString scheme = lower.Left( schemeEnd );
+
+    if( scheme != wxS( "http" ) && scheme != wxS( "https" ) )
+        return wxEmptyString;
+
+    wxString rest = normalized.Mid( schemeEnd + 3 );
+    size_t end = rest.length();
+
+    for( size_t ii = 0; ii < rest.length(); ++ii )
+    {
+        wxUniChar c = rest[ii];
+
+        if( c == '/' || c == '?' )
+        {
+            end = ii;
+            break;
+        }
+    }
+
+    wxString authority = rest.Left( end ).Lower();
+
+    if( authority.IsEmpty() )
+        return wxEmptyString;
+
+    return scheme + wxS( "://" ) + authority;
+}
+
+
 bool WEBVIEW_PANEL::IsNavigationToLockedUrl( const wxString& aUrl ) const
 {
     if( !m_lockNavigation || m_lockedUrl.IsEmpty() )
         return true;
 
-    return NormalizeUrlForLock( aUrl ) == m_lockedUrl;
+    wxString normalized = NormalizeUrlForLock( aUrl );
+
+    if( normalized == m_lockedUrl )
+        return true;
+
+    wxString lockedOrigin = UrlOriginForLock( m_lockedUrl );
+    wxString requestedOrigin = UrlOriginForLock( normalized );
+
+    return !lockedOrigin.IsEmpty() && lockedOrigin == requestedOrigin;
 }
 
 
@@ -102,6 +171,27 @@ void WEBVIEW_PANEL::SendApiCallback( const wxString& aCallbackId, bool aIsError,
                  "  if (window.kicad && window.kicad.api && typeof "
                  "window.kicad.api._handleResponse === 'function') {"
                  "    window.kicad.api._handleResponse(%s, %s, %s);"
+                 "  }"
+                 "})();" ),
+            ToJsStringLiteral( aCallbackId ),
+            aIsError ? wxS( "true" ) : wxS( "false" ),
+            ToJsStringLiteral( aJsonData ) );
+
+    RunScriptAsync( script );
+}
+
+
+void WEBVIEW_PANEL::SendIpcCallback( const wxString& aCallbackId, bool aIsError,
+                                     const wxString& aJsonData )
+{
+    if( !m_browser || aCallbackId.IsEmpty() )
+        return;
+
+    const wxString script = wxString::Format(
+            wxS( "(function() {"
+                 "  if (window.kicad && window.kicad.ipc && typeof "
+                 "window.kicad.ipc._handleResponse === 'function') {"
+                 "    window.kicad.ipc._handleResponse(%s, %s, %s);"
                  "  }"
                  "})();" ),
             ToJsStringLiteral( aCallbackId ),
@@ -186,6 +276,147 @@ void WEBVIEW_PANEL::RegisterBuiltInMessageHandlers()
                 catch( const std::exception& e )
                 {
                     SendApiCallback( callbackId, true, wxString::FromUTF8( e.what() ) );
+                }
+            } );
+
+    AddMessageHandler(
+            wxS( "open_external_url" ),
+            [this]( const wxString& aMessage )
+            {
+                wxString callbackId;
+
+                try
+                {
+                    json payload = json::parse( std::string( aMessage.utf8_str() ) );
+
+                    if( payload.contains( "callbackId" ) && payload["callbackId"].is_string() )
+                        callbackId = wxString::FromUTF8( payload["callbackId"].get<std::string>() );
+                    else if( payload.contains( "callback_id" ) && payload["callback_id"].is_string() )
+                        callbackId = wxString::FromUTF8( payload["callback_id"].get<std::string>() );
+
+                    std::string url;
+
+                    if( payload.contains( "url" ) && payload["url"].is_string() )
+                        url = payload["url"].get<std::string>();
+                    else if( payload.contains( "data" ) && payload["data"].is_object() )
+                    {
+                        const json& data = payload["data"];
+
+                        if( data.contains( "url" ) && data["url"].is_string() )
+                            url = data["url"].get<std::string>();
+                    }
+
+                    wxString wxUrl = wxString::FromUTF8( url );
+                    wxUrl.Trim( true ).Trim( false );
+
+                    if( !wxUrl.StartsWith( wxS( "https://" ) )
+                            && !wxUrl.StartsWith( wxS( "http://" ) ) )
+                    {
+                        if( !callbackId.IsEmpty() )
+                            SendApiCallback( callbackId, true,
+                                             wxS( "Only http(s) URLs can be opened externally." ) );
+                        return;
+                    }
+
+                    bool opened = wxLaunchDefaultBrowser( wxUrl, wxBROWSER_NEW_WINDOW );
+
+                    if( !callbackId.IsEmpty() )
+                    {
+                        json response;
+                        response["ok"] = opened;
+                        SendApiCallback( callbackId, !opened,
+                                         opened ? wxString::FromUTF8( response.dump() )
+                                                : wxS( "Failed to open system browser." ) );
+                    }
+                }
+                catch( const std::exception& e )
+                {
+                    if( !callbackId.IsEmpty() )
+                        SendApiCallback( callbackId, true, wxString::FromUTF8( e.what() ) );
+                }
+            } );
+}
+
+
+void WEBVIEW_PANEL::EnableKiCadIpcBridge()
+{
+    if( m_enableKiCadIpcBridge )
+        return;
+
+    m_enableKiCadIpcBridge = true;
+
+    AddMessageHandler(
+            wxS( "kicad_ipc_request_base64" ),
+            [this]( const wxString& aMessage )
+            {
+                wxString callbackId;
+
+                try
+                {
+                    json payload = json::parse( std::string( aMessage.utf8_str() ) );
+
+                    if( payload.contains( "callbackId" ) && payload["callbackId"].is_string() )
+                        callbackId = wxString::FromUTF8( payload["callbackId"].get<std::string>() );
+                    else if( payload.contains( "callback_id" ) && payload["callback_id"].is_string() )
+                        callbackId = wxString::FromUTF8( payload["callback_id"].get<std::string>() );
+
+                    if( callbackId.IsEmpty() )
+                        return;
+
+                    if( !payload.contains( "requestBase64" ) || !payload["requestBase64"].is_string() )
+                    {
+                        SendIpcCallback( callbackId, true, wxS( "Missing requestBase64." ) );
+                        return;
+                    }
+
+#ifndef KICAD_IPC_API
+                    SendIpcCallback( callbackId, true,
+                                     wxS( "KiCad IPC API support is not enabled in this build." ) );
+#else
+                    const std::string requestBase64 = payload["requestBase64"].get<std::string>();
+                    wxMemoryBuffer decoded = wxBase64Decode( wxString::FromUTF8( requestBase64 ) );
+
+                    if( decoded.GetDataLen() == 0 )
+                    {
+                        SendIpcCallback( callbackId, true, wxS( "Malformed ApiRequest base64." ) );
+                        return;
+                    }
+
+                    kiapi::common::ApiRequest request;
+
+                    if( !request.ParseFromArray( decoded.GetData(),
+                                                 static_cast<int>( decoded.GetDataLen() ) ) )
+                    {
+                        SendIpcCallback( callbackId, true,
+                                         wxS( "Malformed ApiRequest protobuf." ) );
+                        return;
+                    }
+
+                    request.mutable_header()->clear_kicad_token();
+                    request.mutable_header()->set_client_name( "webview-ipc-bridge" );
+
+                    kiapi::common::ApiResponse response =
+                            Pgm().GetApiServer().ProcessRequest( request );
+
+                    response.mutable_header()->clear_kicad_token();
+
+                    std::string responseBytes;
+                    if( !response.SerializeToString( &responseBytes ) )
+                    {
+                        SendIpcCallback( callbackId, true,
+                                         wxS( "Failed to serialize ApiResponse." ) );
+                        return;
+                    }
+
+                    json result;
+                    result["responseBase64"] = std::string(
+                            wxBase64Encode( responseBytes.data(), responseBytes.size() ).utf8_str() );
+                    SendIpcCallback( callbackId, false, wxString::FromUTF8( result.dump() ) );
+#endif
+                }
+                catch( const std::exception& e )
+                {
+                    SendIpcCallback( callbackId, true, wxString::FromUTF8( e.what() ) );
                 }
             } );
 }
@@ -295,11 +526,16 @@ bool WEBVIEW_PANEL::HandleEditCommand( int aCommandId )
 
 WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& aPos,
                               const wxSize& aSize ) :
-        wxPanel( aParent, aId, aPos, aSize ), m_browser( nullptr ), m_initialized( false ),
-        m_loadError( false ), m_loadedEventBound( false ), m_handleExternalLinks( false ),
-        m_lockNavigation( false ), m_lockedUrl( wxEmptyString ), m_toolbar( nullptr ),
-        m_btnOpenId( wxID_ANY ), m_btnCloseId( wxID_ANY )
+        wxPanel( aParent, aId, aPos, aSize ), m_browser( nullptr ), m_toolbar( nullptr ),
+        m_deferredScriptTimer( nullptr ), m_btnOpenId( wxID_ANY ), m_btnCloseId( wxID_ANY ),
+        m_initialized( false ), m_loadError( false ), m_loadedEventBound( false ),
+        m_handleExternalLinks( false ), m_lockNavigation( false ),
+        m_enableKiCadIpcBridge( false ), m_lockedUrl( wxEmptyString )
 {
+    m_deferredScriptTimer = new wxTimer( this );
+    Bind( wxEVT_TIMER, &WEBVIEW_PANEL::OnDeferredScriptTimer, this,
+          m_deferredScriptTimer->GetId() );
+
     // Create toolbar with open/close buttons
     m_toolbar = new wxToolBar( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                wxTB_HORIZONTAL | wxTB_NODIVIDER );
@@ -356,6 +592,17 @@ WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& 
 
 WEBVIEW_PANEL::~WEBVIEW_PANEL()
 {
+    if( m_deferredScriptTimer )
+    {
+        m_deferredScriptTimer->Stop();
+        Unbind( wxEVT_TIMER, &WEBVIEW_PANEL::OnDeferredScriptTimer, this,
+                m_deferredScriptTimer->GetId() );
+        delete m_deferredScriptTimer;
+        m_deferredScriptTimer = nullptr;
+    }
+
+    m_deferredScripts.clear();
+
     // Unbind all event handlers before destruction to prevent callbacks
     // from WebKit during shutdown from trying to process events on a destroyed object
     if( m_browser )
@@ -448,17 +695,66 @@ void WEBVIEW_PANEL::SetPage( const wxString& aHtml, const wxString& aBaseUrl )
 
 void WEBVIEW_PANEL::RunScriptAsync( const wxString& aScript )
 {
-    if( m_browser )
-    {
-        if( KIUI::IsModalDialogFocused() )
-        {
-            wxLogTrace( "webview",
-                        "Skipping script execution while modal dialog is active" );
-            return;
-        }
+    if( !m_browser )
+        return;
 
-        m_browser->RunScriptAsync( aScript );
+    if( KIUI::IsModalDialogFocused() )
+    {
+        m_deferredScripts.push_back( aScript );
+        ScheduleDeferredScriptRetry();
+        wxLogTrace( "webview", "Deferring script execution while modal dialog is active" );
+        return;
     }
+
+    if( KIPLATFORM::UI::RunWebViewScriptFireAndForget( m_browser, aScript ) )
+        return;
+
+    m_browser->RunScriptAsync( aScript );
+}
+
+
+void WEBVIEW_PANEL::ScheduleDeferredScriptRetry()
+{
+    if( m_deferredScriptTimer && !m_deferredScriptTimer->IsRunning() )
+        m_deferredScriptTimer->StartOnce( 100 );
+}
+
+
+void WEBVIEW_PANEL::FlushDeferredScripts()
+{
+    if( !m_browser )
+    {
+        m_deferredScripts.clear();
+        return;
+    }
+
+    if( m_deferredScripts.empty() )
+        return;
+
+    if( KIUI::IsModalDialogFocused() )
+    {
+        ScheduleDeferredScriptRetry();
+        return;
+    }
+
+    std::deque<wxString> scripts;
+    scripts.swap( m_deferredScripts );
+
+    for( const wxString& script : scripts )
+    {
+        if( !m_browser )
+            break;
+
+        if( !KIPLATFORM::UI::RunWebViewScriptFireAndForget( m_browser, script ) )
+            m_browser->RunScriptAsync( script );
+    }
+}
+
+
+void WEBVIEW_PANEL::OnDeferredScriptTimer( wxTimerEvent& aEvent )
+{
+    WXUNUSED( aEvent );
+    FlushDeferredScripts();
 }
 
 
@@ -544,7 +840,7 @@ void WEBVIEW_PANEL::OnWebViewLoaded( wxWebViewEvent& aEvt )
                              "  else { document.addEventListener('DOMContentLoaded', function() "
                              "{ document.head.appendChild(style); }); }"
                              "})();" );
-                m_browser->RunScriptAsync( zoomScript );
+                RunScriptAsync( zoomScript );
 
                 // Inject wx_msg bridge for C++ communication
                 wxString wxMsgScript = wxS(
@@ -568,16 +864,16 @@ void WEBVIEW_PANEL::OnWebViewLoaded( wxWebViewEvent& aEvt )
                         "  "
                         "  console.log('[KiCad] wx_msg bridge injected successfully');"
                         "})();" );
-                m_browser->RunScriptAsync( wxMsgScript );
+                RunScriptAsync( wxMsgScript );
 
                 // Inject window.kicad.api bridge for schematic operations
                 wxString kicadApiScript = wxS(
                         "(function() {"
-                        "  if (window.kicad) return;" // Already injected
+                        "  window.kicad = window.kicad || {};"
+                        "  if (window.kicad.api && typeof window.kicad.api._callHandler === 'function') return;"
                         "  "
                         "  // Create KiCad API bridge that uses wx_msg for communication"
-                        "  window.kicad = {"
-                        "    api: {"
+                        "  window.kicad.api = {"
                         "      // Helper to call C++ handlers via wx_msg"
                         "      _callHandler: function(handlerName, data) {"
                         "        return new Promise((resolve, reject) => {"
@@ -647,12 +943,68 @@ void WEBVIEW_PANEL::OnWebViewLoaded( wxWebViewEvent& aEvt )
                         "        return this._callHandler('clipboard_write_text', { text: text "
                         "|| '' });"
                         "      }"
-                        "    }"
                         "  };"
                         "  "
                         "  console.log('[KiCad] window.kicad.api bridge injected successfully');"
                         "})();" );
-                m_browser->RunScriptAsync( kicadApiScript );
+                RunScriptAsync( kicadApiScript );
+
+                wxString kicadHostScript = wxS(
+                        "(function() {"
+                        "  window.kicad = window.kicad || {};"
+                        "  window.kicad.host = window.kicad.host || {};"
+                        "  if (typeof window.kicad.host.openExternalUrl === 'function') return;"
+                        "  window.kicad.host.openExternalUrl = function(url) {"
+                        "    if (!window.wx_msg || typeof window.wx_msg.postMessage !== 'function') return false;"
+                        "    window.wx_msg.postMessage('open_external_url', JSON.stringify({ url: String(url || '') }));"
+                        "    return true;"
+                        "  };"
+                        "})();" );
+                RunScriptAsync( kicadHostScript );
+
+                if( m_enableKiCadIpcBridge )
+                {
+                    wxString kicadIpcScript = wxS(
+                            "(function() {"
+                            "  window.kicad = window.kicad || {};"
+                            "  if (window.kicad.ipc && typeof window.kicad.ipc.requestBase64 === 'function')"
+                            "    return;"
+                            "  window.kicad.ipc = {"
+                            "    _callbacks: {},"
+                            "    requestBase64: function(requestBase64) {"
+                            "      return new Promise((resolve, reject) => {"
+                            "        const callbackId = 'ipc_' + Date.now() + '_' + Math.random();"
+                            "        window.kicad.ipc._callbacks[callbackId] = { resolve, reject };"
+                            "        const message = JSON.stringify({ callbackId, requestBase64 });"
+                            "        window.wx_msg.postMessage('kicad_ipc_request_base64', message);"
+                            "        setTimeout(() => {"
+                            "          if (window.kicad.ipc._callbacks[callbackId]) {"
+                            "            delete window.kicad.ipc._callbacks[callbackId];"
+                            "            reject(new Error('IPC call timeout'));"
+                            "          }"
+                            "        }, 30000);"
+                            "      });"
+                            "    },"
+                            "    _handleResponse: function(callbackId, isError, jsonData) {"
+                            "      const callback = window.kicad.ipc._callbacks[callbackId];"
+                            "      if (!callback)"
+                            "        return;"
+                            "      delete window.kicad.ipc._callbacks[callbackId];"
+                            "      if (isError) {"
+                            "        callback.reject(new Error(jsonData));"
+                            "        return;"
+                            "      }"
+                            "      try {"
+                            "        callback.resolve(JSON.parse(jsonData));"
+                            "      } catch (e) {"
+                            "        callback.reject(e);"
+                            "      }"
+                            "    }"
+                            "  };"
+                            "  console.log('[KiCad] window.kicad.ipc bridge injected successfully');"
+                            "})();" );
+                    RunScriptAsync( kicadIpcScript );
+                }
 
                 // Inject KaTeX for LaTeX math rendering.
                 // Uses fetch() + blob URLs to bypass CSP restrictions that block
@@ -752,7 +1104,7 @@ void WEBVIEW_PANEL::OnWebViewLoaded( wxWebViewEvent& aEvt )
                         "  "
                         "  console.log('[KiCad] KaTeX injection started');"
                         "})();" );
-                m_browser->RunScriptAsync( katexScript );
+                RunScriptAsync( katexScript );
             } );
 
     if( !m_initialized )
