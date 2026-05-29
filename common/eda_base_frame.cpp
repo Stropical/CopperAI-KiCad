@@ -77,6 +77,10 @@
 #include <functional>
 #include <kiface_ids.h>
 
+#ifdef __WXMSW__
+#include <windows.h>
+#endif
+
 #ifdef KICAD_IPC_API
 #include <api/api_server.h>
 #endif
@@ -1624,8 +1628,112 @@ void EDA_BASE_FRAME::onIconize( wxIconizeEvent& aEvent )
 
 
 #ifdef __WXMSW__
+namespace
+{
+constexpr UINT WM_UAHDRAWMENU = 0x0091;
+constexpr UINT WM_UAHDRAWMENUITEM = 0x0092;
+
+struct UAHMENU
+{
+    HMENU hmenu;
+    HDC   hdc;
+    DWORD dwFlags;
+};
+
+struct UAHMENUITEMMETRICS
+{
+    DWORD rgsizeBar[2];
+    DWORD rgsizePopup[4];
+};
+
+struct UAHMENUPOPUPMETRICS
+{
+    DWORD rgcx[4];
+    DWORD fUpdateMaxWidths : 2;
+};
+
+struct UAHMENUITEM
+{
+    int                 iPosition;
+    UAHMENUITEMMETRICS  umim;
+    UAHMENUPOPUPMETRICS umpm;
+};
+
+struct UAHDRAWMENUITEM
+{
+    DRAWITEMSTRUCT dis;
+    UAHMENU        um;
+    UAHMENUITEM    umi;
+};
+
+COLORREF wxToColorRef( const wxColour& aColour )
+{
+    return RGB( aColour.Red(), aColour.Green(), aColour.Blue() );
+}
+
+void drawDarkMenuBarBackground( HWND aHwnd, HDC aHdc )
+{
+    MENUBARINFO menuInfo = {};
+    menuInfo.cbSize = sizeof( menuInfo );
+
+    if( !GetMenuBarInfo( aHwnd, OBJID_MENU, 0, &menuInfo ) )
+        return;
+
+    RECT windowRect = {};
+    GetWindowRect( aHwnd, &windowRect );
+
+    RECT menuRect = menuInfo.rcBar;
+    OffsetRect( &menuRect, -windowRect.left, -windowRect.top );
+
+    HBRUSH bg = CreateSolidBrush( wxToColorRef( KIPLATFORM::UI::GetPanelBGColour() ) );
+    FillRect( aHdc, &menuRect, bg );
+    DeleteObject( bg );
+}
+
+void drawDarkMenuBarItem( HWND aHwnd, const UAHDRAWMENUITEM* aItem )
+{
+    if( !aItem )
+        return;
+
+    RECT itemRect = aItem->dis.rcItem;
+    const bool selected = ( aItem->dis.itemState & ODS_SELECTED ) != 0
+                          || ( aItem->dis.itemState & ODS_HOTLIGHT ) != 0;
+
+    wxColour bgColour = selected ? wxColour( 55, 55, 55 ) : KIPLATFORM::UI::GetPanelBGColour();
+    HBRUSH bg = CreateSolidBrush( wxToColorRef( bgColour ) );
+    FillRect( aItem->um.hdc, &itemRect, bg );
+    DeleteObject( bg );
+
+    wchar_t label[256] = {};
+    GetMenuStringW( aItem->um.hmenu, aItem->umi.iPosition, label, 255, MF_BYPOSITION );
+
+    SetBkMode( aItem->um.hdc, TRANSPARENT );
+    SetTextColor( aItem->um.hdc, RGB( 245, 245, 245 ) );
+
+    RECT textRect = itemRect;
+    InflateRect( &textRect, -6, 0 );
+    DrawTextW( aItem->um.hdc, label, -1, &textRect,
+               DT_SINGLELINE | DT_VCENTER | DT_CENTER | DT_NOPREFIX );
+}
+}
+
 WXLRESULT EDA_BASE_FRAME::MSWWindowProc( WXUINT message, WXWPARAM wParam, WXLPARAM lParam )
 {
+    if( message == WM_UAHDRAWMENU )
+    {
+        if( UAHMENU* menu = reinterpret_cast<UAHMENU*>( lParam ) )
+        {
+            drawDarkMenuBarBackground( GetHWND(), menu->hdc );
+            return TRUE;
+        }
+    }
+
+    if( message == WM_UAHDRAWMENUITEM )
+    {
+        drawDarkMenuBarItem( GetHWND(), reinterpret_cast<UAHDRAWMENUITEM*>( lParam ) );
+        return TRUE;
+    }
+
     // This will help avoid the menu keeping focus when the alt key is released
     // You can still trigger accelerators as long as you hold down alt
     if( message == WM_SYSCOMMAND )
