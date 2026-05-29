@@ -2464,7 +2464,7 @@ void SCH_EDIT_FRAME::EnsureOllamaNotebook()
 
     m_ollamaAgentNotebook =
             new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                            wxNB_TOP | wxBORDER_NONE | wxCLIP_CHILDREN );
+                            wxNB_TOP | wxBORDER_NONE | wxCLIP_CHILDREN | wxNB_NOPAGETHEME );
     m_ollamaAgentTabPanel = new wxPanel( m_ollamaAgentNotebook, wxID_ANY, wxDefaultPosition,
                                          wxDefaultSize, wxBORDER_NONE );
     m_datasheetTabPanel = new wxPanel( m_ollamaAgentNotebook, wxID_ANY, wxDefaultPosition,

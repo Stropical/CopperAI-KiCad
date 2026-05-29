@@ -76,6 +76,7 @@ elseif( WIN32 )
         "winhttp"
         "wintrust"
         "Imm32"
+        "Dwmapi"
         )
 elseif( UNIX )
     list( APPEND PLATFORM_SRCS

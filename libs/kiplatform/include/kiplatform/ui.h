@@ -40,6 +40,7 @@ namespace KIPLATFORM
 
         wxColour GetDialogBGColour();
         wxColour GetPanelBGColour();
+        void ApplyDarkFrameTheme( wxWindow* aWindow );
 
         /**
          * Pass the current focus to the window. On OSX this will forcefully give the focus to

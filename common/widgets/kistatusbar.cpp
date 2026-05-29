@@ -33,6 +33,7 @@
 #include <background_jobs_monitor.h>
 #include <notifications_manager.h>
 #include <bitmaps.h>
+#include <kiplatform/ui.h>
 #include <wx/dcclient.h>
 
 #define FIELD_OFFSET_BGJOB_TEXT 0
@@ -45,6 +46,9 @@ KISTATUSBAR::KISTATUSBAR( int aNumberFields, wxWindow* parent, wxWindowID id ) :
         wxStatusBar( parent, id ),
         m_normalFieldsCount( aNumberFields )
 {
+    SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    SetForegroundColour( wxColour( 229, 229, 229 ) );
+
 #ifdef __WXOSX__
     // we need +1 extra field on OSX to offset from the rounded corner on the right
     // OSX doesn't use resize grippers like the other platforms and the statusbar field
@@ -83,6 +87,8 @@ KISTATUSBAR::KISTATUSBAR( int aNumberFields, wxWindow* parent, wxWindowID id ) :
     delete[] styles;
 
     m_backgroundTxt = new wxStaticText( this, wxID_ANY, wxT( "" ) );
+    m_backgroundTxt->SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    m_backgroundTxt->SetForegroundColour( wxColour( 229, 229, 229 ) );
 
     m_backgroundProgressBar = new wxGauge( this, wxID_ANY, 100, wxDefaultPosition, wxDefaultSize,
                                            wxGA_HORIZONTAL | wxGA_SMOOTH );

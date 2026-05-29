@@ -198,10 +198,16 @@ WX_AUI_DOCK_ART::WX_AUI_DOCK_ART() : wxAuiDefaultDockArt()
     m_captionSize = ( wxNORMAL_FONT->GetPixelSize().y * 7 ) / 4;
 #endif
 
-    SetColour( wxAUI_DOCKART_ACTIVE_CAPTION_TEXT_COLOUR,
-               wxSystemSettings::GetColour( wxSYS_COLOUR_BTNTEXT ) );
-    SetColour( wxAUI_DOCKART_INACTIVE_CAPTION_TEXT_COLOUR,
-               wxSystemSettings::GetColour( wxSYS_COLOUR_BTNTEXT ) );
+    SetColour( wxAUI_DOCKART_BACKGROUND_COLOUR, KIPLATFORM::UI::GetPanelBGColour() );
+    SetColour( wxAUI_DOCKART_SASH_COLOUR, wxColour( 18, 18, 18 ) );
+    SetColour( wxAUI_DOCKART_BORDER_COLOUR, wxColour( 58, 58, 58 ) );
+    SetColour( wxAUI_DOCKART_GRIPPER_COLOUR, wxColour( 90, 90, 90 ) );
+    SetColour( wxAUI_DOCKART_ACTIVE_CAPTION_COLOUR, wxColour( 40, 40, 40 ) );
+    SetColour( wxAUI_DOCKART_ACTIVE_CAPTION_GRADIENT_COLOUR, wxColour( 40, 40, 40 ) );
+    SetColour( wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour( 48, 48, 48 ) );
+    SetColour( wxAUI_DOCKART_INACTIVE_CAPTION_GRADIENT_COLOUR, wxColour( 48, 48, 48 ) );
+    SetColour( wxAUI_DOCKART_ACTIVE_CAPTION_TEXT_COLOUR, wxColour( 245, 245, 245 ) );
+    SetColour( wxAUI_DOCKART_INACTIVE_CAPTION_TEXT_COLOUR, wxColour( 245, 245, 245 ) );
 
     // Turn off the ridiculous looking gradient
     m_gradientType = wxAUI_GRADIENT_NONE;

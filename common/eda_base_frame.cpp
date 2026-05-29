@@ -129,6 +129,10 @@ END_EVENT_TABLE()
 
 void EDA_BASE_FRAME::commonInit( FRAME_T aFrameType )
 {
+    KIPLATFORM::UI::ApplyDarkFrameTheme( this );
+    SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    SetForegroundColour( wxColour( 229, 229, 229 ) );
+
     m_ident             = aFrameType;
     m_maximizeByDefault = false;
     m_infoBar           = nullptr;
@@ -571,6 +575,9 @@ void EDA_BASE_FRAME::CommonSettingsChanged( int aFlags )
 void EDA_BASE_FRAME::ThemeChanged()
 {
     ClearScaledBitmapCache();
+    KIPLATFORM::UI::ApplyDarkFrameTheme( this );
+    SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    SetForegroundColour( wxColour( 229, 229, 229 ) );
 
     // Update all the toolbars to have new icons
     wxAuiPaneInfoArray panes = m_auimgr.GetAllPanes();

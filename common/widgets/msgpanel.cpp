@@ -32,6 +32,7 @@
 
 #include <advanced_config.h>
 #include <kiid.h>
+#include <kiplatform/ui.h>
 
 #include <widgets/ui_common.h>
 
@@ -47,7 +48,8 @@ EDA_MSG_PANEL::EDA_MSG_PANEL( wxWindow* aParent, int aId, const wxPoint& aPositi
     wxPanel( aParent, aId, aPosition, aSize, style, name )
 {
     SetFont( KIUI::GetStatusFont( this ) );
-    SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_BTNFACE ) );
+    SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    SetForegroundColour( wxColour( 229, 229, 229 ) );
 
     // informs wx not to paint the background itself as we will paint it later in erase()
     SetBackgroundStyle( wxBG_STYLE_PAINT );
@@ -99,9 +101,9 @@ void EDA_MSG_PANEL::OnPaint( wxPaintEvent& aEvent )
 
     erase( &dc );
 
-    dc.SetBackground( wxSystemSettings::GetColour( wxSYS_COLOUR_BTNFACE ) );
+    dc.SetBackground( KIPLATFORM::UI::GetPanelBGColour() );
     dc.SetBackgroundMode( wxSOLID );
-    dc.SetTextBackground( wxSystemSettings::GetColour( wxSYS_COLOUR_BTNFACE ) );
+    dc.SetTextBackground( KIPLATFORM::UI::GetPanelBGColour() );
     dc.SetFont( KIUI::GetControlFont( this ) );
 
     for( const MSG_PANEL_ITEM& item : m_Items )
@@ -203,7 +205,7 @@ void EDA_MSG_PANEL::showItem( wxDC& aDC, const MSG_PANEL_ITEM& aItem )
     if( tlw && !tlw->IsActive() )
         color = wxSystemSettings::GetColour( wxSYS_COLOUR_GRAYTEXT );
     else
-        color = wxSystemSettings::GetColour( wxSYS_COLOUR_WINDOWTEXT );
+        color = wxColour( 229, 229, 229 );
 
     aDC.SetTextForeground( color.ToColour() );
 
@@ -229,7 +231,7 @@ void EDA_MSG_PANEL::erase( wxDC* aDC )
     wxBrush brush;
 
     wxSize  size  = GetClientSize();
-    wxColour color = wxSystemSettings::GetColour( wxSYS_COLOUR_BTNFACE );
+    wxColour color = KIPLATFORM::UI::GetPanelBGColour();
 
     pen.SetColour( color );
 

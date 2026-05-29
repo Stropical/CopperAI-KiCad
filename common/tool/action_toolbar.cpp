@@ -96,7 +96,8 @@ ACTION_TOOLBAR_PALETTE::ACTION_TOOLBAR_PALETTE( wxWindow* aParent, bool aVertica
         m_buttonSizer( nullptr )
 {
     m_panel = new wxPanel( this, wxID_ANY );
-    m_panel->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_WINDOW ) );
+    m_panel->SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    m_panel->SetForegroundColour( wxColour( 229, 229, 229 ) );
 
     // This sizer holds the buttons for the actions
     m_buttonSizer = new wxBoxSizer( aVertical ? wxVERTICAL : wxHORIZONTAL );
@@ -191,6 +192,8 @@ ACTION_TOOLBAR::ACTION_TOOLBAR( EDA_BASE_FRAME* parent, wxWindowID id, const wxP
     m_paletteTimer = new wxTimer( this );
 
     SetArtProvider( new WX_AUI_TOOLBAR_ART );
+    SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    SetForegroundColour( wxColour( 229, 229, 229 ) );
 
     Connect( wxEVT_COMMAND_TOOL_CLICKED, wxAuiToolBarEventHandler( ACTION_TOOLBAR::onToolEvent ),
              nullptr, this );

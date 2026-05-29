@@ -19,6 +19,7 @@
  */
 
 #include <windows.h>
+#include <dwmapi.h>
 
 #include <kiplatform/ui.h>
 
@@ -71,6 +72,21 @@ void KIPLATFORM::UI::GetInfoBarColours( wxColour& aFGColour, wxColour& aBGColour
         aBGColour = wxSystemSettings::GetColour( wxSYS_COLOUR_INFOBK );
         aFGColour = wxSystemSettings::GetColour( wxSYS_COLOUR_INFOTEXT );
     }
+}
+
+
+void KIPLATFORM::UI::ApplyDarkFrameTheme( wxWindow* aWindow )
+{
+    if( !aWindow )
+        return;
+
+    BOOL dark = TRUE;
+    HWND hwnd = aWindow->GetHWND();
+
+    // DWMWA_USE_IMMERSIVE_DARK_MODE. Attribute 20 is used on current Windows
+    // builds; 19 covers older Windows 10 builds that first shipped the flag.
+    DwmSetWindowAttribute( hwnd, 20, &dark, sizeof( dark ) );
+    DwmSetWindowAttribute( hwnd, 19, &dark, sizeof( dark ) );
 }
 
 

@@ -296,6 +296,9 @@ void BITMAP_BUTTON::OnPaint( wxPaintEvent& aEvent )
     // The drawing rectangle
     wxRect    rect( wxPoint( 0, 0 ), GetSize() );
     wxPaintDC dc( this );
+    dc.SetPen( *wxTRANSPARENT_PEN );
+    dc.SetBrush( wxBrush( KIPLATFORM::UI::GetPanelBGColour() ) );
+    dc.DrawRectangle( rect );
 
     if( hasFlag( wxCONTROL_SEPARATOR ) )
     {
