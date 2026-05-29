@@ -85,7 +85,8 @@ PROPERTIES_PANEL::PROPERTIES_PANEL( wxWindow* aParent, EDA_BASE_FRAME* aFrame ) 
     m_caption->SetForegroundColour( fg );
     mainSizer->Add( m_caption, 0, wxALL | wxEXPAND, 5 );
 
-    m_grid = new wxPropertyGrid( this );
+    m_grid = new wxPropertyGrid( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                 wxPG_DEFAULT_STYLE | wxBORDER_NONE );
     m_grid->SetBackgroundColour( bg );
     m_grid->SetForegroundColour( fg );
     m_grid->SetCellBackgroundColour( bg );

@@ -104,10 +104,11 @@
 #include <wx/app.h>
 #include <wx/aui/framemanager.h>
 #include <wx/filedlg.h>
-#include <wx/notebook.h>
+#include <wx/simplebook.h>
 #include <wx/socket.h>
 #include <wx/debug.h>
 #include <wx/sizer.h>
+#include <wx/stattext.h>
 #include <wx/utils.h>
 #include <widgets/panel_sch_selection_filter.h>
 #include <widgets/wx_aui_utils.h>
@@ -152,6 +153,7 @@ SCH_EDIT_FRAME::SCH_EDIT_FRAME( KIWAY* aKiway, wxWindow* aParent ) :
         m_ercDialog( nullptr ), m_diffSymbolDialog( nullptr ), m_symbolFieldsTableDialog( nullptr ),
         m_netNavigator( nullptr ), m_highlightedConnChanged( false ), m_designBlocksPane( nullptr ),
         m_ollamaAgentPane( nullptr ), m_ollamaAgentNotebook( nullptr ),
+        m_ollamaAgentTabHeader( nullptr ), m_datasheetTabHeader( nullptr ),
         m_ollamaAgentTabPanel( nullptr ), m_datasheetTabPanel( nullptr ),
         m_ollamaAgentWebView( nullptr ), m_datasheetWebView( nullptr )
 {
@@ -2462,9 +2464,51 @@ void SCH_EDIT_FRAME::EnsureOllamaNotebook()
     if( m_ollamaAgentPane )
         m_ollamaAgentPane->Destroy();
 
+    wxPanel* container = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                      wxBORDER_NONE | wxCLIP_CHILDREN );
+    container->SetBackgroundColour( wxColour( 10, 10, 10 ) );
+    container->SetForegroundColour( wxColour( 229, 229, 229 ) );
+
+    wxPanel* tabBar = new wxPanel( container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                   wxBORDER_NONE | wxCLIP_CHILDREN );
+    tabBar->SetBackgroundColour( wxColour( 24, 24, 24 ) );
+    tabBar->SetForegroundColour( wxColour( 229, 229, 229 ) );
+
+    auto makeTab = [&]( const wxString& aLabel, int aPage ) -> wxWindow*
+    {
+        wxPanel* tab = new wxPanel( tabBar, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                    wxBORDER_NONE | wxCLIP_CHILDREN );
+        wxStaticText* label = new wxStaticText( tab, wxID_ANY, aLabel );
+        label->SetForegroundColour( wxColour( 245, 245, 245 ) );
+        label->SetBackgroundColour( wxColour( 24, 24, 24 ) );
+
+        wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
+        sizer->Add( label, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, FromDIP( 8 ) );
+        tab->SetSizer( sizer );
+        tab->SetMinSize( FromDIP( wxSize( 72, 26 ) ) );
+
+        auto selectPage = [this, aPage]( wxMouseEvent& aEvent )
+        {
+            SelectOllamaNotebookPage( aPage );
+        };
+
+        tab->Bind( wxEVT_LEFT_DOWN, selectPage );
+        label->Bind( wxEVT_LEFT_DOWN, selectPage );
+        return tab;
+    };
+
+    m_ollamaAgentTabHeader = makeTab( _( "Agent" ), 0 );
+    m_datasheetTabHeader = makeTab( _( "Datasheet" ), 1 );
+
+    wxBoxSizer* tabSizer = new wxBoxSizer( wxHORIZONTAL );
+    tabSizer->Add( m_ollamaAgentTabHeader, 0, wxEXPAND );
+    tabSizer->Add( m_datasheetTabHeader, 0, wxEXPAND );
+    tabSizer->AddStretchSpacer();
+    tabBar->SetSizer( tabSizer );
+
     m_ollamaAgentNotebook =
-            new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                            wxNB_TOP | wxBORDER_NONE | wxCLIP_CHILDREN | wxNB_NOPAGETHEME );
+            new wxSimplebook( container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                              wxBORDER_NONE | wxCLIP_CHILDREN );
     m_ollamaAgentTabPanel = new wxPanel( m_ollamaAgentNotebook, wxID_ANY, wxDefaultPosition,
                                          wxDefaultSize, wxBORDER_NONE );
     m_datasheetTabPanel = new wxPanel( m_ollamaAgentNotebook, wxID_ANY, wxDefaultPosition,
@@ -2484,11 +2528,15 @@ void SCH_EDIT_FRAME::EnsureOllamaNotebook()
 
     m_ollamaAgentNotebook->AddPage( m_ollamaAgentTabPanel, _( "Agent" ), true );
     m_ollamaAgentNotebook->AddPage( m_datasheetTabPanel, _( "Datasheet" ), false );
-    m_ollamaAgentNotebook->Bind( wxEVT_NOTEBOOK_PAGE_CHANGED,
-                                 &SCH_EDIT_FRAME::OnOllamaNotebookPageChanged, this );
 
-    m_ollamaAgentPane = m_ollamaAgentNotebook;
+    wxBoxSizer* containerSizer = new wxBoxSizer( wxVERTICAL );
+    containerSizer->Add( tabBar, 0, wxEXPAND );
+    containerSizer->Add( m_ollamaAgentNotebook, 1, wxEXPAND );
+    container->SetSizer( containerSizer );
+
+    m_ollamaAgentPane = container;
     agentPane.Window( m_ollamaAgentPane );
+    SelectOllamaNotebookPage( 0 );
     m_auimgr.Update();
 }
 
@@ -2633,6 +2681,35 @@ void SCH_EDIT_FRAME::OnOllamaNotebookPageChanged( wxBookCtrlEvent& aEvent )
         RefreshDatasheetWebView();
 
     aEvent.Skip();
+}
+
+
+void SCH_EDIT_FRAME::SelectOllamaNotebookPage( int aPage )
+{
+    if( !m_ollamaAgentNotebook )
+        return;
+
+    m_ollamaAgentNotebook->SetSelection( aPage );
+
+    auto setTabActive = []( wxWindow* aTab, bool aActive )
+    {
+        if( !aTab )
+            return;
+
+        wxColour bg = aActive ? wxColour( 10, 10, 10 ) : wxColour( 24, 24, 24 );
+        aTab->SetBackgroundColour( bg );
+
+        for( wxWindow* child : aTab->GetChildren() )
+            child->SetBackgroundColour( bg );
+
+        aTab->Refresh();
+    };
+
+    setTabActive( m_ollamaAgentTabHeader, aPage == 0 );
+    setTabActive( m_datasheetTabHeader, aPage == 1 );
+
+    if( aPage == 1 )
+        RefreshDatasheetWebView();
 }
 
 

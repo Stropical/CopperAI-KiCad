@@ -1684,6 +1684,10 @@ void drawDarkMenuBarBackground( HWND aHwnd, HDC aHdc )
 
     RECT menuRect = menuInfo.rcBar;
     OffsetRect( &menuRect, -windowRect.left, -windowRect.top );
+    menuRect.left = 0;
+    menuRect.right = windowRect.right - windowRect.left;
+    menuRect.top -= 1;
+    menuRect.bottom += 2;
 
     HBRUSH bg = CreateSolidBrush( wxToColorRef( KIPLATFORM::UI::GetPanelBGColour() ) );
     FillRect( aHdc, &menuRect, bg );
@@ -1696,6 +1700,7 @@ void drawDarkMenuBarItem( HWND aHwnd, const UAHDRAWMENUITEM* aItem )
         return;
 
     RECT itemRect = aItem->dis.rcItem;
+    InflateRect( &itemRect, 1, 1 );
     const bool selected = ( aItem->dis.itemState & ODS_SELECTED ) != 0
                           || ( aItem->dis.itemState & ODS_HOTLIGHT ) != 0;
 
@@ -1713,7 +1718,7 @@ void drawDarkMenuBarItem( HWND aHwnd, const UAHDRAWMENUITEM* aItem )
     RECT textRect = itemRect;
     InflateRect( &textRect, -6, 0 );
     DrawTextW( aItem->um.hdc, label, -1, &textRect,
-               DT_SINGLELINE | DT_VCENTER | DT_CENTER | DT_NOPREFIX );
+               DT_SINGLELINE | DT_VCENTER | DT_CENTER | DT_HIDEPREFIX );
 }
 }
 

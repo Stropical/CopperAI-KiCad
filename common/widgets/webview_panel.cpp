@@ -299,7 +299,7 @@ bool WEBVIEW_PANEL::HandleEditCommand( int aCommandId )
 
 WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& aPos,
                               const wxSize& aSize ) :
-        wxPanel( aParent, aId, aPos, aSize ), m_browser( nullptr ), m_initialized( false ),
+        wxPanel( aParent, aId, aPos, aSize, wxBORDER_NONE ), m_browser( nullptr ), m_initialized( false ),
         m_loadError( false ), m_loadedEventBound( false ), m_handleExternalLinks( false ),
         m_lockNavigation( false ), m_lockedUrl( wxEmptyString ), m_toolbar( nullptr ),
         m_btnOpenId( wxID_ANY ), m_btnCloseId( wxID_ANY )
@@ -331,7 +331,8 @@ WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& 
     Bind( wxEVT_COMMAND_TOOL_CLICKED, &WEBVIEW_PANEL::OnToolbarClick, this );
 
     // Create the WebView
-    m_browser = wxWebView::New( this, wxID_ANY );
+    m_browser = wxWebView::New( this, wxID_ANY, wxWebViewDefaultURLStr, wxDefaultPosition,
+                                wxDefaultSize, wxWebViewBackendDefault, wxBORDER_NONE );
 
     if( !m_browser )
     {

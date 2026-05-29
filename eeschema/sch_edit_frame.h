@@ -69,7 +69,7 @@ class DIALOG_SCHEMATIC_SETUP;
 class WEBVIEW_PANEL;
 class wxAuiManagerEvent;
 class wxBookCtrlEvent;
-class wxNotebook;
+class wxSimplebook;
 
 
 /// Schematic search type used by the socket link with Pcbnew
@@ -1058,6 +1058,7 @@ private:
     void EnsureOllamaNotebook();
     WEBVIEW_PANEL* EnsureOllamaAgentWebView();
     WEBVIEW_PANEL* EnsureDatasheetWebView();
+    void SelectOllamaNotebookPage( int aPage );
     void LoadOllamaAgentWebView();
     void ResetOllamaAgentWebView();
     void RefreshDatasheetWebView();
@@ -1104,7 +1105,9 @@ private:
 
     DESIGN_BLOCK_PANE* m_designBlocksPane;
     wxWindow*          m_ollamaAgentPane;      // Placeholder panel or notebook
-    wxNotebook*        m_ollamaAgentNotebook;  // Lazy-created notebook for Agent/Datasheet tabs
+    wxSimplebook*      m_ollamaAgentNotebook;  // Lazy-created book for Agent/Datasheet pages
+    wxWindow*          m_ollamaAgentTabHeader; // Custom dark Agent tab
+    wxWindow*          m_datasheetTabHeader;   // Custom dark Datasheet tab
     wxWindow*          m_ollamaAgentTabPanel;  // Parent panel for Agent WEBVIEW_PANEL
     wxWindow*          m_datasheetTabPanel;    // Parent panel for Datasheet WEBVIEW_PANEL
     WEBVIEW_PANEL*     m_ollamaAgentWebView;   // Lazy-created Agent tab webview
