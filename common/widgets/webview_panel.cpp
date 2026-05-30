@@ -328,9 +328,10 @@ void WEBVIEW_PANEL::RegisterBuiltInMessageHandlers()
                     {
                         json response;
                         response["ok"] = opened;
-                        SendApiCallback( callbackId, !opened,
-                                         opened ? wxString::FromUTF8( response.dump() )
-                                                : wxS( "Failed to open system browser." ) );
+                        const wxString callbackPayload =
+                                opened ? wxString::FromUTF8( response.dump() )
+                                       : wxString( wxS( "Failed to open system browser." ) );
+                        SendApiCallback( callbackId, !opened, callbackPayload );
                     }
                 }
                 catch( const std::exception& e )
@@ -719,9 +720,6 @@ void WEBVIEW_PANEL::RunScriptAsync( const wxString& aScript )
         return;
     }
 
-    if( KIPLATFORM::UI::RunWebViewScriptFireAndForget( m_browser, aScript ) )
-        return;
-
     m_browser->RunScriptAsync( aScript );
 }
 
@@ -758,8 +756,7 @@ void WEBVIEW_PANEL::FlushDeferredScripts()
         if( !m_browser )
             break;
 
-        if( !KIPLATFORM::UI::RunWebViewScriptFireAndForget( m_browser, script ) )
-            m_browser->RunScriptAsync( script );
+        m_browser->RunScriptAsync( script );
     }
 }
 
