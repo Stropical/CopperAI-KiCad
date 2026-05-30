@@ -560,6 +560,7 @@ WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& 
                         wxT( "Close WebView" ), wxT( "Hide the webview panel" ) );
 
     m_toolbar->Realize();
+    m_toolbar->Hide();
 
     // Store button IDs
     m_btnOpenId = openId;
@@ -585,6 +586,7 @@ WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& 
     // Layout
     wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
     sizer->Add( m_toolbar, 0, wxEXPAND );
+    sizer->Show( m_toolbar, false );
     sizer->Add( m_browser, 1, wxEXPAND | wxALL, 0 );
     SetSizer( sizer );
 
@@ -1184,31 +1186,37 @@ void WEBVIEW_PANEL::OnScriptMessage( wxWebViewEvent& aEvt )
     handler.Trim( true ).Trim( false );
     wxString message = aEvt.GetString();
 
-    // WebView2 only exposes a single postMessage pipe, so wx_msg sends a small
-    // JSON envelope there that carries the KiCad handler name.
-    if( handler.IsEmpty() || m_msgHandlers.find( handler ) == m_msgHandlers.end() )
+    // WebView2 only exposes a single postMessage pipe and reports every message
+    // as the one registered handler.  Always prefer wx_msg's envelope when it is
+    // present, then fall back to wx's native named handler on WebKit.
+    json payload = json::parse( std::string( message.utf8_str() ), nullptr, false );
+
+    if( payload.is_object() )
     {
-        json payload = json::parse( std::string( message.utf8_str() ), nullptr, false );
+        bool hasWrappedHandler = false;
 
-        if( payload.is_object() )
+        if( payload.contains( "handler" ) && payload["handler"].is_string() )
         {
-            if( payload.contains( "handler" ) && payload["handler"].is_string() )
-                handler = wxString::FromUTF8( payload["handler"].get<std::string>() );
-            else if( payload.contains( "handlerName" ) && payload["handlerName"].is_string() )
-                handler = wxString::FromUTF8( payload["handlerName"].get<std::string>() );
-
-            if( payload.contains( "message" ) )
-            {
-                const json& wrappedMessage = payload["message"];
-
-                if( wrappedMessage.is_string() )
-                    message = wxString::FromUTF8( wrappedMessage.get<std::string>() );
-                else
-                    message = wxString::FromUTF8( wrappedMessage.dump() );
-            }
-
-            handler.Trim( true ).Trim( false );
+            handler = wxString::FromUTF8( payload["handler"].get<std::string>() );
+            hasWrappedHandler = true;
         }
+        else if( payload.contains( "handlerName" ) && payload["handlerName"].is_string() )
+        {
+            handler = wxString::FromUTF8( payload["handlerName"].get<std::string>() );
+            hasWrappedHandler = true;
+        }
+
+        if( hasWrappedHandler && payload.contains( "message" ) )
+        {
+            const json& wrappedMessage = payload["message"];
+
+            if( wrappedMessage.is_string() )
+                message = wxString::FromUTF8( wrappedMessage.get<std::string>() );
+            else
+                message = wxString::FromUTF8( wrappedMessage.dump() );
+        }
+
+        handler.Trim( true ).Trim( false );
     }
 
     auto it = m_msgHandlers.find( handler );
