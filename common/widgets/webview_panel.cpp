@@ -1182,13 +1182,41 @@ void WEBVIEW_PANEL::OnScriptMessage( wxWebViewEvent& aEvt )
 
     wxString handler = aEvt.GetMessageHandler();
     handler.Trim( true ).Trim( false );
+    wxString message = aEvt.GetString();
+
+    // WebView2 only exposes a single postMessage pipe, so wx_msg sends a small
+    // JSON envelope there that carries the KiCad handler name.
+    if( handler.IsEmpty() || m_msgHandlers.find( handler ) == m_msgHandlers.end() )
+    {
+        json payload = json::parse( std::string( message.utf8_str() ), nullptr, false );
+
+        if( payload.is_object() )
+        {
+            if( payload.contains( "handler" ) && payload["handler"].is_string() )
+                handler = wxString::FromUTF8( payload["handler"].get<std::string>() );
+            else if( payload.contains( "handlerName" ) && payload["handlerName"].is_string() )
+                handler = wxString::FromUTF8( payload["handlerName"].get<std::string>() );
+
+            if( payload.contains( "message" ) )
+            {
+                const json& wrappedMessage = payload["message"];
+
+                if( wrappedMessage.is_string() )
+                    message = wxString::FromUTF8( wrappedMessage.get<std::string>() );
+                else
+                    message = wxString::FromUTF8( wrappedMessage.dump() );
+            }
+
+            handler.Trim( true ).Trim( false );
+        }
+    }
 
     auto it = m_msgHandlers.find( handler );
     if( it != m_msgHandlers.end() )
     {
         try
         {
-            it->second( aEvt.GetString() );
+            it->second( message );
         }
         catch( const std::exception& e )
         {

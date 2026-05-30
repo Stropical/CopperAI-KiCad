@@ -1687,7 +1687,7 @@ void drawDarkMenuBarBackground( HWND aHwnd, HDC aHdc )
     menuRect.left = 0;
     menuRect.right = windowRect.right - windowRect.left;
     menuRect.top -= 1;
-    menuRect.bottom += 2;
+    menuRect.bottom += 8;
 
     HBRUSH bg = CreateSolidBrush( wxToColorRef( KIPLATFORM::UI::GetPanelBGColour() ) );
     FillRect( aHdc, &menuRect, bg );
@@ -1700,7 +1700,7 @@ void drawDarkMenuBarItem( HWND aHwnd, const UAHDRAWMENUITEM* aItem )
         return;
 
     RECT itemRect = aItem->dis.rcItem;
-    InflateRect( &itemRect, 1, 1 );
+    InflateRect( &itemRect, 1, 2 );
     const bool selected = ( aItem->dis.itemState & ODS_SELECTED ) != 0
                           || ( aItem->dis.itemState & ODS_HOTLIGHT ) != 0;
 

@@ -14,7 +14,7 @@ PANEL_KICAD_LAUNCHER_BASE::PANEL_KICAD_LAUNCHER_BASE( wxWindow* parent, wxWindow
 	wxBoxSizer* bSizer2;
 	bSizer2 = new wxBoxSizer( wxVERTICAL );
 
-	m_scrolledWindow = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL );
+	m_scrolledWindow = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL|wxBORDER_NONE );
 	m_scrolledWindow->SetScrollRate( 0, 5 );
 	wxBoxSizer* bSizerInner;
 	bSizerInner = new wxBoxSizer( wxVERTICAL );
