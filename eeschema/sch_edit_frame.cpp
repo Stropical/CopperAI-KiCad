@@ -139,7 +139,7 @@ public:
             m_onClick( std::move( aOnClick ) )
     {
         SetBackgroundStyle( wxBG_STYLE_PAINT );
-        SetMinSize( wxSize( FromDIP( 96 ), FromDIP( 28 ) ) );
+        SetMinSize( wxSize( FromDIP( 96 ), FromDIP( 30 ) ) );
         SetCursor( wxCursor( wxCURSOR_HAND ) );
 
         Bind( wxEVT_PAINT, &COPPERAI_AGENT_TAB::OnPaint, this );
@@ -162,31 +162,25 @@ private:
     {
         wxAutoBufferedPaintDC dc( this );
         const wxColour        tabBarBg( 30, 30, 30 );
-        const wxColour        activeBg( 18, 20, 22 );
-        const wxColour        hoverBg( 43, 45, 47 );
-        const wxColour        inactiveBg( 34, 35, 37 );
-        const wxColour        activeBorder( 238, 138, 86 );
-        const wxColour        inactiveBorder( 70, 72, 75 );
+        const wxColour        activeBg( 38, 38, 38 );
+        const wxColour        hoverBg( 45, 45, 45 );
+        const wxColour        border( 65, 65, 65 );
+        const wxColour        activeAccent( 64, 159, 226 );
         const wxColour        activeFg( 245, 245, 245 );
-        const wxColour        inactiveFg( 210, 214, 219 );
+        const wxColour        inactiveFg( 205, 205, 205 );
 
         wxRect rect = GetClientRect();
         dc.SetBackground( wxBrush( tabBarBg ) );
         dc.Clear();
 
-        rect.Deflate( FromDIP( 2 ), FromDIP( 3 ) );
+        wxRect tabRect = rect;
+        tabRect.Deflate( FromDIP( 2 ), FromDIP( 4 ) );
 
-        dc.SetPen( wxPen( m_active ? activeBorder : inactiveBorder ) );
-        dc.SetBrush( wxBrush( m_active ? activeBg : ( m_hover ? hoverBg : inactiveBg ) ) );
-        dc.DrawRoundedRectangle( rect, FromDIP( 5 ) );
-
-        if( m_active )
+        if( m_active || m_hover )
         {
-            wxRect accent( rect.GetLeft() + FromDIP( 8 ), rect.GetBottom() - FromDIP( 2 ),
-                           rect.GetWidth() - FromDIP( 16 ), FromDIP( 2 ) );
-            dc.SetPen( *wxTRANSPARENT_PEN );
-            dc.SetBrush( wxBrush( activeBorder ) );
-            dc.DrawRoundedRectangle( accent, FromDIP( 1 ) );
+            dc.SetPen( wxPen( m_active ? border : wxColour( 55, 55, 55 ) ) );
+            dc.SetBrush( wxBrush( m_active ? activeBg : hoverBg ) );
+            dc.DrawRoundedRectangle( tabRect, FromDIP( 3 ) );
         }
 
         wxFont font = GetFont();
@@ -196,7 +190,16 @@ private:
 
         dc.SetFont( font );
         dc.SetTextForeground( m_active ? activeFg : inactiveFg );
-        dc.DrawLabel( m_label, rect, wxALIGN_CENTER );
+        dc.DrawLabel( m_label, tabRect, wxALIGN_CENTER );
+
+        if( m_active )
+        {
+            wxRect accent( tabRect.GetLeft() + FromDIP( 10 ), tabRect.GetBottom() - FromDIP( 1 ),
+                           tabRect.GetWidth() - FromDIP( 20 ), FromDIP( 2 ) );
+            dc.SetPen( *wxTRANSPARENT_PEN );
+            dc.SetBrush( wxBrush( activeAccent ) );
+            dc.DrawRoundedRectangle( accent, FromDIP( 1 ) );
+        }
     }
 
     void OnEnter( wxMouseEvent& )
@@ -2575,6 +2578,7 @@ void SCH_EDIT_FRAME::EnsureOllamaNotebook()
     wxPanel* tabBar = new wxPanel( container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                    wxBORDER_NONE | wxCLIP_CHILDREN );
     tabBar->SetBackgroundColour( wxColour( 30, 30, 30 ) );
+    tabBar->SetMinSize( wxSize( -1, FromDIP( 36 ) ) );
 
     wxBoxSizer* tabSizer = new wxBoxSizer( wxHORIZONTAL );
     m_ollamaAgentTabHeader = new COPPERAI_AGENT_TAB( tabBar, _( "Agent" ),
@@ -2588,7 +2592,7 @@ void SCH_EDIT_FRAME::EnsureOllamaNotebook()
                                                        SelectOllamaNotebookPage( 1 );
                                                    } );
 
-    tabSizer->AddSpacer( FromDIP( 6 ) );
+    tabSizer->AddSpacer( FromDIP( 8 ) );
     tabSizer->Add( m_ollamaAgentTabHeader, 0, wxEXPAND | wxTOP | wxBOTTOM, FromDIP( 3 ) );
     tabSizer->Add( m_datasheetTabHeader, 0, wxEXPAND | wxTOP | wxBOTTOM, FromDIP( 3 ) );
     tabSizer->AddStretchSpacer();
@@ -2613,7 +2617,12 @@ void SCH_EDIT_FRAME::EnsureOllamaNotebook()
     m_ollamaAgentNotebook->AddPage( m_ollamaAgentTabPanel, _( "Agent" ), true );
     m_ollamaAgentNotebook->AddPage( m_datasheetTabPanel, _( "Datasheet" ), false );
 
+    wxPanel* tabSeparator = new wxPanel( container, wxID_ANY, wxDefaultPosition,
+                                         wxSize( -1, FromDIP( 1 ) ), wxBORDER_NONE );
+    tabSeparator->SetBackgroundColour( wxColour( 48, 48, 48 ) );
+
     containerSizer->Add( tabBar, 0, wxEXPAND );
+    containerSizer->Add( tabSeparator, 0, wxEXPAND );
     containerSizer->Add( m_ollamaAgentNotebook, 1, wxEXPAND );
     container->SetSizer( containerSizer );
 

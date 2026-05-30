@@ -1694,6 +1694,25 @@ void drawDarkMenuBarBackground( HWND aHwnd, HDC aHdc )
     DeleteObject( bg );
 }
 
+void paintDarkClientTopSeam( HWND aHwnd )
+{
+    HDC hdc = GetDC( aHwnd );
+
+    if( !hdc )
+        return;
+
+    RECT clientRect = {};
+    GetClientRect( aHwnd, &clientRect );
+
+    RECT seamRect = clientRect;
+    seamRect.bottom = seamRect.top + 3;
+
+    HBRUSH bg = CreateSolidBrush( wxToColorRef( KIPLATFORM::UI::GetPanelBGColour() ) );
+    FillRect( hdc, &seamRect, bg );
+    DeleteObject( bg );
+    ReleaseDC( aHwnd, hdc );
+}
+
 void drawDarkMenuBarItem( HWND aHwnd, const UAHDRAWMENUITEM* aItem )
 {
     if( !aItem )
@@ -1737,6 +1756,13 @@ WXLRESULT EDA_BASE_FRAME::MSWWindowProc( WXUINT message, WXWPARAM wParam, WXLPAR
     {
         drawDarkMenuBarItem( GetHWND(), reinterpret_cast<UAHDRAWMENUITEM*>( lParam ) );
         return TRUE;
+    }
+
+    if( message == WM_PAINT || message == WM_NCPAINT )
+    {
+        WXLRESULT result = wxFrame::MSWWindowProc( message, wParam, lParam );
+        paintDarkClientTopSeam( GetHWND() );
+        return result;
     }
 
     // This will help avoid the menu keeping focus when the alt key is released
