@@ -31,8 +31,8 @@
 #ifdef KICAD_IPC_API
 #include <pgm_base.h>
 #endif
+#include <json_common.h>
 #include <widgets/ui_common.h>
-#include <nlohmann/json.hpp>
 #include <wx/base64.h>
 #include <wx/sizer.h>
 #include <wx/log.h>
