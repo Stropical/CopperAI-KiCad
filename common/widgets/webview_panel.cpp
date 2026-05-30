@@ -27,18 +27,22 @@
 #include <api/common/envelope.pb.h>
 #endif
 #include <clipboard.h>
+#include <eda_base_frame.h>
 #include <kiplatform/ui.h>
 #ifdef KICAD_IPC_API
 #include <pgm_base.h>
 #endif
 #include <json_common.h>
+#include <project.h>
 #include <widgets/ui_common.h>
 #include <wx/base64.h>
+#include <wx/filename.h>
 #include <wx/sizer.h>
 #include <wx/log.h>
 #include <wx/button.h>
 #include <wx/toolbar.h>
 #include <wx/timer.h>
+#include <random>
 
 using json = nlohmann::json;
 
@@ -51,6 +55,18 @@ const wxColour COPPERAI_DARK_FG( 229, 229, 229 );
 wxString ToJsStringLiteral( const wxString& aValue )
 {
     return wxString::FromUTF8( json( std::string( aValue.utf8_str() ) ).dump() );
+}
+
+
+wxString RandomHexToken( size_t aBytes )
+{
+    std::random_device rd;
+    wxString           token;
+
+    for( size_t i = 0; i < aBytes; ++i )
+        token += wxString::Format( wxS( "%02x" ), rd() & 0xff );
+
+    return token;
 }
 }
 
@@ -203,6 +219,121 @@ void WEBVIEW_PANEL::SendIpcCallback( const wxString& aCallbackId, bool aIsError,
             ToJsStringLiteral( aJsonData ) );
 
     RunScriptAsync( script );
+}
+
+
+void WEBVIEW_PANEL::EnsureRelayContext()
+{
+    if( m_kicadAdapterSessionId.IsEmpty() )
+        m_kicadAdapterSessionId = wxS( "kas-" ) + RandomHexToken( 16 );
+
+    if( m_kicadAdapterToken.IsEmpty() )
+        m_kicadAdapterToken = wxS( "kat-" ) + RandomHexToken( 24 );
+}
+
+
+void WEBVIEW_PANEL::SendHostRpcResponse( const json& aResponse )
+{
+    if( !m_browser )
+        return;
+
+    const wxString payload = wxString::FromUTF8( aResponse.dump() );
+    const wxString script = wxString::Format(
+            wxS( "(function() {"
+                 "  var msg = %s;"
+                 "  try {"
+                 "    window.dispatchEvent(new MessageEvent('message', { data: msg }));"
+                 "  } catch (e) {}"
+                 "  try {"
+                 "    if (window.kiclient && typeof window.kiclient.postMessage === 'function')"
+                 "      window.kiclient.postMessage(msg);"
+                 "  } catch (e) {}"
+                 "})();" ),
+            ToJsStringLiteral( payload ) );
+
+    RunScriptAsync( script );
+}
+
+
+bool WEBVIEW_PANEL::HandleHostRpcMessage( const json& aPayload )
+{
+    if( !aPayload.is_object() || !aPayload.contains( "command" )
+            || !aPayload["command"].is_string() )
+    {
+        return false;
+    }
+
+    json response;
+
+    if( aPayload.contains( "message_id" ) && aPayload["message_id"].is_number_integer() )
+        response["response_to"] = aPayload["message_id"].get<int>();
+    else if( aPayload.contains( "message_id" ) && aPayload["message_id"].is_string() )
+        response["response_to"] = aPayload["message_id"].get<std::string>();
+    else
+        response["response_to"] = nullptr;
+
+    const std::string command = aPayload["command"].get<std::string>();
+    response["command"] = command;
+
+    if( command == "PING" )
+    {
+        response["status"] = "OK";
+        response["data"] = { { "ok", true } };
+        SendHostRpcResponse( response );
+        return true;
+    }
+
+    if( command == "GET_COPPER_RELAY_CONTEXT" )
+    {
+        EnsureRelayContext();
+        response["status"] = "OK";
+        response["data"] = {
+            { "kicadBridgeUrl", "https://api.vcryptfinancial.com/agent/mcp" },
+            { "kicadAdapterBridgeWsUrl", "wss://api.vcryptfinancial.com/agent/kicad-bridge/" },
+            { "kicadAdapterSessionId", std::string( m_kicadAdapterSessionId.utf8_str() ) },
+            { "kicadAdapterToken", std::string( m_kicadAdapterToken.utf8_str() ) }
+        };
+        SendHostRpcResponse( response );
+        return true;
+    }
+
+    if( command == "GET_PROJECT_PATH" )
+    {
+        wxString projectPath;
+
+        if( wxWindow* top = wxGetTopLevelParent( this ) )
+        {
+            if( EDA_BASE_FRAME* frame = dynamic_cast<EDA_BASE_FRAME*>( top ) )
+            {
+                projectPath = frame->Prj().GetProjectPath();
+
+                if( projectPath.IsEmpty() )
+                {
+                    wxFileName currentFile( frame->GetCurrentFileName() );
+                    projectPath = currentFile.GetPathWithSep();
+                }
+            }
+        }
+
+        if( projectPath.IsEmpty() )
+        {
+            response["status"] = "ERROR";
+            response["error_message"] = "No project path is available.";
+        }
+        else
+        {
+            response["status"] = "OK";
+            response["data"] = std::string( projectPath.utf8_str() );
+        }
+
+        SendHostRpcResponse( response );
+        return true;
+    }
+
+    response["status"] = "ERROR";
+    response["error_message"] = "Unsupported KiCad host command: " + command;
+    SendHostRpcResponse( response );
+    return true;
 }
 
 
@@ -1217,6 +1348,9 @@ void WEBVIEW_PANEL::OnScriptMessage( wxWebViewEvent& aEvt )
         }
 
         handler.Trim( true ).Trim( false );
+
+        if( !hasWrappedHandler && HandleHostRpcMessage( payload ) )
+            return;
     }
 
     auto it = m_msgHandlers.find( handler );
