@@ -45,6 +45,7 @@
 #include <kiplatform/app.h>
 #include <kiplatform/environment.h>
 #include <kiplatform/policy.h>
+#include <kiplatform/ui.h>
 #include <build_version.h>
 #include <kiway.h>
 #include <kiway_express.h>
