@@ -27,8 +27,12 @@
 #include <wx/panel.h>
 #include <wx/webview.h>
 #include <wx/toolbar.h>
+#include <deque>
 #include <functional>
 #include <map>
+
+class wxTimer;
+class wxTimerEvent;
 
 /**
  * @brief A reusable panel that wraps wxWebView with message handling capabilities.
@@ -129,6 +133,13 @@ public:
     void SetHandleExternalLinks( bool aHandle ) { m_handleExternalLinks = aHandle; }
 
     /**
+     * @brief Enable the opaque KiCad IPC bridge for this webview.
+     *
+     * This is intended for trusted KiCad-owned pages such as the schematic AI Agent panel.
+     */
+    void EnableKiCadIpcBridge();
+
+    /**
      * @brief Show or hide the webview browser
      * 
      * @param aShow If true, show the browser; if false, hide it
@@ -203,11 +214,18 @@ private:
     void            RegisterBuiltInMessageHandlers();
     void            SendApiCallback( const wxString& aCallbackId, bool aIsError,
                                      const wxString& aJsonData );
+    void            SendIpcCallback( const wxString& aCallbackId, bool aIsError,
+                                     const wxString& aJsonData );
+    void            ScheduleDeferredScriptRetry();
+    void            FlushDeferredScripts();
+    void            OnDeferredScriptTimer( wxTimerEvent& aEvent );
 
     wxWebView* m_browser; ///< The WebView browser instance
     wxToolBar* m_toolbar; ///< Toolbar with open/close buttons
+    wxTimer*   m_deferredScriptTimer; ///< Timer used to retry scripts after modal dialogs close
     wxWindowID m_btnOpenId;  ///< Open button tool ID
     wxWindowID m_btnCloseId; ///< Close button tool ID
+    std::deque<wxString> m_deferredScripts; ///< Scripts waiting for modal dialogs to close
     std::map<wxString, std::function<void( const wxString& )>>
             m_msgHandlers;         ///< Message handler callbacks
     bool    m_initialized;         ///< Whether handlers have been initialized
@@ -215,6 +233,7 @@ private:
     bool    m_loadedEventBound;    ///< Whether the loaded event is bound
     bool    m_handleExternalLinks; ///< Whether to handle external links in panel
     bool    m_lockNavigation;      ///< Whether to keep WebView pinned to a single URL
+    bool    m_enableKiCadIpcBridge; ///< Whether to expose window.kicad.ipc
     wxString m_lockedUrl;          ///< Normalized URL allowed when navigation is locked
 };
 

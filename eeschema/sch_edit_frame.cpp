@@ -24,6 +24,9 @@
 
 
 #include <algorithm>
+#include <cstdlib>
+#include <functional>
+#include <utility>
 #include <api/api_handler_sch.h>
 #include <api/api_server.h>
 #include <google/protobuf/util/json_util.h>
@@ -103,13 +106,12 @@
 #include <wx/cmdline.h>
 #include <wx/app.h>
 #include <wx/aui/framemanager.h>
+#include <wx/dcbuffer.h>
 #include <wx/filedlg.h>
 #include <wx/simplebook.h>
 #include <wx/socket.h>
 #include <wx/debug.h>
 #include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/utils.h>
 #include <widgets/panel_sch_selection_filter.h>
 #include <widgets/wx_aui_utils.h>
 #include <drawing_sheet/ds_proxy_view_item.h>
@@ -122,6 +124,106 @@
 
 
 #define DIFF_SYMBOLS_DIALOG_NAME wxT( "DiffSymbolsDialog" )
+
+
+namespace
+{
+class COPPERAI_AGENT_TAB : public wxPanel
+{
+public:
+    COPPERAI_AGENT_TAB( wxWindow* aParent, const wxString& aLabel,
+                        std::function<void()> aOnClick ) :
+            wxPanel( aParent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                     wxBORDER_NONE | wxCLIP_CHILDREN ),
+            m_label( aLabel ),
+            m_onClick( std::move( aOnClick ) )
+    {
+        SetBackgroundStyle( wxBG_STYLE_PAINT );
+        SetMinSize( wxSize( FromDIP( 96 ), FromDIP( 28 ) ) );
+        SetCursor( wxCursor( wxCURSOR_HAND ) );
+
+        Bind( wxEVT_PAINT, &COPPERAI_AGENT_TAB::OnPaint, this );
+        Bind( wxEVT_ENTER_WINDOW, &COPPERAI_AGENT_TAB::OnEnter, this );
+        Bind( wxEVT_LEAVE_WINDOW, &COPPERAI_AGENT_TAB::OnLeave, this );
+        Bind( wxEVT_LEFT_DOWN, &COPPERAI_AGENT_TAB::OnLeftDown, this );
+    }
+
+    void SetActive( bool aActive )
+    {
+        if( m_active == aActive )
+            return;
+
+        m_active = aActive;
+        Refresh();
+    }
+
+private:
+    void OnPaint( wxPaintEvent& )
+    {
+        wxAutoBufferedPaintDC dc( this );
+        const wxColour        tabBarBg( 30, 30, 30 );
+        const wxColour        activeBg( 18, 20, 22 );
+        const wxColour        hoverBg( 43, 45, 47 );
+        const wxColour        inactiveBg( 34, 35, 37 );
+        const wxColour        activeBorder( 238, 138, 86 );
+        const wxColour        inactiveBorder( 70, 72, 75 );
+        const wxColour        activeFg( 245, 245, 245 );
+        const wxColour        inactiveFg( 210, 214, 219 );
+
+        wxRect rect = GetClientRect();
+        dc.SetBackground( wxBrush( tabBarBg ) );
+        dc.Clear();
+
+        rect.Deflate( FromDIP( 2 ), FromDIP( 3 ) );
+
+        dc.SetPen( wxPen( m_active ? activeBorder : inactiveBorder ) );
+        dc.SetBrush( wxBrush( m_active ? activeBg : ( m_hover ? hoverBg : inactiveBg ) ) );
+        dc.DrawRoundedRectangle( rect, FromDIP( 5 ) );
+
+        if( m_active )
+        {
+            wxRect accent( rect.GetLeft() + FromDIP( 8 ), rect.GetBottom() - FromDIP( 2 ),
+                           rect.GetWidth() - FromDIP( 16 ), FromDIP( 2 ) );
+            dc.SetPen( *wxTRANSPARENT_PEN );
+            dc.SetBrush( wxBrush( activeBorder ) );
+            dc.DrawRoundedRectangle( accent, FromDIP( 1 ) );
+        }
+
+        wxFont font = GetFont();
+
+        if( m_active )
+            font.SetWeight( wxFONTWEIGHT_BOLD );
+
+        dc.SetFont( font );
+        dc.SetTextForeground( m_active ? activeFg : inactiveFg );
+        dc.DrawLabel( m_label, rect, wxALIGN_CENTER );
+    }
+
+    void OnEnter( wxMouseEvent& )
+    {
+        m_hover = true;
+        Refresh();
+    }
+
+    void OnLeave( wxMouseEvent& )
+    {
+        m_hover = false;
+        Refresh();
+    }
+
+    void OnLeftDown( wxMouseEvent& )
+    {
+        if( m_onClick )
+            m_onClick();
+    }
+
+private:
+    wxString              m_label;
+    bool                  m_active = false;
+    bool                  m_hover = false;
+    std::function<void()> m_onClick;
+};
+}
 
 
 BEGIN_EVENT_TABLE( SCH_EDIT_FRAME, SCH_BASE_FRAME )
@@ -153,7 +255,6 @@ SCH_EDIT_FRAME::SCH_EDIT_FRAME( KIWAY* aKiway, wxWindow* aParent ) :
         m_ercDialog( nullptr ), m_diffSymbolDialog( nullptr ), m_symbolFieldsTableDialog( nullptr ),
         m_netNavigator( nullptr ), m_highlightedConnChanged( false ), m_designBlocksPane( nullptr ),
         m_ollamaAgentPane( nullptr ), m_ollamaAgentNotebook( nullptr ),
-        m_ollamaAgentTabHeader( nullptr ), m_datasheetTabHeader( nullptr ),
         m_ollamaAgentTabPanel( nullptr ), m_datasheetTabPanel( nullptr ),
         m_ollamaAgentWebView( nullptr ), m_datasheetWebView( nullptr )
 {
@@ -2467,42 +2568,29 @@ void SCH_EDIT_FRAME::EnsureOllamaNotebook()
     wxPanel* container = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                       wxBORDER_NONE | wxCLIP_CHILDREN );
     container->SetBackgroundColour( wxColour( 10, 10, 10 ) );
-    container->SetForegroundColour( wxColour( 229, 229, 229 ) );
+    container->SetForegroundColour( wxColour( 245, 245, 245 ) );
+
+    wxBoxSizer* containerSizer = new wxBoxSizer( wxVERTICAL );
 
     wxPanel* tabBar = new wxPanel( container, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                    wxBORDER_NONE | wxCLIP_CHILDREN );
-    tabBar->SetBackgroundColour( wxColour( 24, 24, 24 ) );
-    tabBar->SetForegroundColour( wxColour( 229, 229, 229 ) );
-
-    auto makeTab = [&]( const wxString& aLabel, int aPage ) -> wxWindow*
-    {
-        wxPanel* tab = new wxPanel( tabBar, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                    wxBORDER_NONE | wxCLIP_CHILDREN );
-        wxStaticText* label = new wxStaticText( tab, wxID_ANY, aLabel );
-        label->SetForegroundColour( wxColour( 245, 245, 245 ) );
-        label->SetBackgroundColour( wxColour( 24, 24, 24 ) );
-
-        wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
-        sizer->Add( label, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, FromDIP( 8 ) );
-        tab->SetSizer( sizer );
-        tab->SetMinSize( FromDIP( wxSize( 72, 26 ) ) );
-
-        auto selectPage = [this, aPage]( wxMouseEvent& aEvent )
-        {
-            SelectOllamaNotebookPage( aPage );
-        };
-
-        tab->Bind( wxEVT_LEFT_DOWN, selectPage );
-        label->Bind( wxEVT_LEFT_DOWN, selectPage );
-        return tab;
-    };
-
-    m_ollamaAgentTabHeader = makeTab( _( "Agent" ), 0 );
-    m_datasheetTabHeader = makeTab( _( "Datasheet" ), 1 );
+    tabBar->SetBackgroundColour( wxColour( 30, 30, 30 ) );
 
     wxBoxSizer* tabSizer = new wxBoxSizer( wxHORIZONTAL );
-    tabSizer->Add( m_ollamaAgentTabHeader, 0, wxEXPAND );
-    tabSizer->Add( m_datasheetTabHeader, 0, wxEXPAND );
+    m_ollamaAgentTabHeader = new COPPERAI_AGENT_TAB( tabBar, _( "Agent" ),
+                                                     [this]()
+                                                     {
+                                                         SelectOllamaNotebookPage( 0 );
+                                                     } );
+    m_datasheetTabHeader = new COPPERAI_AGENT_TAB( tabBar, _( "Datasheet" ),
+                                                   [this]()
+                                                   {
+                                                       SelectOllamaNotebookPage( 1 );
+                                                   } );
+
+    tabSizer->AddSpacer( FromDIP( 6 ) );
+    tabSizer->Add( m_ollamaAgentTabHeader, 0, wxEXPAND | wxTOP | wxBOTTOM, FromDIP( 3 ) );
+    tabSizer->Add( m_datasheetTabHeader, 0, wxEXPAND | wxTOP | wxBOTTOM, FromDIP( 3 ) );
     tabSizer->AddStretchSpacer();
     tabBar->SetSizer( tabSizer );
 
@@ -2514,14 +2602,10 @@ void SCH_EDIT_FRAME::EnsureOllamaNotebook()
     m_datasheetTabPanel = new wxPanel( m_ollamaAgentNotebook, wxID_ANY, wxDefaultPosition,
                                        wxDefaultSize, wxBORDER_NONE );
 
-    const wxColour bg( 10, 10, 10 );
-    const wxColour fg( 229, 229, 229 );
-    m_ollamaAgentNotebook->SetBackgroundColour( bg );
-    m_ollamaAgentNotebook->SetForegroundColour( fg );
-    m_ollamaAgentTabPanel->SetBackgroundColour( bg );
-    m_ollamaAgentTabPanel->SetForegroundColour( fg );
-    m_datasheetTabPanel->SetBackgroundColour( bg );
-    m_datasheetTabPanel->SetForegroundColour( fg );
+    m_ollamaAgentNotebook->SetBackgroundColour( wxColour( 10, 10, 10 ) );
+    m_ollamaAgentNotebook->SetForegroundColour( wxColour( 245, 245, 245 ) );
+    m_ollamaAgentTabPanel->SetBackgroundColour( wxColour( 10, 10, 10 ) );
+    m_datasheetTabPanel->SetBackgroundColour( wxColour( 10, 10, 10 ) );
 
     m_ollamaAgentTabPanel->SetSizer( new wxBoxSizer( wxVERTICAL ) );
     m_datasheetTabPanel->SetSizer( new wxBoxSizer( wxVERTICAL ) );
@@ -2529,7 +2613,6 @@ void SCH_EDIT_FRAME::EnsureOllamaNotebook()
     m_ollamaAgentNotebook->AddPage( m_ollamaAgentTabPanel, _( "Agent" ), true );
     m_ollamaAgentNotebook->AddPage( m_datasheetTabPanel, _( "Datasheet" ), false );
 
-    wxBoxSizer* containerSizer = new wxBoxSizer( wxVERTICAL );
     containerSizer->Add( tabBar, 0, wxEXPAND );
     containerSizer->Add( m_ollamaAgentNotebook, 1, wxEXPAND );
     container->SetSizer( containerSizer );
@@ -2551,6 +2634,7 @@ WEBVIEW_PANEL* SCH_EDIT_FRAME::EnsureOllamaAgentWebView()
     if( !m_ollamaAgentWebView )
     {
         m_ollamaAgentWebView = new WEBVIEW_PANEL( m_ollamaAgentTabPanel );
+        m_ollamaAgentWebView->EnableKiCadIpcBridge();
         m_ollamaAgentWebView->BindLoadedEvent();
         m_ollamaAgentWebView->SetHandleExternalLinks( true );
         m_ollamaAgentTabPanel->GetSizer()->Add( m_ollamaAgentWebView, 1, wxEXPAND );
@@ -2580,16 +2664,32 @@ WEBVIEW_PANEL* SCH_EDIT_FRAME::EnsureDatasheetWebView()
 }
 
 
+/* AI Agent (Copper) webview: full URL, UTF-8.
+ * - If the environment variable KICAD_AGENT_CHAT_URL is set and non-empty, that URL is used.
+ * - Otherwise: production Cloudflare URL when KICAD_PRODUCTION_AGENT_CHAT_DEFAULT is defined at
+ *   build time (e.g. release/packaging), else http://127.0.0.1:3000/... for local dev.
+ * Adjust the port via KICAD_AGENT_CHAT_URL or run your local chat app on 3000. */
+static wxString GetAgentChatWebviewUrl()
+{
+    if( const char* fromEnv = std::getenv( "KICAD_AGENT_CHAT_URL" ) )
+    {
+        if( fromEnv[0] != '\0' )
+            return wxString::FromUTF8( fromEnv );
+    }
+
+#if defined( KICAD_PRODUCTION_AGENT_CHAT_DEFAULT )
+    return wxS( "https://app.copperai.workers.dev/chat?copper_client=kicad" );
+#else
+    return wxS( "http://127.0.0.1:3000/chat?copper_client=kicad" );
+#endif
+}
+
+
 void SCH_EDIT_FRAME::LoadOllamaAgentWebView()
 {
-    wxString websiteUrl;
-
-    if( !wxGetEnv( wxS( "COPPERAI_AGENT_URL" ), &websiteUrl ) || websiteUrl.IsEmpty() )
-        websiteUrl = wxS( "https://app.copperai.workers.dev/chat?copper_client=kicad" );
-
     if( WEBVIEW_PANEL* panel = EnsureOllamaAgentWebView() )
     {
-        panel->LoadURL( websiteUrl );
+        panel->LoadURL( GetAgentChatWebviewUrl() );
         panel->ShowBrowser( true );
     }
 }
@@ -2634,7 +2734,7 @@ void SCH_EDIT_FRAME::LoadDatasheetPlaceholder( WEBVIEW_PANEL* aPanel, const wxSt
             wxS( "<!DOCTYPE html>"
                  "<html><body style='margin:0;display:flex;align-items:center;"
                  "justify-content:center;height:100vh;font-family:system-ui,sans-serif;"
-                 "background:#0A0A0A;color:#E5E5E5;color-scheme:dark;'>%s</body></html>" ),
+                 "color:#666666;'>%s</body></html>" ),
             EscapeHTML( aMessage ) );
 
     aPanel->SetPage( html, wxS( "about:blank" ) );
@@ -2689,24 +2789,14 @@ void SCH_EDIT_FRAME::SelectOllamaNotebookPage( int aPage )
     if( !m_ollamaAgentNotebook )
         return;
 
+    aPage = std::clamp( aPage, 0, 1 );
     m_ollamaAgentNotebook->SetSelection( aPage );
 
-    auto setTabActive = []( wxWindow* aTab, bool aActive )
-    {
-        if( !aTab )
-            return;
+    if( COPPERAI_AGENT_TAB* tab = dynamic_cast<COPPERAI_AGENT_TAB*>( m_ollamaAgentTabHeader ) )
+        tab->SetActive( aPage == 0 );
 
-        wxColour bg = aActive ? wxColour( 10, 10, 10 ) : wxColour( 24, 24, 24 );
-        aTab->SetBackgroundColour( bg );
-
-        for( wxWindow* child : aTab->GetChildren() )
-            child->SetBackgroundColour( bg );
-
-        aTab->Refresh();
-    };
-
-    setTabActive( m_ollamaAgentTabHeader, aPage == 0 );
-    setTabActive( m_datasheetTabHeader, aPage == 1 );
+    if( COPPERAI_AGENT_TAB* tab = dynamic_cast<COPPERAI_AGENT_TAB*>( m_datasheetTabHeader ) )
+        tab->SetActive( aPage == 1 );
 
     if( aPage == 1 )
         RefreshDatasheetWebView();
