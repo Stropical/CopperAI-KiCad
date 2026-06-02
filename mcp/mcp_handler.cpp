@@ -3350,7 +3350,12 @@ std::string McpHandler::HandleToolsCall( const void* params, const std::string& 
         std::string lib = getStr( "library" );
         if( !lib.empty() )
             cmd.set_library( lib );
-        cmd.set_limit( getInt( "limit", 100 ) );
+        int limit = getInt( "limit", 30 );
+        if( limit <= 0 )
+            limit = 30;
+        if( limit > 50 )
+            limit = 50;
+        cmd.set_limit( limit );
         req.mutable_message()->PackFrom( cmd );
     }
     else if( name == "batch_search_components" )
@@ -3370,11 +3375,11 @@ std::string McpHandler::HandleToolsCall( const void* params, const std::string& 
         std::string lib = getStr( "library" );
         // Batch calls can include multiple broad queries. Use a smaller default
         // to reduce client-side timeout risk while still allowing explicit override.
-        int limit = getInt( "limit", 30 );
+        int limit = getInt( "limit", 15 );
         if( limit <= 0 )
-            limit = 30;
-        if( limit > 100 )
-            limit = 100;
+            limit = 15;
+        if( limit > 50 )
+            limit = 50;
 
         // Deduplicate: run each unique query once, reuse results for duplicate query strings
         std::map<std::string, json> resultByQuery;
@@ -3382,8 +3387,15 @@ std::string McpHandler::HandleToolsCall( const void* params, const std::string& 
         for( const auto& q : queries )
         {
             if( !q.is_string() ) continue;
-            std::string queryStr = q.get<std::string>();
-            auto it = resultByQuery.find( queryStr );
+            std::string queryStr = trimStr( q.get<std::string>() );
+            if( queryStr.empty() )
+                continue;
+
+            std::string queryKey = queryStr;
+            std::transform( queryKey.begin(), queryKey.end(), queryKey.begin(),
+                            []( unsigned char c ) { return std::tolower( c ); } );
+
+            auto it = resultByQuery.find( queryKey );
             if( it != resultByQuery.end() )
             {
                 batchResults.push_back( it->second );
@@ -3425,7 +3437,7 @@ std::string McpHandler::HandleToolsCall( const void* params, const std::string& 
                             result["description"] = desc;
                             queryResult["results"].push_back( result );
                         }
-                        resultByQuery[queryStr] = queryResult;
+                        resultByQuery[queryKey] = queryResult;
                         batchResults.push_back( queryResult );
                     }
                 }

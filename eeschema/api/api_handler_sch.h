@@ -25,12 +25,16 @@
 #include <api/common/commands/editor_commands.pb.h>
 #include <api/schematic/schematic_commands.pb.h>
 #include <kiid.h>
+#include <wx/string.h>
+
+#include <vector>
 
 using namespace kiapi;
 using namespace kiapi::common;
 
 class SCH_EDIT_FRAME;
 class SCH_ITEM;
+class SYMBOL_LIB_TABLE;
 
 
 class API_HANDLER_SCH : public API_HANDLER_EDITOR
@@ -115,7 +119,28 @@ private:
     handleAppendProjectSymbolLibraryRow(
             const HANDLER_CONTEXT<kiapi::schematic::types::AppendProjectSymbolLibraryRow>& aCtx );
 
+    struct SYMBOL_SEARCH_ENTRY
+    {
+        wxString libraryNickname;
+        wxString symbolName;
+        wxString symbolNameLower;
+        wxString description;
+        wxString descriptionLower;
+        wxString keywords;
+        wxString keywordsLower;
+        wxString datasheet;
+        bool     metadataLoaded = false;
+    };
+
+    void clearSymbolSearchCache();
+    void rebuildSymbolSearchCacheIfNeeded( SYMBOL_LIB_TABLE* aLibTable );
+    bool loadSymbolSearchMetadata( SYMBOL_LIB_TABLE* aLibTable, SYMBOL_SEARCH_ENTRY& aEntry );
+
     SCH_EDIT_FRAME* m_frame;
+
+    SYMBOL_LIB_TABLE*                m_symbolSearchCacheTable = nullptr;
+    wxString                         m_symbolSearchCacheSignature;
+    std::vector<SYMBOL_SEARCH_ENTRY> m_symbolSearchCache;
 };
 
 
