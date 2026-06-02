@@ -35,6 +35,7 @@
 #include <wx/grid.h>
 #include <wx/listbox.h>
 #include <wx/sizer.h>
+#include <wx/odcombo.h>
 #include <wx/radiobut.h>
 #include <wx/scrolwin.h>
 #include <wx/slider.h>
@@ -93,21 +94,24 @@ void ApplyDarkPreferencesTheme( wxWindow* aWindow )
     if( dynamic_cast<wxTextCtrl*>( aWindow ) || dynamic_cast<wxStyledTextCtrl*>( aWindow )
             || dynamic_cast<wxTreeCtrl*>( aWindow ) || dynamic_cast<wxListCtrl*>( aWindow )
             || dynamic_cast<wxListBox*>( aWindow ) || dynamic_cast<wxDataViewCtrl*>( aWindow )
-            || dynamic_cast<wxGrid*>( aWindow ) )
+            || dynamic_cast<wxGrid*>( aWindow ) || dynamic_cast<wxChoice*>( aWindow )
+            || dynamic_cast<wxComboBox*>( aWindow )
+            || dynamic_cast<wxOwnerDrawnComboBox*>( aWindow )
+            || dynamic_cast<wxSpinCtrl*>( aWindow )
+            || dynamic_cast<wxSpinCtrlDouble*>( aWindow )
+            || dynamic_cast<wxFilePickerCtrl*>( aWindow ) )
     {
         bg = fieldBg;
-    }
-    else if( dynamic_cast<wxChoice*>( aWindow ) || dynamic_cast<wxComboBox*>( aWindow )
-             || dynamic_cast<wxSpinCtrl*>( aWindow )
-             || dynamic_cast<wxSpinCtrlDouble*>( aWindow )
-             || dynamic_cast<wxFilePickerCtrl*>( aWindow ) )
-    {
-        bg = controlBg;
     }
     else if( dynamic_cast<wxStaticLine*>( aWindow ) )
     {
         bg = panelBg;
         text = border;
+    }
+    else if( dynamic_cast<wxStaticBox*>( aWindow ) )
+    {
+        bg = panelBg;
+        text = wxColour( 190, 190, 190 );
     }
     else if( dynamic_cast<wxStaticText*>( aWindow ) )
     {
@@ -127,6 +131,9 @@ void ApplyDarkPreferencesTheme( wxWindow* aWindow )
         grid->SetLabelBackgroundColour( controlBg );
         grid->SetLabelTextColour( fg );
         grid->SetGridLineColour( border );
+        grid->SetSelectionBackground( wxColour( 70, 70, 75 ) );
+        grid->SetSelectionForeground( fg );
+        grid->SetCellHighlightColour( wxColour( 105, 105, 110 ) );
     }
     else if( wxStyledTextCtrl* styledText = dynamic_cast<wxStyledTextCtrl*>( aWindow ) )
     {

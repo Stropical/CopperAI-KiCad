@@ -23,6 +23,10 @@
 
 #include <wx/cursor.h>
 
+#ifdef __WXMSW__
+#include <wx/window.h>
+#endif
+
 class wxChoice;
 class wxNonOwnedWindow;
 class wxWindow;
@@ -42,6 +46,17 @@ namespace KIPLATFORM
         wxColour GetPanelBGColour();
         void EnableWin32DarkMode();
         void ApplyDarkFrameTheme( wxWindow* aWindow );
+
+#ifdef __WXMSW__
+        /**
+         * Provide dark brushes for native MSW child controls that wxWidgets does not repaint
+         * from SetBackgroundColour() alone.
+         *
+         * @return true if \a aResult was set and the caller should return it from MSWWindowProc().
+         */
+        bool HandleDarkThemeCtlColor( WXUINT aMessage, WXWPARAM aWParam, WXLPARAM aLParam,
+                                      WXLRESULT* aResult );
+#endif
 
         /**
          * Apply KiCad's dark-mode colours to a window and its children.

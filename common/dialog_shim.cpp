@@ -377,6 +377,19 @@ bool DIALOG_SHIM::Enable( bool enable )
 }
 
 
+#ifdef __WXMSW__
+WXLRESULT DIALOG_SHIM::MSWWindowProc( WXUINT message, WXWPARAM wParam, WXLPARAM lParam )
+{
+    WXLRESULT result = 0;
+
+    if( KIPLATFORM::UI::HandleDarkThemeCtlColor( message, wParam, lParam, &result ) )
+        return result;
+
+    return wxDialog::MSWWindowProc( message, wParam, lParam );
+}
+#endif
+
+
 // Recursive descent doing a SelectAll() in wxTextCtrls.
 // MacOS User Interface Guidelines state that when tabbing to a text control all its
 // text should be selected.  Since wxWidgets fails to implement this, we do it here.
