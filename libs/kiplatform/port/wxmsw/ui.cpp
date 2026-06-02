@@ -33,7 +33,6 @@
 #include <wx/dialog.h>
 #include <wx/filepicker.h>
 #include <wx/grid.h>
-#include <wx/html/htmlwin.h>
 #include <wx/listbox.h>
 #include <wx/listctrl.h>
 #include <wx/nonownedwnd.h>
@@ -228,7 +227,7 @@ void KIPLATFORM::UI::ApplyDarkWindowTheme( wxWindow* aWindow )
     else if( dynamic_cast<wxTextCtrl*>( aWindow ) || dynamic_cast<wxStyledTextCtrl*>( aWindow )
              || dynamic_cast<wxTreeCtrl*>( aWindow ) || dynamic_cast<wxListCtrl*>( aWindow )
              || dynamic_cast<wxListBox*>( aWindow ) || dynamic_cast<wxDataViewCtrl*>( aWindow )
-             || dynamic_cast<wxGrid*>( aWindow ) || dynamic_cast<wxHtmlWindow*>( aWindow ) )
+             || dynamic_cast<wxGrid*>( aWindow ) )
     {
         bg = fieldBg;
     }
