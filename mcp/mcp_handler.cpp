@@ -17,7 +17,14 @@
 #include <api/board/board_commands.pb.h>
 #include <api/schematic/schematic_commands.pb.h>
 #include <api/schematic/schematic_types.pb.h>
+#if defined( _WIN32 ) && defined( NANODBC_ENABLE_UNICODE )
+// The KiCad Windows DLL build exports nlohmann::json instantiations from kicommon.
+// Use KiCad's import stub when this file is compiled into common.lib, while keeping
+// the standalone MCP server self-contained.
+#include <json_common.h>
+#else
 #include <nlohmann/json.hpp>
+#endif
 #include <algorithm>
 #include <cctype>
 #include <cmath>

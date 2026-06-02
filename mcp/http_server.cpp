@@ -23,6 +23,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #pragma comment( lib, "ws2_32.lib" )
+using ssize_t = int;
 #else
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -363,32 +364,35 @@ void HttpServer::ServeClient( int clientFd )
             return;
         }
 
+        if( pathOk && method == "OPTIONS" )
+        {
+            // Handle CORS preflight before the main dispatch.  MSVC rejects
+            // continuing the connection loop from inside the try/catch below.
+            const char* optionsHeaders = "HTTP/1.1 204 No Content\r\n"
+                                         "Access-Control-Allow-Origin: *\r\n"
+                                         "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n"
+                                         "Access-Control-Allow-Headers: Content-Type, "
+                                         "Mcp-Session-Id, x-mcp-session-id\r\n"
+                                         "Access-Control-Max-Age: 86400\r\n"
+                                         "Content-Length: 0\r\n"
+                                         "Connection: keep-alive\r\n"
+                                         "\r\n";
+            if( send( clientFd, optionsHeaders, (size_t) strlen( optionsHeaders ), 0 )
+                != (ssize_t) strlen( optionsHeaders ) )
+            {
+                close_socket( clientFd );
+                return;
+            }
+
+            continue;
+        }
+
         try
         {
             if( !pathOk )
             {
                 status = 404;
                 responseBody = "{\"error\":\"Not Found\"}";
-            }
-            else if( method == "OPTIONS" )
-            {
-                // Handle CORS preflight
-                const char* optionsHeaders = "HTTP/1.1 204 No Content\r\n"
-                                             "Access-Control-Allow-Origin: *\r\n"
-                                             "Access-Control-Allow-Methods: POST, GET, OPTIONS\r\n"
-                                             "Access-Control-Allow-Headers: Content-Type, "
-                                             "Mcp-Session-Id, x-mcp-session-id\r\n"
-                                             "Access-Control-Max-Age: 86400\r\n"
-                                             "Content-Length: 0\r\n"
-                                             "Connection: keep-alive\r\n"
-                                             "\r\n";
-                if( send( clientFd, optionsHeaders, (size_t) strlen( optionsHeaders ), 0 )
-                    != (ssize_t) strlen( optionsHeaders ) )
-                {
-                    close_socket( clientFd );
-                    return;
-                }
-                continue; // Wait for the actual POST/GET on same connection
             }
             else if( method != "POST" && method != "GET" )
             {
