@@ -1697,25 +1697,54 @@ void drawDarkMenuBarBackground( HWND aHwnd, HDC aHdc )
     menuRect.left = 0;
     menuRect.right = windowRect.right - windowRect.left;
     menuRect.top -= 1;
-    menuRect.bottom += 8;
 
     HBRUSH bg = CreateSolidBrush( wxToColorRef( KIPLATFORM::UI::GetPanelBGColour() ) );
     FillRect( aHdc, &menuRect, bg );
     DeleteObject( bg );
 }
 
-void paintDarkClientTopSeam( HWND aHwnd )
+void paintDarkMenuBarSeam( HWND aHwnd )
 {
-    HDC hdc = GetDC( aHwnd );
+    MENUBARINFO menuInfo = {};
+    menuInfo.cbSize = sizeof( menuInfo );
+
+    if( !GetMenuBarInfo( aHwnd, OBJID_MENU, 0, &menuInfo ) )
+        return;
+
+    RECT windowRect = {};
+    GetWindowRect( aHwnd, &windowRect );
+
+    POINT clientOrigin = { 0, 0 };
+    ClientToScreen( aHwnd, &clientOrigin );
+
+    RECT menuRect = menuInfo.rcBar;
+    OffsetRect( &menuRect, -windowRect.left, -windowRect.top );
+
+    const int windowWidth = windowRect.right - windowRect.left;
+    const int clientTop = clientOrigin.y - windowRect.top;
+
+    RECT seamRect = {};
+    seamRect.left = 0;
+    seamRect.right = windowWidth;
+    seamRect.top = menuRect.bottom - 1;
+    seamRect.bottom = clientTop;
+
+    if( seamRect.top < 0 )
+        seamRect.top = 0;
+
+    if( seamRect.bottom <= seamRect.top )
+        seamRect.bottom = seamRect.top + 1;
+
+    if( seamRect.bottom > clientTop )
+        seamRect.bottom = clientTop;
+
+    if( seamRect.bottom <= seamRect.top )
+        return;
+
+    HDC hdc = GetWindowDC( aHwnd );
 
     if( !hdc )
         return;
-
-    RECT clientRect = {};
-    GetClientRect( aHwnd, &clientRect );
-
-    RECT seamRect = clientRect;
-    seamRect.bottom = seamRect.top + 3;
 
     HBRUSH bg = CreateSolidBrush( wxToColorRef( KIPLATFORM::UI::GetPanelBGColour() ) );
     FillRect( hdc, &seamRect, bg );
@@ -1758,6 +1787,7 @@ WXLRESULT EDA_BASE_FRAME::MSWWindowProc( WXUINT message, WXWPARAM wParam, WXLPAR
         if( UAHMENU* menu = reinterpret_cast<UAHMENU*>( lParam ) )
         {
             drawDarkMenuBarBackground( GetHWND(), menu->hdc );
+            paintDarkMenuBarSeam( GetHWND() );
             return TRUE;
         }
     }
@@ -1771,7 +1801,7 @@ WXLRESULT EDA_BASE_FRAME::MSWWindowProc( WXUINT message, WXWPARAM wParam, WXLPAR
     if( message == WM_PAINT || message == WM_NCPAINT )
     {
         WXLRESULT result = wxFrame::MSWWindowProc( message, wParam, lParam );
-        paintDarkClientTopSeam( GetHWND() );
+        paintDarkMenuBarSeam( GetHWND() );
         return result;
     }
 

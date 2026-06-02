@@ -1619,6 +1619,9 @@ void PROJECT_TREE_PANE::onPaint( wxPaintEvent& event )
     wxPaintDC dc( this );
 
     dc.SetBrush( KIPLATFORM::UI::GetPanelBGColour() );
+    dc.SetPen( *wxTRANSPARENT_PEN );
+    dc.DrawRectangle( rect );
+
     dc.SetPen( wxPen( wxColour( 45, 45, 45 ), 1 ) );
 
     dc.DrawLine( rect.GetLeft(), rect.GetTop(), rect.GetLeft(), rect.GetBottom() );
