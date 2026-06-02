@@ -1865,7 +1865,7 @@ std::string McpHandler::HandleToolsList( const std::string& id )
 
     json placeComponent;
     placeComponent["name"] = "place_component";
-    placeComponent["description"] = "Place a component on the schematic. Use 'near' to auto-place near a component/pin, or provide x/y in mm (KiCad coordinates). Snapped to 0.1mm grid. Inductors auto-rotated 90°.";
+    placeComponent["description"] = "Place a component on the schematic. Use 'near' to auto-place near a component/pin, or provide x/y or x_mm/y_mm in mm (KiCad coordinates). Snapped to 0.1mm grid. Inductors auto-rotated 90 degrees.";
     placeComponent["inputSchema"]["type"] = "object";
     placeComponent["inputSchema"]["required"] = json::array( { "library", "symbol", "reference" } );
     placeComponent["inputSchema"]["properties"]["library"]["type"] = "string";
@@ -1876,6 +1876,10 @@ std::string McpHandler::HandleToolsList( const std::string& id )
     placeComponent["inputSchema"]["properties"]["x"]["description"] = "X coordinate in mm (optional if 'near' is specified)";
     placeComponent["inputSchema"]["properties"]["y"]["type"] = "number";
     placeComponent["inputSchema"]["properties"]["y"]["description"] = "Y coordinate in mm (optional if 'near' is specified)";
+    placeComponent["inputSchema"]["properties"]["x_mm"]["type"] = "number";
+    placeComponent["inputSchema"]["properties"]["x_mm"]["description"] = "Alias for x: X coordinate in mm";
+    placeComponent["inputSchema"]["properties"]["y_mm"]["type"] = "number";
+    placeComponent["inputSchema"]["properties"]["y_mm"]["description"] = "Alias for y: Y coordinate in mm";
     placeComponent["inputSchema"]["properties"]["rotation"]["type"] = "number";
     placeComponent["inputSchema"]["properties"]["near"]["type"] = "object";
     placeComponent["inputSchema"]["properties"]["near"]["description"] = "Auto-place near a component. Provide 'reference' and optionally 'pin'. If x/y not specified, finds empty spot automatically.";
@@ -1901,7 +1905,7 @@ std::string McpHandler::HandleToolsList( const std::string& id )
     // ── batch_place_component ──
     json batchPlaceComponent;
     batchPlaceComponent["name"] = "batch_place_component";
-    batchPlaceComponent["description"] = "Place multiple components in one call. Each component can use absolute (x/y) or relative (near) placement. Faster and more atomic than calling place_component multiple times.";
+    batchPlaceComponent["description"] = "Place multiple components in one call. Each component can use absolute (x/y or x_mm/y_mm) or relative (near) placement. Faster and more atomic than calling place_component multiple times.";
     batchPlaceComponent["inputSchema"]["type"] = "object";
     batchPlaceComponent["inputSchema"]["required"] = json::array( { "components" } );
     batchPlaceComponent["inputSchema"]["properties"]["components"]["type"] = "array";
@@ -1912,9 +1916,20 @@ std::string McpHandler::HandleToolsList( const std::string& id )
     batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["reference"]["type"] = "string";
     batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["value"]["type"] = "string";
     batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["x"]["type"] = "number";
+    batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["x"]["description"] = "X coordinate in mm";
     batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["y"]["type"] = "number";
+    batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["y"]["description"] = "Y coordinate in mm";
+    batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["x_mm"]["type"] = "number";
+    batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["x_mm"]["description"] = "Alias for x: X coordinate in mm";
+    batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["y_mm"]["type"] = "number";
+    batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["y_mm"]["description"] = "Alias for y: Y coordinate in mm";
     batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["rotation"]["type"] = "number";
     batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["near"]["type"] = "object";
+    batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["near"]["description"] = "Auto-place near a component. Provide 'reference' and optionally 'pin'.";
+    batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["near"]["properties"]["reference"]["type"] = "string";
+    batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["near"]["properties"]["reference"]["description"] = "Component reference (e.g. 'U1')";
+    batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["near"]["properties"]["pin"]["type"] = "string";
+    batchPlaceComponent["inputSchema"]["properties"]["components"]["items"]["properties"]["near"]["properties"]["pin"]["description"] = "Optional pin number";
     tools.push_back( batchPlaceComponent );
 
     json moveComponent;
@@ -3592,11 +3607,12 @@ std::string McpHandler::HandleToolsCall( const void* params, const std::string& 
         double x = 0.0;
         double y = 0.0;
         double placementMinSpacingMm = DEFAULT_OVERLAP_SPACING_MM;
-        bool hasPosition = hasArg( "x" ) && hasArg( "y" );
+        bool hasPosition = ( hasArg( "x" ) && hasArg( "y" ) )
+                           || ( hasArg( "x_mm" ) && hasArg( "y_mm" ) );
         if( hasPosition )
         {
-            x = getDouble( "x" );
-            y = getDouble( "y" );
+            x = hasArg( "x" ) ? getDouble( "x" ) : getDouble( "x_mm" );
+            y = hasArg( "y" ) ? getDouble( "y" ) : getDouble( "y_mm" );
         }
 
         if( !hasPosition && args.contains( "near" ) && args["near"].is_object() )
@@ -3703,10 +3719,10 @@ std::string McpHandler::HandleToolsCall( const void* params, const std::string& 
         if( !hasPosition )
         {
             // Use explicit coordinates (mm, KiCad schematic coordinates)
-            if( hasArg( "x" ) && hasArg( "y" ) )
+            if( ( hasArg( "x" ) && hasArg( "y" ) ) || ( hasArg( "x_mm" ) && hasArg( "y_mm" ) ) )
             {
-                x = getDouble( "x" );
-                y = getDouble( "y" );
+                x = hasArg( "x" ) ? getDouble( "x" ) : getDouble( "x_mm" );
+                y = hasArg( "y" ) ? getDouble( "y" ) : getDouble( "y_mm" );
             }
             else
             {
@@ -3802,46 +3818,373 @@ std::string McpHandler::HandleToolsCall( const void* params, const std::string& 
             return "{\"jsonrpc\":\"2.0\",\"result\":" + json( { { "content", content }, { "isError", true } } ).dump() + ",\"id\":" + id + "}";
         }
 
-        json results = json::array();
-        std::string batchText = "Batch place_component results:\n";
-        int successCount = 0;
+        std::string placeIpcErr;
+        if( !m_ipc.EnsureSchematicApiConnection( placeIpcErr ) )
+        {
+            json content = json::array();
+            content.push_back( { { "type", "text" },
+                                 { "text", placeIpcErr.empty() ? "KiCad schematic IPC not available." : placeIpcErr } } );
+            return "{\"jsonrpc\":\"2.0\",\"result\":" + json( { { "content", content }, { "isError", true } } ).dump()
+                   + ",\"id\":" + id + "}";
+        }
+
+        struct ComponentSize
+        {
+            double width = 5.0;
+            double height = 5.0;
+        };
+
+        struct PlannedPlacement
+        {
+            std::string library;
+            std::string symbol;
+            std::string reference;
+            std::string value;
+            double x = 0.0;
+            double y = 0.0;
+            double width = 5.0;
+            double height = 5.0;
+            double rotation = 0.0;
+            double minSpacing = DEFAULT_OVERLAP_SPACING_MM;
+        };
+
+        auto snapMm = []( double mm ) -> double
+        {
+            return std::round( mm / COMPACT_GRID_MM ) * COMPACT_GRID_MM;
+        };
+
+        auto rectsOverlap = []( double ax, double ay, double aw, double ah,
+                                double bx, double by, double bw, double bh,
+                                double spacingMm ) -> bool
+        {
+            double halfSpacing = std::max( 0.0, spacingMm ) / 2.0;
+            double ax1 = ax - aw / 2.0 - halfSpacing;
+            double ay1 = ay - ah / 2.0 - halfSpacing;
+            double ax2 = ax + aw / 2.0 + halfSpacing;
+            double ay2 = ay + ah / 2.0 + halfSpacing;
+            double bx1 = bx - bw / 2.0 - halfSpacing;
+            double by1 = by - bh / 2.0 - halfSpacing;
+            double bx2 = bx + bw / 2.0 + halfSpacing;
+            double by2 = by + bh / 2.0 + halfSpacing;
+            return !( ax2 < bx1 || ax1 > bx2 || ay2 < by1 || ay1 > by2 );
+        };
+
+        std::map<std::string, ComponentSize> sizeCache;
+        auto getSizeFor = [&]( const std::string& library, const std::string& symbol ) -> ComponentSize
+        {
+            std::string key = library + ":" + symbol;
+            auto it = sizeCache.find( key );
+            if( it != sizeCache.end() )
+                return it->second;
+
+            ComponentSize size;
+            std::string dataErr;
+            kiapi::common::ApiRequest dataReq;
+            dataReq.mutable_header()->set_client_name( "mcp" );
+            kiapi::schematic::types::GetComponentData dataCmd;
+            dataCmd.mutable_lib_id()->set_library_nickname( library );
+            dataCmd.mutable_lib_id()->set_entry_name( symbol );
+            dataReq.mutable_message()->PackFrom( dataCmd );
+            kiapi::common::ApiResponse dataResp;
+            if( m_ipc.SendRequest( dataReq, dataResp, dataErr ) && dataResp.status().status() == kiapi::common::AS_OK )
+            {
+                kiapi::schematic::types::GetComponentDataResponse dataR;
+                if( dataResp.has_message() && dataResp.message().UnpackTo( &dataR ) )
+                {
+                    if( dataR.width_mm() > 0 )
+                        size.width = dataR.width_mm();
+                    if( dataR.height_mm() > 0 )
+                        size.height = dataR.height_mm();
+                }
+            }
+
+            sizeCache[key] = size;
+            return size;
+        };
+
+        std::vector<PlannedPlacement> planned;
+        std::map<std::string, size_t> plannedByRef;
+        json failed = json::array();
+
+        auto plannedOverlap = [&]( double x, double y, double w, double h, double spacing,
+                                   std::string& overlapDesc ) -> bool
+        {
+            for( const PlannedPlacement& p : planned )
+            {
+                double spacingUse = std::max( spacing, p.minSpacing );
+                if( rectsOverlap( x, y, w, h, p.x, p.y, p.width, p.height, spacingUse ) )
+                {
+                    overlapDesc = "new component " + p.reference;
+                    return true;
+                }
+            }
+
+            return false;
+        };
 
         for( const auto& compObj : componentsArg )
         {
-            if( !compObj.is_object() ) continue;
+            if( !compObj.is_object() )
+            {
+                failed.push_back( { { "reference", "(invalid)" }, { "error", "component entry must be an object" } } );
+                continue;
+            }
 
             std::string library = compObj.value( "library", "" );
             std::string symbol = compObj.value( "symbol", "" );
             std::string reference = compObj.value( "reference", "" );
-            if( library.empty() || symbol.empty() || reference.empty() ) continue;
-
-            json oneResult;
-            oneResult["reference"] = reference;
-            oneResult["library"] = library;
-            oneResult["symbol"] = symbol;
-
-            // Extract position information
-            if( compObj.contains( "x" ) && compObj["x"].is_number() && compObj.contains( "y" ) && compObj["y"].is_number() )
+            if( library.empty() || symbol.empty() || reference.empty() )
             {
-                oneResult["x"] = compObj["x"].get<double>();
-                oneResult["y"] = compObj["y"].get<double>();
+                failed.push_back( { { "reference", reference.empty() ? "(missing)" : reference },
+                                    { "error", "library, symbol, and reference are required" } } );
+                continue;
             }
-            else if( compObj.contains( "near" ) && compObj["near"].is_object() )
+
+            ComponentSize size = getSizeFor( library, symbol );
+            bool nearPassive = isLikelyPassiveSymbol( library, symbol );
+            double placementMinSpacingMm = nearPassive ? NEAR_PASSIVE_OVERLAP_SPACING_MM
+                                                       : DEFAULT_OVERLAP_SPACING_MM;
+            double x = 0.0;
+            double y = 0.0;
+            bool hasPosition = false;
+
+            if( compObj.contains( "x" ) && compObj["x"].is_number()
+                && compObj.contains( "y" ) && compObj["y"].is_number() )
+            {
+                x = compObj["x"].get<double>();
+                y = compObj["y"].get<double>();
+                hasPosition = true;
+            }
+            else if( compObj.contains( "x_mm" ) && compObj["x_mm"].is_number()
+                     && compObj.contains( "y_mm" ) && compObj["y_mm"].is_number() )
+            {
+                x = compObj["x_mm"].get<double>();
+                y = compObj["y_mm"].get<double>();
+                hasPosition = true;
+            }
+
+            if( !hasPosition && compObj.contains( "near" ) && compObj["near"].is_object() )
             {
                 const json& nearObj = compObj["near"];
-                oneResult["near"] = nearObj;
+                std::string nearRef = nearObj.value( "reference", "" );
+                std::string nearPin = nearObj.value( "pin", "" );
+                double nearX = 25.0;
+                double nearY = 25.0;
+                double nearPinOrientationDeg = 0.0;
+                bool haveNearPinOrientation = false;
+
+                auto plannedIt = plannedByRef.find( nearRef );
+                if( plannedIt != plannedByRef.end() )
+                {
+                    const PlannedPlacement& anchor = planned[plannedIt->second];
+                    nearX = anchor.x;
+                    nearY = anchor.y;
+                }
+                else if( !nearRef.empty() )
+                {
+                    std::string err;
+                    if( !nearPin.empty() )
+                    {
+                        auto [px, py] = getPinPosition( nearRef, nearPin, err, &nearPinOrientationDeg );
+                        if( err.empty() )
+                        {
+                            nearX = px;
+                            nearY = py;
+                            haveNearPinOrientation = true;
+                        }
+                    }
+                    else
+                    {
+                        auto [cx, cy, w, h] = getComponentBounds( nearRef, err );
+                        (void) w;
+                        (void) h;
+                        if( err.empty() )
+                        {
+                            nearX = cx;
+                            nearY = cy;
+                        }
+                    }
+                }
+
+                double nearFindSpotSpacingMm = nearPassive ? NEAR_PASSIVE_FIND_SPOT_SPACING_MM
+                                                           : DEFAULT_FIND_SPOT_SPACING_MM;
+                std::vector<std::pair<double, double>> offsets =
+                    buildNearPlacementOffsets( nearPassive, haveNearPinOrientation, nearPinOrientationDeg );
+                std::string overlapDesc;
+                for( const auto& [dx, dy] : offsets )
+                {
+                    double tryX = snapMm( nearX + dx );
+                    double tryY = snapMm( nearY + dy );
+                    if( placementWouldOverlap( tryX, tryY, size.width, size.height, overlapDesc, placementMinSpacingMm ) )
+                        continue;
+                    if( plannedOverlap( tryX, tryY, size.width, size.height, placementMinSpacingMm, overlapDesc ) )
+                        continue;
+
+                    x = tryX;
+                    y = tryY;
+                    hasPosition = true;
+                    break;
+                }
+
+                if( !hasPosition )
+                {
+                    std::string err;
+                    for( int attempt = 0; attempt < 16 && !hasPosition; ++attempt )
+                    {
+                        auto [emptyX, emptyY] = findEmptySpot( nearX + attempt * 2.0, nearY,
+                                                               size.width, size.height, err,
+                                                               nearFindSpotSpacingMm );
+                        if( placementWouldOverlap( emptyX, emptyY, size.width, size.height, overlapDesc, placementMinSpacingMm ) )
+                            continue;
+                        if( plannedOverlap( emptyX, emptyY, size.width, size.height, placementMinSpacingMm, overlapDesc ) )
+                            continue;
+
+                        x = emptyX;
+                        y = emptyY;
+                        hasPosition = true;
+                    }
+                }
             }
 
-            // Mark as staged for placement
-            oneResult["staged"] = true;
-            oneResult["status"] = "ready_for_placement";
-            results.push_back( oneResult );
-            successCount++;
+            if( !hasPosition )
+            {
+                std::string err;
+                std::string overlapDesc;
+                for( int attempt = 0; attempt < 24 && !hasPosition; ++attempt )
+                {
+                    auto [emptyX, emptyY] = findEmptySpot( 25.0 + attempt * 4.0, 25.0,
+                                                           size.width, size.height, err );
+                    if( placementWouldOverlap( emptyX, emptyY, size.width, size.height, overlapDesc, placementMinSpacingMm ) )
+                        continue;
+                    if( plannedOverlap( emptyX, emptyY, size.width, size.height, placementMinSpacingMm, overlapDesc ) )
+                        continue;
+
+                    x = emptyX;
+                    y = emptyY;
+                    hasPosition = true;
+                }
+            }
+
+            if( !hasPosition )
+            {
+                failed.push_back( { { "reference", reference }, { "error", "could not find a non-overlapping placement" } } );
+                continue;
+            }
+
+            double rotation = compObj.contains( "rotation" ) && compObj["rotation"].is_number()
+                                  ? compObj["rotation"].get<double>()
+                                  : 0.0;
+            if( symbol == "L" )
+                rotation = 90.0;
+
+            std::string overlapDesc;
+            if( placementWouldOverlap( x, y, size.width, size.height, overlapDesc, placementMinSpacingMm )
+                || plannedOverlap( x, y, size.width, size.height, placementMinSpacingMm, overlapDesc ) )
+            {
+                failed.push_back( { { "reference", reference },
+                                    { "error", "placement would overlap " + overlapDesc } } );
+                continue;
+            }
+
+            PlannedPlacement p;
+            p.library = library;
+            p.symbol = symbol;
+            p.reference = reference;
+            p.value = compObj.value( "value", "" );
+            p.x = x;
+            p.y = y;
+            p.width = size.width;
+            p.height = size.height;
+            p.rotation = rotation;
+            p.minSpacing = placementMinSpacingMm;
+            plannedByRef[reference] = planned.size();
+            planned.push_back( p );
         }
 
-        batchText += std::to_string( successCount ) + " components staged for placement";
+        if( !failed.empty() )
+        {
+            json resultObj = { { "placed", json::array() }, { "failed", failed },
+                               { "message", "batch_place_component preflight failed; no components were placed" } };
+            json content = json::array();
+            content.push_back( { { "type", "text" }, { "text", resultObj.dump() } } );
+            return "{\"jsonrpc\":\"2.0\",\"result\":" + json( { { "content", content }, { "isError", true } } ).dump() + ",\"id\":" + id + "}";
+        }
+
+        if( planned.empty() )
+        {
+            json content = json::array();
+            content.push_back( { { "type", "text" }, { "text", "batch_place_component did not contain any valid components" } } );
+            return "{\"jsonrpc\":\"2.0\",\"result\":" + json( { { "content", content }, { "isError", true } } ).dump() + ",\"id\":" + id + "}";
+        }
+
+        std::string txnErr;
+        TransactionGuard batchTxn( *this, m_ipc, txnErr );
+        if( !batchTxn.ok() )
+        {
+            json content = json::array();
+            content.push_back( { { "type", "text" }, { "text", txnErr.empty() ? "Begin commit failed" : txnErr } } );
+            return "{\"jsonrpc\":\"2.0\",\"result\":" + json( { { "content", content }, { "isError", true } } ).dump() + ",\"id\":" + id + "}";
+        }
+
+        json placed = json::array();
+        for( const PlannedPlacement& p : planned )
+        {
+            kiapi::common::ApiRequest addReq;
+            addReq.mutable_header()->set_client_name( "mcp" );
+            kiapi::schematic::types::AddComponent cmd;
+            cmd.set_library_nickname( p.library );
+            cmd.set_symbol_name( p.symbol );
+            cmd.set_reference( p.reference );
+            cmd.set_value( p.value );
+            cmd.mutable_position()->set_x_mm( p.x );
+            cmd.mutable_position()->set_y_mm( p.y );
+            cmd.set_rotation( p.rotation );
+            cmd.mutable_commit_id()->set_value( batchTxn.commitId() );
+            addReq.mutable_message()->PackFrom( cmd );
+
+            kiapi::common::ApiResponse addResp;
+            std::string err;
+            if( !m_ipc.SendRequest( addReq, addResp, err ) || addResp.status().status() != kiapi::common::AS_OK )
+            {
+                batchTxn.drop();
+                std::string msg = !err.empty() ? err
+                                  : ( addResp.status().error_message().empty() ? "Place component failed"
+                                                                               : addResp.status().error_message() );
+                json addFailed = json::array();
+                addFailed.push_back( { { "reference", p.reference }, { "error", msg } } );
+                json resultObj = { { "placed", json::array() },
+                                   { "failed", addFailed },
+                                   { "message", "batch_place_component failed during AddComponent; transaction was dropped" } };
+                json content = json::array();
+                content.push_back( { { "type", "text" }, { "text", resultObj.dump() } } );
+                return "{\"jsonrpc\":\"2.0\",\"result\":" + json( { { "content", content }, { "isError", true } } ).dump() + ",\"id\":" + id + "}";
+            }
+
+            json entry = { { "reference", p.reference }, { "library", p.library }, { "symbol", p.symbol },
+                           { "x", p.x }, { "y", p.y }, { "rotation", p.rotation } };
+            if( addResp.has_message() && addResp.message().type_url().find( "AddComponentResponse" ) != std::string::npos )
+            {
+                kiapi::schematic::types::AddComponentResponse addR;
+                if( addResp.message().UnpackTo( &addR ) && addR.has_component_id() )
+                    entry["component_id"] = addR.component_id().value();
+            }
+            placed.push_back( entry );
+        }
+
+        if( !batchTxn.commit() )
+        {
+            json resultObj = { { "placed", json::array() }, { "failed", json::array() },
+                               { "message", "batch_place_component failed to commit; transaction was dropped" } };
+            json content = json::array();
+            content.push_back( { { "type", "text" }, { "text", resultObj.dump() } } );
+            return "{\"jsonrpc\":\"2.0\",\"result\":" + json( { { "content", content }, { "isError", true } } ).dump() + ",\"id\":" + id + "}";
+        }
+        invalidateSummaryCache();
+
+        json resultObj = { { "placed", placed }, { "failed", json::array() },
+                           { "count", static_cast<int>( planned.size() ) } };
         json content = json::array();
-        content.push_back( { { "type", "text" }, { "text", batchText } } );
+        content.push_back( { { "type", "text" }, { "text", resultObj.dump() } } );
         return "{\"jsonrpc\":\"2.0\",\"result\":" + json( { { "content", content }, { "isError", false } } ).dump() + ",\"id\":" + id + "}";
     }
     else if( name == "move_component" )
