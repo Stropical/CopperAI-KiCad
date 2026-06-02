@@ -23,10 +23,34 @@
 
 #include <kiplatform/ui.h>
 
+#include <wx/bmpbuttn.h>
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/choice.h>
+#include <wx/combobox.h>
 #include <wx/cursor.h>
+#include <wx/dataview.h>
+#include <wx/dialog.h>
+#include <wx/filepicker.h>
+#include <wx/grid.h>
+#include <wx/html/htmlwin.h>
+#include <wx/listbox.h>
+#include <wx/listctrl.h>
 #include <wx/nonownedwnd.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/radiobut.h>
+#include <wx/scrolwin.h>
+#include <wx/slider.h>
+#include <wx/spinctrl.h>
+#include <wx/statbox.h>
+#include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/treectrl.h>
 #include <wx/window.h>
 #include <wx/msw/registry.h>
+#include <wx/stc/stc.h>
 
 namespace
 {
@@ -94,6 +118,15 @@ void allowWindowDarkMode( HWND aHwnd )
 
     if( allowDarkModeForWindow )
         allowDarkModeForWindow( aHwnd, TRUE );
+}
+
+
+void setDarkWindowColours( wxWindow* aWindow, const wxColour& aBg, const wxColour& aFg )
+{
+    aWindow->SetBackgroundColour( aBg );
+    aWindow->SetOwnBackgroundColour( aBg );
+    aWindow->SetForegroundColour( aFg );
+    aWindow->SetOwnForegroundColour( aFg );
 }
 }
 
@@ -167,6 +200,83 @@ void KIPLATFORM::UI::ApplyDarkFrameTheme( wxWindow* aWindow )
     DwmSetWindowAttribute( hwnd, 20, &dark, sizeof( dark ) );
     DwmSetWindowAttribute( hwnd, 19, &dark, sizeof( dark ) );
     SetWindowTheme( hwnd, L"DarkMode_Explorer", nullptr );
+}
+
+
+void KIPLATFORM::UI::ApplyDarkWindowTheme( wxWindow* aWindow )
+{
+    if( !aWindow || !IsDarkTheme() )
+        return;
+
+    ApplyDarkFrameTheme( aWindow );
+
+    const wxColour dialogBg = GetDialogBGColour();
+    const wxColour panelBg( 30, 30, 30 );
+    const wxColour fieldBg( 18, 18, 18 );
+    const wxColour controlBg( 28, 28, 28 );
+    const wxColour border( 68, 68, 68 );
+    const wxColour fg( 245, 245, 245 );
+    const wxColour mutedFg( 176, 176, 176 );
+
+    wxColour bg = panelBg;
+    wxColour text = aWindow->IsEnabled() ? fg : mutedFg;
+
+    if( dynamic_cast<wxDialog*>( aWindow ) )
+    {
+        bg = dialogBg;
+    }
+    else if( dynamic_cast<wxTextCtrl*>( aWindow ) || dynamic_cast<wxStyledTextCtrl*>( aWindow )
+             || dynamic_cast<wxTreeCtrl*>( aWindow ) || dynamic_cast<wxListCtrl*>( aWindow )
+             || dynamic_cast<wxListBox*>( aWindow ) || dynamic_cast<wxDataViewCtrl*>( aWindow )
+             || dynamic_cast<wxGrid*>( aWindow ) || dynamic_cast<wxHtmlWindow*>( aWindow ) )
+    {
+        bg = fieldBg;
+    }
+    else if( dynamic_cast<wxNotebook*>( aWindow ) || dynamic_cast<wxChoice*>( aWindow )
+             || dynamic_cast<wxComboBox*>( aWindow ) || dynamic_cast<wxSpinCtrl*>( aWindow )
+             || dynamic_cast<wxSpinCtrlDouble*>( aWindow )
+             || dynamic_cast<wxFilePickerCtrl*>( aWindow ) || dynamic_cast<wxButton*>( aWindow )
+             || dynamic_cast<wxBitmapButton*>( aWindow ) )
+    {
+        bg = controlBg;
+    }
+    else if( dynamic_cast<wxStaticLine*>( aWindow ) )
+    {
+        bg = panelBg;
+        text = border;
+    }
+    else if( dynamic_cast<wxStaticText*>( aWindow ) || dynamic_cast<wxStaticBox*>( aWindow )
+             || dynamic_cast<wxCheckBox*>( aWindow ) || dynamic_cast<wxRadioButton*>( aWindow )
+             || dynamic_cast<wxSlider*>( aWindow ) )
+    {
+        bg = panelBg;
+    }
+    else if( dynamic_cast<wxPanel*>( aWindow ) || dynamic_cast<wxScrolledWindow*>( aWindow ) )
+    {
+        bg = panelBg;
+    }
+
+    setDarkWindowColours( aWindow, bg, text );
+
+    if( wxGrid* grid = dynamic_cast<wxGrid*>( aWindow ) )
+    {
+        grid->SetDefaultCellBackgroundColour( fieldBg );
+        grid->SetDefaultCellTextColour( fg );
+        grid->SetLabelBackgroundColour( controlBg );
+        grid->SetLabelTextColour( fg );
+        grid->SetGridLineColour( border );
+    }
+    else if( wxStyledTextCtrl* styledText = dynamic_cast<wxStyledTextCtrl*>( aWindow ) )
+    {
+        styledText->StyleSetBackground( wxSTC_STYLE_DEFAULT, fieldBg );
+        styledText->StyleSetForeground( wxSTC_STYLE_DEFAULT, fg );
+        styledText->StyleClearAll();
+    }
+
+    for( wxWindow* child : aWindow->GetChildren() )
+        ApplyDarkWindowTheme( child );
+
+    aWindow->Refresh();
 }
 
 

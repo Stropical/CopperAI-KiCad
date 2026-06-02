@@ -44,6 +44,14 @@ namespace KIPLATFORM
         void ApplyDarkFrameTheme( wxWindow* aWindow );
 
         /**
+         * Apply KiCad's dark-mode colours to a window and its children.
+         *
+         * This is primarily used on Windows where native wxWidgets controls do not fully
+         * inherit the application dark mode.
+         */
+        void ApplyDarkWindowTheme( wxWindow* aWindow );
+
+        /**
          * Pass the current focus to the window. On OSX this will forcefully give the focus to
          * the desired window, while on MSW and GTK it will simply call the wxWidgets SetFocus()
          * function.

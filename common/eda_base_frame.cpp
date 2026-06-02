@@ -137,6 +137,15 @@ void EDA_BASE_FRAME::commonInit( FRAME_T aFrameType )
     SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
     SetForegroundColour( wxColour( 229, 229, 229 ) );
 
+    Bind( wxEVT_SHOW,
+          [this]( wxShowEvent& aEvent )
+          {
+              if( aEvent.IsShown() )
+                  KIPLATFORM::UI::ApplyDarkWindowTheme( this );
+
+              aEvent.Skip();
+          } );
+
     m_ident             = aFrameType;
     m_maximizeByDefault = false;
     m_infoBar           = nullptr;
@@ -593,6 +602,7 @@ void EDA_BASE_FRAME::ThemeChanged()
     KIPLATFORM::UI::ApplyDarkFrameTheme( this );
     SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
     SetForegroundColour( wxColour( 229, 229, 229 ) );
+    KIPLATFORM::UI::ApplyDarkWindowTheme( this );
 
     // Update all the toolbars to have new icons
     wxAuiPaneInfoArray panes = m_auimgr.GetAllPanes();
