@@ -589,30 +589,22 @@ HANDLER_RESULT<SearchSymbolsResponse> API_HANDLER_SCH::handleSearchSymbols(
         if( !targetLib.IsEmpty() && entry.libraryNickname != targetLib )
             continue;
 
+        // Keep the hot path cheap: search by name only and let GetComponentData
+        // populate full metadata when the agent drills into a specific result.
         bool matched = queryTokens.empty() || anyTokenMatches( entry.symbolNameLower, queryTokens );
-
-        if( !matched && !queryTokens.empty() )
-        {
-            if( loadSymbolSearchMetadata( libTable, entry ) )
-            {
-                matched = anyTokenMatches( entry.descriptionLower, queryTokens )
-                          || anyTokenMatches( entry.keywordsLower, queryTokens );
-            }
-        }
 
         if( !matched )
             continue;
 
-        // Name-only matches are common and avoid most library loads.  Load metadata only
-        // for the small set of rows that will actually be returned to the agent.
-        loadSymbolSearchMetadata( libTable, entry );
-
         SymbolSearchResult* result = response.add_results();
         result->set_library_nickname( entry.libraryNickname.ToStdString() );
         result->set_symbol_name( entry.symbolName.ToStdString() );
-        result->set_description( entry.description.ToStdString() );
-        result->set_keywords( entry.keywords.ToStdString() );
-        result->set_datasheet( entry.datasheet.ToStdString() );
+        if( entry.metadataLoaded )
+        {
+            result->set_description( entry.description.ToStdString() );
+            result->set_keywords( entry.keywords.ToStdString() );
+            result->set_datasheet( entry.datasheet.ToStdString() );
+        }
 
         if( yieldWatch.Time() > 50 )
         {
