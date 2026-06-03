@@ -543,7 +543,6 @@ WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& 
     m_deferredScriptTimer = new wxTimer( this );
     Bind( wxEVT_TIMER, &WEBVIEW_PANEL::OnDeferredScriptTimer, this,
           m_deferredScriptTimer->GetId() );
-
     // Create toolbar with open/close buttons
     m_toolbar = new wxToolBar( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                wxTB_HORIZONTAL | wxTB_NODIVIDER );
