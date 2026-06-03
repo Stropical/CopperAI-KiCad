@@ -24,6 +24,7 @@
 
 
 #include <algorithm>
+#include <cstdlib>
 #include <api/api_handler_sch.h>
 #include <api/api_server.h>
 #include <google/protobuf/util/json_util.h>
@@ -2551,6 +2552,7 @@ WEBVIEW_PANEL* SCH_EDIT_FRAME::EnsureOllamaAgentWebView()
     if( !m_ollamaAgentWebView )
     {
         m_ollamaAgentWebView = new WEBVIEW_PANEL( m_ollamaAgentTabPanel );
+        m_ollamaAgentWebView->EnableKiCadIpcBridge();
         m_ollamaAgentWebView->BindLoadedEvent();
         m_ollamaAgentWebView->SetHandleExternalLinks( true );
         m_ollamaAgentTabPanel->GetSizer()->Add( m_ollamaAgentWebView, 1, wxEXPAND );
@@ -2580,16 +2582,38 @@ WEBVIEW_PANEL* SCH_EDIT_FRAME::EnsureDatasheetWebView()
 }
 
 
+/* AI Agent (Copper) webview: full URL, UTF-8.
+ * - If COPPERAI_AGENT_URL or KICAD_AGENT_CHAT_URL is set and non-empty, that URL is used.
+ * - Otherwise: production Cloudflare URL when KICAD_PRODUCTION_AGENT_CHAT_DEFAULT is defined at
+ *   build time (e.g. release/packaging), else http://127.0.0.1:3000/... for local dev.
+ * Adjust the port via either environment variable or run your local chat app on 3000. */
+static wxString GetAgentChatWebviewUrl()
+{
+    if( const char* fromEnv = std::getenv( "COPPERAI_AGENT_URL" ) )
+    {
+        if( fromEnv[0] != '\0' )
+            return wxString::FromUTF8( fromEnv );
+    }
+
+    if( const char* fromEnv = std::getenv( "KICAD_AGENT_CHAT_URL" ) )
+    {
+        if( fromEnv[0] != '\0' )
+            return wxString::FromUTF8( fromEnv );
+    }
+
+#if defined( KICAD_PRODUCTION_AGENT_CHAT_DEFAULT )
+    return wxS( "https://app.copperai.workers.dev/chat?copper_client=kicad" );
+#else
+    return wxS( "http://127.0.0.1:3000/chat?copper_client=kicad" );
+#endif
+}
+
+
 void SCH_EDIT_FRAME::LoadOllamaAgentWebView()
 {
-    wxString websiteUrl;
-
-    if( !wxGetEnv( wxS( "COPPERAI_AGENT_URL" ), &websiteUrl ) || websiteUrl.IsEmpty() )
-        websiteUrl = wxS( "https://app.copperai.workers.dev/chat?copper_client=kicad" );
-
     if( WEBVIEW_PANEL* panel = EnsureOllamaAgentWebView() )
     {
-        panel->LoadURL( websiteUrl );
+        panel->LoadURL( GetAgentChatWebviewUrl() );
         panel->ShowBrowser( true );
     }
 }
