@@ -25,9 +25,25 @@
 #include <widgets/wx_treebook.h>
 #include <widgets/ui_common.h>
 
+#include <kiplatform/ui.h>
 #include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/choice.h>
+#include <wx/combobox.h>
+#include <wx/dataview.h>
+#include <wx/filepicker.h>
 #include <wx/grid.h>
+#include <wx/listbox.h>
 #include <wx/sizer.h>
+#include <wx/odcombo.h>
+#include <wx/radiobut.h>
+#include <wx/scrolwin.h>
+#include <wx/slider.h>
+#include <wx/spinctrl.h>
+#include <wx/statbox.h>
+#include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
 #include <wx/treebook.h>
 #include <wx/treectrl.h>
 #include <wx/listctrl.h>
@@ -43,6 +59,95 @@
 // This is not a simple page index because some dialogs have dynamic page sets.
 std::map<wxString, wxString> g_lastPage;
 std::map<wxString, wxString> g_lastParentPage;
+
+
+namespace
+{
+void setDarkWindowColours( wxWindow* aWindow, const wxColour& aBg, const wxColour& aFg )
+{
+    aWindow->SetBackgroundColour( aBg );
+    aWindow->SetOwnBackgroundColour( aBg );
+    aWindow->SetForegroundColour( aFg );
+    aWindow->SetOwnForegroundColour( aFg );
+}
+
+
+void ApplyDarkPreferencesTheme( wxWindow* aWindow )
+{
+    if( !aWindow || !KIPLATFORM::UI::IsDarkTheme() )
+        return;
+
+    const wxColour panelBg = KIPLATFORM::UI::GetPanelBGColour();
+    const wxColour fieldBg( 18, 18, 18 );
+    const wxColour controlBg( 28, 28, 28 );
+    const wxColour border( 68, 68, 68 );
+    const wxColour fg( 245, 245, 245 );
+    const wxColour mutedFg( 176, 176, 176 );
+
+#ifdef __WXMSW__
+    KIPLATFORM::UI::ApplyDarkFrameTheme( aWindow );
+#endif
+
+    wxColour bg = panelBg;
+    wxColour text = fg;
+
+    if( dynamic_cast<wxTextCtrl*>( aWindow ) || dynamic_cast<wxStyledTextCtrl*>( aWindow )
+            || dynamic_cast<wxTreeCtrl*>( aWindow ) || dynamic_cast<wxListCtrl*>( aWindow )
+            || dynamic_cast<wxListBox*>( aWindow ) || dynamic_cast<wxDataViewCtrl*>( aWindow )
+            || dynamic_cast<wxGrid*>( aWindow ) || dynamic_cast<wxChoice*>( aWindow )
+            || dynamic_cast<wxComboBox*>( aWindow )
+            || dynamic_cast<wxOwnerDrawnComboBox*>( aWindow )
+            || dynamic_cast<wxSpinCtrl*>( aWindow )
+            || dynamic_cast<wxSpinCtrlDouble*>( aWindow )
+            || dynamic_cast<wxFilePickerCtrl*>( aWindow ) )
+    {
+        bg = fieldBg;
+    }
+    else if( dynamic_cast<wxStaticLine*>( aWindow ) )
+    {
+        bg = panelBg;
+        text = border;
+    }
+    else if( dynamic_cast<wxStaticBox*>( aWindow ) )
+    {
+        bg = panelBg;
+        text = wxColour( 190, 190, 190 );
+    }
+    else if( dynamic_cast<wxStaticText*>( aWindow ) )
+    {
+        bg = panelBg;
+        text = fg;
+    }
+
+    if( !aWindow->IsEnabled() )
+        text = mutedFg;
+
+    setDarkWindowColours( aWindow, bg, text );
+
+    if( wxGrid* grid = dynamic_cast<wxGrid*>( aWindow ) )
+    {
+        grid->SetDefaultCellBackgroundColour( fieldBg );
+        grid->SetDefaultCellTextColour( fg );
+        grid->SetLabelBackgroundColour( controlBg );
+        grid->SetLabelTextColour( fg );
+        grid->SetGridLineColour( border );
+        grid->SetSelectionBackground( wxColour( 70, 70, 75 ) );
+        grid->SetSelectionForeground( fg );
+        grid->SetCellHighlightColour( wxColour( 105, 105, 110 ) );
+    }
+    else if( wxStyledTextCtrl* styledText = dynamic_cast<wxStyledTextCtrl*>( aWindow ) )
+    {
+        styledText->StyleSetBackground( wxSTC_STYLE_DEFAULT, fieldBg );
+        styledText->StyleSetForeground( wxSTC_STYLE_DEFAULT, fg );
+        styledText->StyleClearAll();
+    }
+
+    for( wxWindow* child : aWindow->GetChildren() )
+        ApplyDarkPreferencesTheme( child );
+
+    aWindow->Refresh();
+}
+}
 
 
 PAGED_DIALOG::PAGED_DIALOG( wxWindow* aParent, const wxString& aTitle, bool aShowReset,
@@ -143,6 +248,8 @@ PAGED_DIALOG::PAGED_DIALOG( wxWindow* aParent, const wxString& aTitle, bool aSho
     m_treebook->Bind( wxEVT_CHAR_HOOK, &PAGED_DIALOG::onCharHook, this );
     m_treebook->Bind( wxEVT_TREEBOOK_PAGE_CHANGED, &PAGED_DIALOG::onPageChanged, this );
     m_treebook->Bind( wxEVT_TREEBOOK_PAGE_CHANGING, &PAGED_DIALOG::onPageChanging, this );
+
+    ApplyDarkPreferencesTheme( this );
 }
 
 
@@ -157,6 +264,8 @@ void PAGED_DIALOG::finishInitialization()
 
     for( size_t i = 0; i < m_treebook->GetPageCount(); ++i )
         m_treebook->GetPage( i )->Layout();
+
+    ApplyDarkPreferencesTheme( this );
 
     m_treebook->Layout();
     m_treebook->Fit();
@@ -332,6 +441,8 @@ void PAGED_DIALOG::SetError( const wxString& aMessage, wxWindow* aPage, wxWindow
 void PAGED_DIALOG::UpdateResetButton( int aPage )
 {
     wxWindow* panel = m_treebook->ResolvePage( aPage );
+
+    ApplyDarkPreferencesTheme( panel );
 
     // Enable the reset button only if the page is re-settable
     if( m_resetButton )

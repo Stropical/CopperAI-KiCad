@@ -45,6 +45,7 @@
 #include <kiplatform/app.h>
 #include <kiplatform/environment.h>
 #include <kiplatform/policy.h>
+#include <kiplatform/ui.h>
 #include <build_version.h>
 #include <kiway.h>
 #include <kiway_express.h>
@@ -64,6 +65,7 @@
 #include <wildcards_and_files_ext.h>
 #include <widgets/app_progress_dialog.h>
 #include <widgets/kistatusbar.h>
+#include <wx/aui/tabart.h>
 #include <wx/ffile.h>
 #include <wx/filedlg.h>
 #include <wx/dnd.h>
@@ -90,6 +92,52 @@
 #define PROJECT_FILES_CAPTION _( "Project Files" )
 
 #define SEP()   wxFileName::GetPathSeparator()
+
+
+namespace
+{
+class COPPERAI_DARK_AUI_TAB_ART : public wxAuiGenericTabArt
+{
+public:
+    COPPERAI_DARK_AUI_TAB_ART()
+    {
+        wxColour bg = KIPLATFORM::UI::GetPanelBGColour();
+        SetColour( bg );
+        SetActiveColour( bg );
+    }
+
+    wxAuiTabArt* Clone() override
+    {
+        return new COPPERAI_DARK_AUI_TAB_ART( *this );
+    }
+
+    void DrawBorder( wxDC& aDC, wxWindow*, const wxRect& aRect ) override
+    {
+        wxColour bg = KIPLATFORM::UI::GetPanelBGColour();
+        aDC.SetPen( wxPen( bg ) );
+        aDC.SetBrush( wxBrush( bg ) );
+        aDC.DrawRectangle( aRect );
+    }
+
+    void DrawBackground( wxDC& aDC, wxWindow*, const wxRect& aRect ) override
+    {
+        wxColour bg = KIPLATFORM::UI::GetPanelBGColour();
+        aDC.SetPen( *wxTRANSPARENT_PEN );
+        aDC.SetBrush( wxBrush( bg ) );
+        aDC.DrawRectangle( aRect );
+    }
+
+    int GetBorderWidth( wxWindow* ) override
+    {
+        return 0;
+    }
+
+    int GetAdditionalBorderSpace( wxWindow* ) override
+    {
+        return 0;
+    }
+};
+}
 
 
 // Menubar and toolbar event table
@@ -228,6 +276,10 @@ KICAD_MANAGER_FRAME::KICAD_MANAGER_FRAME( wxWindow* parent, const wxString& titl
                                     FromDIP( wxSize( 700, 590 ) ),
                                     wxAUI_NB_TOP | wxAUI_NB_CLOSE_ON_ALL_TABS | wxAUI_NB_TAB_MOVE
                                             | wxAUI_NB_SCROLL_BUTTONS | wxNO_BORDER );
+    m_notebook->SetArtProvider( new COPPERAI_DARK_AUI_TAB_ART() );
+    m_notebook->SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    m_notebook->SetOwnBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
+    m_notebook->SetForegroundColour( wxColour( 229, 229, 229 ) );
 
     m_notebook->Bind( wxEVT_AUINOTEBOOK_PAGE_CLOSE,
                       &KICAD_MANAGER_FRAME::onNotebookPageCloseRequest, this );

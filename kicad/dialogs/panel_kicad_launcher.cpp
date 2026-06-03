@@ -41,8 +41,14 @@ PANEL_KICAD_LAUNCHER::PANEL_KICAD_LAUNCHER( wxWindow* aParent ) :
     const wxColour fg( 229, 229, 229 );
     SetBackgroundColour( bg );
     SetForegroundColour( fg );
+    SetWindowStyleFlag( ( GetWindowStyleFlag() & ~wxBORDER_MASK ) | wxTAB_TRAVERSAL
+                        | wxBORDER_NONE );
+    SetOwnBackgroundColour( bg );
     m_scrolledWindow->SetBackgroundColour( bg );
     m_scrolledWindow->SetForegroundColour( fg );
+    m_scrolledWindow->SetWindowStyleFlag( ( m_scrolledWindow->GetWindowStyleFlag()
+                                            & ~wxBORDER_MASK ) | wxBORDER_NONE );
+    m_scrolledWindow->SetOwnBackgroundColour( bg );
 
     CreateLaunchers();
 

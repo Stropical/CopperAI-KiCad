@@ -27,6 +27,7 @@
 #include <wx/panel.h>
 #include <wx/webview.h>
 #include <wx/toolbar.h>
+#include <json_common.h>
 #include <deque>
 #include <functional>
 #include <map>
@@ -219,6 +220,9 @@ private:
     void            ScheduleDeferredScriptRetry();
     void            FlushDeferredScripts();
     void            OnDeferredScriptTimer( wxTimerEvent& aEvent );
+    bool            HandleHostRpcMessage( const nlohmann::json& aPayload );
+    void            SendHostRpcResponse( const nlohmann::json& aResponse );
+    void            EnsureRelayContext();
 
     wxWebView* m_browser; ///< The WebView browser instance
     wxToolBar* m_toolbar; ///< Toolbar with open/close buttons
@@ -235,6 +239,8 @@ private:
     bool    m_lockNavigation;      ///< Whether to keep WebView pinned to a single URL
     bool    m_enableKiCadIpcBridge; ///< Whether to expose window.kicad.ipc
     wxString m_lockedUrl;          ///< Normalized URL allowed when navigation is locked
+    wxString m_kicadAdapterSessionId; ///< Relay session id exposed to Copper web app
+    wxString m_kicadAdapterToken;     ///< Relay token exposed to Copper web app
 };
 
 #endif // WEBVIEW_PANEL_H

@@ -139,6 +139,21 @@ void KIPLATFORM::UI::ForceFocus( wxWindow* aWindow )
 }
 
 
+void KIPLATFORM::UI::EnableWin32DarkMode()
+{
+}
+
+
+void KIPLATFORM::UI::ApplyDarkFrameTheme( wxWindow* aWindow )
+{
+}
+
+
+void KIPLATFORM::UI::ApplyDarkWindowTheme( wxWindow* aWindow )
+{
+}
+
+
 bool KIPLATFORM::UI::IsWindowActive( wxWindow* aWindow )
 {
     if( !aWindow )

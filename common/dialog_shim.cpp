@@ -172,6 +172,7 @@ void DIALOG_SHIM::finishDialogSettings()
 
     // SetSizeHints fixes the minimal size of sizers in the dialog
     // (SetSizeHints calls Fit(), so no need to call it)
+    KIPLATFORM::UI::ApplyDarkWindowTheme( this );
     GetSizer()->SetSizeHints( this );
 }
 
@@ -256,6 +257,8 @@ bool DIALOG_SHIM::Show( bool show )
         wxDialog::Raise();  // Needed on OS X and some other window managers (i.e. Unity)
 #endif
         ret = wxDialog::Show( show );
+
+        KIPLATFORM::UI::ApplyDarkWindowTheme( this );
 
         // classname is key, returns a zeroed-out default wxRect if none existed before.
         wxRect savedDialogRect = class_map[ hash_key ];
@@ -374,6 +377,19 @@ bool DIALOG_SHIM::Enable( bool enable )
 }
 
 
+#ifdef __WXMSW__
+WXLRESULT DIALOG_SHIM::MSWWindowProc( WXUINT message, WXWPARAM wParam, WXLPARAM lParam )
+{
+    WXLRESULT result = 0;
+
+    if( KIPLATFORM::UI::HandleDarkThemeCtlColor( message, wParam, lParam, &result ) )
+        return result;
+
+    return wxDialog::MSWWindowProc( message, wParam, lParam );
+}
+#endif
+
+
 // Recursive descent doing a SelectAll() in wxTextCtrls.
 // MacOS User Interface Guidelines state that when tabbing to a text control all its
 // text should be selected.  Since wxWidgets fails to implement this, we do it here.
@@ -452,6 +468,7 @@ void DIALOG_SHIM::OnPaint( wxPaintEvent &event )
 {
     if( m_firstPaintEvent )
     {
+        KIPLATFORM::UI::ApplyDarkWindowTheme( this );
         KIPLATFORM::UI::FixupCancelButtonCmdKeyCollision( this );
 
         SelectAllInTextCtrls( GetChildren() );
@@ -488,6 +505,7 @@ int DIALOG_SHIM::ShowModal()
     // the windows so that the modal will be pushed in front of the disabled
     // window when it is raised.
     KIPLATFORM::UI::ReparentModal( this );
+    KIPLATFORM::UI::ApplyDarkWindowTheme( this );
 
     // Call the base class ShowModal() method
     return wxDialog::ShowModal();

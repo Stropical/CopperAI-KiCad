@@ -37,6 +37,24 @@ static void drawAuiToolbarBackground( wxDC& aDc, const wxRect& aRect )
 }
 
 
+static wxColour auiPanelBg()
+{
+    return KIPLATFORM::UI::GetPanelBGColour();
+}
+
+
+static wxColour auiCaptionBg()
+{
+    return wxColour( 24, 24, 24 );
+}
+
+
+static wxColour auiBorderColour()
+{
+    return wxColour( 45, 45, 45 );
+}
+
+
 #if wxCHECK_VERSION( 3, 3, 0 )
 wxSize WX_AUI_TOOLBAR_ART::GetToolSize( wxReadOnlyDC& aDc, wxWindow* aWindow,
                                         const wxAuiToolBarItem& aItem )
@@ -244,17 +262,69 @@ WX_AUI_DOCK_ART::WX_AUI_DOCK_ART() : wxAuiDefaultDockArt()
     m_captionSize = ( wxNORMAL_FONT->GetPixelSize().y * 7 ) / 4;
 #endif
 
-    SetColour( wxAUI_DOCKART_BACKGROUND_COLOUR, KIPLATFORM::UI::GetPanelBGColour() );
+    SetColour( wxAUI_DOCKART_BACKGROUND_COLOUR, auiPanelBg() );
     SetColour( wxAUI_DOCKART_SASH_COLOUR, wxColour( 18, 18, 18 ) );
-    SetColour( wxAUI_DOCKART_BORDER_COLOUR, wxColour( 58, 58, 58 ) );
+    SetColour( wxAUI_DOCKART_BORDER_COLOUR, auiBorderColour() );
     SetColour( wxAUI_DOCKART_GRIPPER_COLOUR, wxColour( 90, 90, 90 ) );
-    SetColour( wxAUI_DOCKART_ACTIVE_CAPTION_COLOUR, wxColour( 40, 40, 40 ) );
-    SetColour( wxAUI_DOCKART_ACTIVE_CAPTION_GRADIENT_COLOUR, wxColour( 40, 40, 40 ) );
-    SetColour( wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxColour( 48, 48, 48 ) );
-    SetColour( wxAUI_DOCKART_INACTIVE_CAPTION_GRADIENT_COLOUR, wxColour( 48, 48, 48 ) );
+    SetColour( wxAUI_DOCKART_ACTIVE_CAPTION_COLOUR, auiCaptionBg() );
+    SetColour( wxAUI_DOCKART_ACTIVE_CAPTION_GRADIENT_COLOUR, auiCaptionBg() );
+    SetColour( wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, auiCaptionBg() );
+    SetColour( wxAUI_DOCKART_INACTIVE_CAPTION_GRADIENT_COLOUR, auiCaptionBg() );
     SetColour( wxAUI_DOCKART_ACTIVE_CAPTION_TEXT_COLOUR, wxColour( 245, 245, 245 ) );
     SetColour( wxAUI_DOCKART_INACTIVE_CAPTION_TEXT_COLOUR, wxColour( 245, 245, 245 ) );
+    SetMetric( wxAUI_DOCKART_PANE_BORDER_SIZE, 0 );
+    SetMetric( wxAUI_DOCKART_SASH_SIZE, 2 );
 
     // Turn off the ridiculous looking gradient
     m_gradientType = wxAUI_GRADIENT_NONE;
+}
+
+
+void WX_AUI_DOCK_ART::DrawSash( wxDC& aDc, wxWindow*, int, const wxRect& aRect )
+{
+    aDc.SetPen( *wxTRANSPARENT_PEN );
+    aDc.SetBrush( wxBrush( wxColour( 18, 18, 18 ) ) );
+    aDc.DrawRectangle( aRect );
+}
+
+
+void WX_AUI_DOCK_ART::DrawBackground( wxDC& aDc, wxWindow*, int, const wxRect& aRect )
+{
+    aDc.SetPen( *wxTRANSPARENT_PEN );
+    aDc.SetBrush( wxBrush( auiPanelBg() ) );
+    aDc.DrawRectangle( aRect );
+}
+
+
+void WX_AUI_DOCK_ART::DrawCaption( wxDC& aDc, wxWindow*, const wxString& aText,
+                                   const wxRect& aRect, wxAuiPaneInfo& aPane )
+{
+    wxRect rect = aRect;
+
+    aDc.SetPen( *wxTRANSPARENT_PEN );
+    aDc.SetBrush( wxBrush( auiCaptionBg() ) );
+    aDc.DrawRectangle( rect );
+
+    aDc.SetFont( m_captionFont );
+    aDc.SetTextForeground( wxColour( 245, 245, 245 ) );
+
+    wxRect textRect = rect;
+    textRect.Deflate( 6, 0 );
+
+    if( aPane.HasCloseButton() )
+        textRect.SetRight( textRect.GetRight() - m_buttonSize - 4 );
+
+    aDc.DrawLabel( aText, textRect, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL );
+}
+
+
+void WX_AUI_DOCK_ART::DrawBorder( wxDC& aDc, wxWindow*, const wxRect& aRect,
+                                  wxAuiPaneInfo& aPane )
+{
+    if( !aPane.HasBorder() )
+        return;
+
+    aDc.SetPen( wxPen( auiBorderColour(), 1 ) );
+    aDc.SetBrush( *wxTRANSPARENT_BRUSH );
+    aDc.DrawRectangle( aRect );
 }

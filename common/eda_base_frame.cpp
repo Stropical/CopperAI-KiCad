@@ -137,6 +137,15 @@ void EDA_BASE_FRAME::commonInit( FRAME_T aFrameType )
     SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
     SetForegroundColour( wxColour( 229, 229, 229 ) );
 
+    Bind( wxEVT_SHOW,
+          [this]( wxShowEvent& aEvent )
+          {
+              if( aEvent.IsShown() )
+                  KIPLATFORM::UI::ApplyDarkWindowTheme( this );
+
+              aEvent.Skip();
+          } );
+
     m_ident             = aFrameType;
     m_maximizeByDefault = false;
     m_infoBar           = nullptr;
@@ -593,6 +602,7 @@ void EDA_BASE_FRAME::ThemeChanged()
     KIPLATFORM::UI::ApplyDarkFrameTheme( this );
     SetBackgroundColour( KIPLATFORM::UI::GetPanelBGColour() );
     SetForegroundColour( wxColour( 229, 229, 229 ) );
+    KIPLATFORM::UI::ApplyDarkWindowTheme( this );
 
     // Update all the toolbars to have new icons
     wxAuiPaneInfoArray panes = m_auimgr.GetAllPanes();
@@ -1687,11 +1697,59 @@ void drawDarkMenuBarBackground( HWND aHwnd, HDC aHdc )
     menuRect.left = 0;
     menuRect.right = windowRect.right - windowRect.left;
     menuRect.top -= 1;
-    menuRect.bottom += 2;
 
     HBRUSH bg = CreateSolidBrush( wxToColorRef( KIPLATFORM::UI::GetPanelBGColour() ) );
     FillRect( aHdc, &menuRect, bg );
     DeleteObject( bg );
+}
+
+void paintDarkMenuBarSeam( HWND aHwnd )
+{
+    MENUBARINFO menuInfo = {};
+    menuInfo.cbSize = sizeof( menuInfo );
+
+    if( !GetMenuBarInfo( aHwnd, OBJID_MENU, 0, &menuInfo ) )
+        return;
+
+    RECT windowRect = {};
+    GetWindowRect( aHwnd, &windowRect );
+
+    POINT clientOrigin = { 0, 0 };
+    ClientToScreen( aHwnd, &clientOrigin );
+
+    RECT menuRect = menuInfo.rcBar;
+    OffsetRect( &menuRect, -windowRect.left, -windowRect.top );
+
+    const int windowWidth = windowRect.right - windowRect.left;
+    const int clientTop = clientOrigin.y - windowRect.top;
+
+    RECT seamRect = {};
+    seamRect.left = 0;
+    seamRect.right = windowWidth;
+    seamRect.top = menuRect.bottom - 1;
+    seamRect.bottom = clientTop;
+
+    if( seamRect.top < 0 )
+        seamRect.top = 0;
+
+    if( seamRect.bottom <= seamRect.top )
+        seamRect.bottom = seamRect.top + 1;
+
+    if( seamRect.bottom > clientTop )
+        seamRect.bottom = clientTop;
+
+    if( seamRect.bottom <= seamRect.top )
+        return;
+
+    HDC hdc = GetWindowDC( aHwnd );
+
+    if( !hdc )
+        return;
+
+    HBRUSH bg = CreateSolidBrush( wxToColorRef( KIPLATFORM::UI::GetPanelBGColour() ) );
+    FillRect( hdc, &seamRect, bg );
+    DeleteObject( bg );
+    ReleaseDC( aHwnd, hdc );
 }
 
 void drawDarkMenuBarItem( HWND aHwnd, const UAHDRAWMENUITEM* aItem )
@@ -1700,7 +1758,7 @@ void drawDarkMenuBarItem( HWND aHwnd, const UAHDRAWMENUITEM* aItem )
         return;
 
     RECT itemRect = aItem->dis.rcItem;
-    InflateRect( &itemRect, 1, 1 );
+    InflateRect( &itemRect, 1, 2 );
     const bool selected = ( aItem->dis.itemState & ODS_SELECTED ) != 0
                           || ( aItem->dis.itemState & ODS_HOTLIGHT ) != 0;
 
@@ -1724,11 +1782,17 @@ void drawDarkMenuBarItem( HWND aHwnd, const UAHDRAWMENUITEM* aItem )
 
 WXLRESULT EDA_BASE_FRAME::MSWWindowProc( WXUINT message, WXWPARAM wParam, WXLPARAM lParam )
 {
+    WXLRESULT ctlColorResult = 0;
+
+    if( KIPLATFORM::UI::HandleDarkThemeCtlColor( message, wParam, lParam, &ctlColorResult ) )
+        return ctlColorResult;
+
     if( message == WM_UAHDRAWMENU )
     {
         if( UAHMENU* menu = reinterpret_cast<UAHMENU*>( lParam ) )
         {
             drawDarkMenuBarBackground( GetHWND(), menu->hdc );
+            paintDarkMenuBarSeam( GetHWND() );
             return TRUE;
         }
     }
@@ -1737,6 +1801,13 @@ WXLRESULT EDA_BASE_FRAME::MSWWindowProc( WXUINT message, WXWPARAM wParam, WXLPAR
     {
         drawDarkMenuBarItem( GetHWND(), reinterpret_cast<UAHDRAWMENUITEM*>( lParam ) );
         return TRUE;
+    }
+
+    if( message == WM_PAINT || message == WM_NCPAINT )
+    {
+        WXLRESULT result = wxFrame::MSWWindowProc( message, wParam, lParam );
+        paintDarkMenuBarSeam( GetHWND() );
+        return result;
     }
 
     // This will help avoid the menu keeping focus when the alt key is released

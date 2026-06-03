@@ -117,7 +117,7 @@
             <property name="tooltip"></property>
             <property name="window_extra_style"></property>
             <property name="window_name"></property>
-            <property name="window_style">wxVSCROLL</property>
+            <property name="window_style">wxVSCROLL|wxBORDER_NONE</property>
             <object class="wxBoxSizer" expanded="true">
               <property name="minimum_size"></property>
               <property name="name">bSizerInner</property>

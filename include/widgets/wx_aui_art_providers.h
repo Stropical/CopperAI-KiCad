@@ -53,6 +53,15 @@ class WX_AUI_DOCK_ART : public wxAuiDefaultDockArt
 {
 public:
     WX_AUI_DOCK_ART();
+
+    void DrawSash( wxDC& aDc, wxWindow* aWindow, int aOrientation,
+                   const wxRect& aRect ) override;
+    void DrawBackground( wxDC& aDc, wxWindow* aWindow, int aOrientation,
+                         const wxRect& aRect ) override;
+    void DrawCaption( wxDC& aDc, wxWindow* aWindow, const wxString& aText,
+                      const wxRect& aRect, wxAuiPaneInfo& aPane ) override;
+    void DrawBorder( wxDC& aDc, wxWindow* aWindow, const wxRect& aRect,
+                     wxAuiPaneInfo& aPane ) override;
 };
 
 

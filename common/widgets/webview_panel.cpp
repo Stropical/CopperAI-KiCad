@@ -27,19 +27,22 @@
 #include <api/common/envelope.pb.h>
 #endif
 #include <clipboard.h>
-#include <json_common.h>
+#include <eda_base_frame.h>
 #include <kiplatform/ui.h>
-#include <widgets/ui_common.h>
 #ifdef KICAD_IPC_API
 #include <pgm_base.h>
 #endif
-#include <nlohmann/json.hpp>
+#include <json_common.h>
+#include <project.h>
+#include <widgets/ui_common.h>
 #include <wx/base64.h>
-#include <wx/log.h>
+#include <wx/filename.h>
 #include <wx/sizer.h>
+#include <wx/log.h>
 #include <wx/button.h>
 #include <wx/toolbar.h>
 #include <wx/timer.h>
+#include <random>
 
 using json = nlohmann::json;
 
@@ -52,6 +55,18 @@ const wxColour COPPERAI_DARK_FG( 229, 229, 229 );
 wxString ToJsStringLiteral( const wxString& aValue )
 {
     return wxString::FromUTF8( json( std::string( aValue.utf8_str() ) ).dump() );
+}
+
+
+wxString RandomHexToken( size_t aBytes )
+{
+    std::random_device rd;
+    wxString           token;
+
+    for( size_t i = 0; i < aBytes; ++i )
+        token += wxString::Format( wxS( "%02x" ), rd() & 0xff );
+
+    return token;
 }
 }
 
@@ -207,6 +222,121 @@ void WEBVIEW_PANEL::SendIpcCallback( const wxString& aCallbackId, bool aIsError,
 }
 
 
+void WEBVIEW_PANEL::EnsureRelayContext()
+{
+    if( m_kicadAdapterSessionId.IsEmpty() )
+        m_kicadAdapterSessionId = wxS( "kas-" ) + RandomHexToken( 16 );
+
+    if( m_kicadAdapterToken.IsEmpty() )
+        m_kicadAdapterToken = wxS( "kat-" ) + RandomHexToken( 24 );
+}
+
+
+void WEBVIEW_PANEL::SendHostRpcResponse( const json& aResponse )
+{
+    if( !m_browser )
+        return;
+
+    const wxString payload = wxString::FromUTF8( aResponse.dump() );
+    const wxString script = wxString::Format(
+            wxS( "(function() {"
+                 "  var msg = %s;"
+                 "  try {"
+                 "    window.dispatchEvent(new MessageEvent('message', { data: msg }));"
+                 "  } catch (e) {}"
+                 "  try {"
+                 "    if (window.kiclient && typeof window.kiclient.postMessage === 'function')"
+                 "      window.kiclient.postMessage(msg);"
+                 "  } catch (e) {}"
+                 "})();" ),
+            ToJsStringLiteral( payload ) );
+
+    RunScriptAsync( script );
+}
+
+
+bool WEBVIEW_PANEL::HandleHostRpcMessage( const json& aPayload )
+{
+    if( !aPayload.is_object() || !aPayload.contains( "command" )
+            || !aPayload["command"].is_string() )
+    {
+        return false;
+    }
+
+    json response;
+
+    if( aPayload.contains( "message_id" ) && aPayload["message_id"].is_number_integer() )
+        response["response_to"] = aPayload["message_id"].get<int>();
+    else if( aPayload.contains( "message_id" ) && aPayload["message_id"].is_string() )
+        response["response_to"] = aPayload["message_id"].get<std::string>();
+    else
+        response["response_to"] = nullptr;
+
+    const std::string command = aPayload["command"].get<std::string>();
+    response["command"] = command;
+
+    if( command == "PING" )
+    {
+        response["status"] = "OK";
+        response["data"] = { { "ok", true } };
+        SendHostRpcResponse( response );
+        return true;
+    }
+
+    if( command == "GET_COPPER_RELAY_CONTEXT" )
+    {
+        EnsureRelayContext();
+        response["status"] = "OK";
+        response["data"] = {
+            { "kicadBridgeUrl", "https://api.vcryptfinancial.com/agent/mcp" },
+            { "kicadAdapterBridgeWsUrl", "wss://api.vcryptfinancial.com/agent/kicad-bridge/" },
+            { "kicadAdapterSessionId", std::string( m_kicadAdapterSessionId.utf8_str() ) },
+            { "kicadAdapterToken", std::string( m_kicadAdapterToken.utf8_str() ) }
+        };
+        SendHostRpcResponse( response );
+        return true;
+    }
+
+    if( command == "GET_PROJECT_PATH" )
+    {
+        wxString projectPath;
+
+        if( wxWindow* top = wxGetTopLevelParent( this ) )
+        {
+            if( EDA_BASE_FRAME* frame = dynamic_cast<EDA_BASE_FRAME*>( top ) )
+            {
+                projectPath = frame->Prj().GetProjectPath();
+
+                if( projectPath.IsEmpty() )
+                {
+                    wxFileName currentFile( frame->GetCurrentFileName() );
+                    projectPath = currentFile.GetPathWithSep();
+                }
+            }
+        }
+
+        if( projectPath.IsEmpty() )
+        {
+            response["status"] = "ERROR";
+            response["error_message"] = "No project path is available.";
+        }
+        else
+        {
+            response["status"] = "OK";
+            response["data"] = std::string( projectPath.utf8_str() );
+        }
+
+        SendHostRpcResponse( response );
+        return true;
+    }
+
+    response["status"] = "ERROR";
+    response["error_message"] = "Unsupported KiCad host command: " + command;
+    SendHostRpcResponse( response );
+    return true;
+}
+
+
 void WEBVIEW_PANEL::RegisterBuiltInMessageHandlers()
 {
     AddMessageHandler(
@@ -329,9 +459,10 @@ void WEBVIEW_PANEL::RegisterBuiltInMessageHandlers()
                     {
                         json response;
                         response["ok"] = opened;
-                        SendApiCallback( callbackId, !opened,
-                                         opened ? wxString::FromUTF8( response.dump() )
-                                                : wxS( "Failed to open system browser." ) );
+                        const wxString callbackPayload =
+                                opened ? wxString::FromUTF8( response.dump() )
+                                       : wxString( wxS( "Failed to open system browser." ) );
+                        SendApiCallback( callbackId, !opened, callbackPayload );
                     }
                 }
                 catch( const std::exception& e )
@@ -531,18 +662,20 @@ bool WEBVIEW_PANEL::HandleEditCommand( int aCommandId )
 
 WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& aPos,
                               const wxSize& aSize ) :
-        wxPanel( aParent, aId, aPos, aSize, wxBORDER_NONE ), m_browser( nullptr ),
-        m_toolbar( nullptr ), m_deferredScriptTimer( nullptr ), m_btnOpenId( wxID_ANY ),
-        m_btnCloseId( wxID_ANY ), m_initialized( false ), m_loadError( false ),
-        m_loadedEventBound( false ), m_handleExternalLinks( false ), m_lockNavigation( false ),
+        wxPanel( aParent, aId, aPos, aSize, wxBORDER_NONE ),
+        m_browser( nullptr ), m_toolbar( nullptr ),
+        m_deferredScriptTimer( nullptr ), m_btnOpenId( wxID_ANY ), m_btnCloseId( wxID_ANY ),
+        m_initialized( false ), m_loadError( false ), m_loadedEventBound( false ),
+        m_handleExternalLinks( false ), m_lockNavigation( false ),
         m_enableKiCadIpcBridge( false ), m_lockedUrl( wxEmptyString )
 {
-    SetBackgroundColour( COPPERAI_DARK_BG );
-    SetForegroundColour( COPPERAI_DARK_FG );
-
     m_deferredScriptTimer = new wxTimer( this );
     Bind( wxEVT_TIMER, &WEBVIEW_PANEL::OnDeferredScriptTimer, this,
           m_deferredScriptTimer->GetId() );
+
+    SetBackgroundColour( COPPERAI_DARK_BG );
+    SetForegroundColour( COPPERAI_DARK_FG );
+
     // Create toolbar with open/close buttons
     m_toolbar = new wxToolBar( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                wxTB_HORIZONTAL | wxTB_NODIVIDER );
@@ -558,6 +691,7 @@ WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& 
                         wxT( "Close WebView" ), wxT( "Hide the webview panel" ) );
 
     m_toolbar->Realize();
+    m_toolbar->Hide();
 
     // Store button IDs
     m_btnOpenId = openId;
@@ -583,6 +717,7 @@ WEBVIEW_PANEL::WEBVIEW_PANEL( wxWindow* aParent, wxWindowID aId, const wxPoint& 
     // Layout
     wxBoxSizer* sizer = new wxBoxSizer( wxVERTICAL );
     sizer->Add( m_toolbar, 0, wxEXPAND );
+    sizer->Show( m_toolbar, false );
     sizer->Add( m_browser, 1, wxEXPAND | wxALL, 0 );
     SetSizer( sizer );
 
@@ -718,9 +853,6 @@ void WEBVIEW_PANEL::RunScriptAsync( const wxString& aScript )
         return;
     }
 
-    if( KIPLATFORM::UI::RunWebViewScriptFireAndForget( m_browser, aScript ) )
-        return;
-
     m_browser->RunScriptAsync( aScript );
 }
 
@@ -757,8 +889,7 @@ void WEBVIEW_PANEL::FlushDeferredScripts()
         if( !m_browser )
             break;
 
-        if( !KIPLATFORM::UI::RunWebViewScriptFireAndForget( m_browser, script ) )
-            m_browser->RunScriptAsync( script );
+        m_browser->RunScriptAsync( script );
     }
 }
 
@@ -802,10 +933,7 @@ void WEBVIEW_PANEL::OnNavigationRequest( wxWebViewEvent& aEvt )
         return;
     }
 
-    const bool navigationMatchesLock = IsNavigationToLockedUrl( url );
-    const bool hasLockedUrl = m_lockNavigation && !m_lockedUrl.IsEmpty();
-
-    if( !navigationMatchesLock )
+    if( !IsNavigationToLockedUrl( url ) )
     {
         if( url.StartsWith( "http" ) )
             wxLaunchDefaultBrowser( url );
@@ -817,7 +945,7 @@ void WEBVIEW_PANEL::OnNavigationRequest( wxWebViewEvent& aEvt )
 
     // Default behavior: open external links in the system browser
     // unless m_handleExternalLinks is true
-    if( !hasLockedUrl && !m_handleExternalLinks && url.StartsWith( "http" ) )
+    if( !m_handleExternalLinks && url.StartsWith( "http" ) )
     {
         wxLaunchDefaultBrowser( url );
         aEvt.Veto();
@@ -848,10 +976,9 @@ void WEBVIEW_PANEL::OnWebViewLoaded( wxWebViewEvent& aEvt )
                 wxString zoomScript =
                         wxS( "(function() {"
                              "  var style = document.createElement('style');"
-                             "  style.innerHTML = 'html, body, #root, #__next { margin: 0; "
-                             "padding: 0; width: 100%; min-height: 100%; background: #0A0A0A "
-                             "!important; color: #E5E5E5; color-scheme: dark; } body { "
-                             "overflow: hidden; }';"
+                             "  style.innerHTML = 'html, body { margin: 0; padding: 0; width: "
+                             "100%; height: "
+                             "100%; overflow: hidden; }';"
                              "  if (document.head) { document.head.appendChild(style); }"
                              "  else { document.addEventListener('DOMContentLoaded', function() "
                              "{ document.head.appendChild(style); }); }"
@@ -1188,13 +1315,50 @@ void WEBVIEW_PANEL::OnScriptMessage( wxWebViewEvent& aEvt )
 
     wxString handler = aEvt.GetMessageHandler();
     handler.Trim( true ).Trim( false );
+    wxString message = aEvt.GetString();
+
+    // WebView2 only exposes a single postMessage pipe and reports every message
+    // as the one registered handler.  Always prefer wx_msg's envelope when it is
+    // present, then fall back to wx's native named handler on WebKit.
+    json payload = json::parse( std::string( message.utf8_str() ), nullptr, false );
+
+    if( payload.is_object() )
+    {
+        bool hasWrappedHandler = false;
+
+        if( payload.contains( "handler" ) && payload["handler"].is_string() )
+        {
+            handler = wxString::FromUTF8( payload["handler"].get<std::string>() );
+            hasWrappedHandler = true;
+        }
+        else if( payload.contains( "handlerName" ) && payload["handlerName"].is_string() )
+        {
+            handler = wxString::FromUTF8( payload["handlerName"].get<std::string>() );
+            hasWrappedHandler = true;
+        }
+
+        if( hasWrappedHandler && payload.contains( "message" ) )
+        {
+            const json& wrappedMessage = payload["message"];
+
+            if( wrappedMessage.is_string() )
+                message = wxString::FromUTF8( wrappedMessage.get<std::string>() );
+            else
+                message = wxString::FromUTF8( wrappedMessage.dump() );
+        }
+
+        handler.Trim( true ).Trim( false );
+
+        if( !hasWrappedHandler && HandleHostRpcMessage( payload ) )
+            return;
+    }
 
     auto it = m_msgHandlers.find( handler );
     if( it != m_msgHandlers.end() )
     {
         try
         {
-            it->second( aEvt.GetString() );
+            it->second( message );
         }
         catch( const std::exception& e )
         {

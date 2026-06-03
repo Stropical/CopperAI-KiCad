@@ -90,6 +90,10 @@ public:
 
     void OnPaint( wxPaintEvent &event );
 
+#ifdef __WXMSW__
+    WXLRESULT MSWWindowProc( WXUINT message, WXWPARAM wParam, WXLPARAM lParam ) override;
+#endif
+
     void OnModify();
     void ClearModify();
 
