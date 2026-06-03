@@ -18,6 +18,7 @@
  */
 
 #include <functional>
+#include <kiplatform/ui.h>
 #include <widgets/footprint_choice.h>
 #include <wx/dc.h>
 #include <wx/pen.h>
@@ -30,6 +31,11 @@ FOOTPRINT_CHOICE::FOOTPRINT_CHOICE( wxWindow* aParent, int aId ) :
                               /* n */ 0, /* choices */ nullptr, wxCB_READONLY ),
         m_last_selection( 0 )
 {
+    if( KIPLATFORM::UI::IsDarkTheme() )
+    {
+        SetBackgroundColour( wxColour( 18, 18, 18 ) );
+        SetForegroundColour( wxColour( 245, 245, 245 ) );
+    }
 }
 
 
@@ -45,6 +51,12 @@ void FOOTPRINT_CHOICE::DoSetPopupControl( wxComboPopup* aPopup )
 
     // Bind events to intercept selections, so the separator can be made nonselectable.
 
+    if( KIPLATFORM::UI::IsDarkTheme() )
+    {
+        GetVListBoxComboPopup()->SetBackgroundColour( wxColour( 18, 18, 18 ) );
+        GetVListBoxComboPopup()->SetForegroundColour( wxColour( 245, 245, 245 ) );
+    }
+
     GetVListBoxComboPopup()->Bind( wxEVT_MOTION, &FOOTPRINT_CHOICE::TryVetoMouse, this );
     GetVListBoxComboPopup()->Bind( wxEVT_LEFT_DOWN, &FOOTPRINT_CHOICE::TryVetoMouse, this );
     GetVListBoxComboPopup()->Bind( wxEVT_LEFT_UP, &FOOTPRINT_CHOICE::TryVetoMouse, this );
@@ -57,6 +69,19 @@ void FOOTPRINT_CHOICE::DoSetPopupControl( wxComboPopup* aPopup )
 
 void FOOTPRINT_CHOICE::OnDrawItem( wxDC& aDC, wxRect const& aRect, int aItem, int aFlags ) const
 {
+    wxColour oldText = aDC.GetTextForeground();
+
+    if( KIPLATFORM::UI::IsDarkTheme() )
+    {
+        const bool selected = ( aFlags & wxODCB_PAINTING_SELECTED ) != 0;
+        wxColour  bg = selected ? wxColour( 55, 55, 60 ) : wxColour( 18, 18, 18 );
+
+        aDC.SetPen( *wxTRANSPARENT_PEN );
+        aDC.SetBrush( wxBrush( bg ) );
+        aDC.DrawRectangle( aRect );
+        aDC.SetTextForeground( wxColour( 245, 245, 245 ) );
+    }
+
     wxString text = SafeGetString( aItem );
 
     if( text == wxEmptyString )
@@ -119,6 +144,8 @@ void FOOTPRINT_CHOICE::OnDrawItem( wxDC& aDC, wxRect const& aRect, int aItem, in
             aDC.DrawText( text, x, y );
         }
     }
+
+    aDC.SetTextForeground( oldText );
 }
 
 

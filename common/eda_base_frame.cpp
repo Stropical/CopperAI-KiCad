@@ -1782,6 +1782,11 @@ void drawDarkMenuBarItem( HWND aHwnd, const UAHDRAWMENUITEM* aItem )
 
 WXLRESULT EDA_BASE_FRAME::MSWWindowProc( WXUINT message, WXWPARAM wParam, WXLPARAM lParam )
 {
+    WXLRESULT ctlColorResult = 0;
+
+    if( KIPLATFORM::UI::HandleDarkThemeCtlColor( message, wParam, lParam, &ctlColorResult ) )
+        return ctlColorResult;
+
     if( message == WM_UAHDRAWMENU )
     {
         if( UAHMENU* menu = reinterpret_cast<UAHMENU*>( lParam ) )

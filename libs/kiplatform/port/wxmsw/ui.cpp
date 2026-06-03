@@ -41,6 +41,7 @@
 #include <wx/listctrl.h>
 #include <wx/nonownedwnd.h>
 #include <wx/notebook.h>
+#include <wx/odcombo.h>
 #include <wx/panel.h>
 #include <wx/radiobut.h>
 #include <wx/scrolwin.h>
@@ -54,6 +55,8 @@
 #include <wx/window.h>
 #include <wx/msw/registry.h>
 #include <wx/stc/stc.h>
+
+#include <cwchar>
 
 namespace
 {
@@ -121,6 +124,92 @@ void allowWindowDarkMode( HWND aHwnd )
 
     if( allowDarkModeForWindow )
         allowDarkModeForWindow( aHwnd, TRUE );
+}
+
+
+COLORREF wxToColorRef( const wxColour& aColour )
+{
+    return RGB( aColour.Red(), aColour.Green(), aColour.Blue() );
+}
+
+
+bool isNativeClass( HWND aHwnd, const wchar_t* aClassName )
+{
+    wchar_t className[64] = {};
+
+    if( !aHwnd || !GetClassNameW( aHwnd, className, 64 ) )
+        return false;
+
+    return wcscmp( className, aClassName ) == 0;
+}
+
+
+const wchar_t* nativeThemeForWindow( wxWindow* aWindow )
+{
+    if( dynamic_cast<wxChoice*>( aWindow ) || dynamic_cast<wxComboBox*>( aWindow )
+        || dynamic_cast<wxOwnerDrawnComboBox*>( aWindow ) || dynamic_cast<wxSpinCtrl*>( aWindow )
+        || dynamic_cast<wxSpinCtrlDouble*>( aWindow )
+        || dynamic_cast<wxFilePickerCtrl*>( aWindow ) )
+    {
+        return L"DarkMode_CFD";
+    }
+
+    return L"DarkMode_Explorer";
+}
+
+
+const wchar_t* nativeThemeForHandle( HWND aHwnd )
+{
+    if( isNativeClass( aHwnd, L"ComboBox" ) || isNativeClass( aHwnd, L"ComboBoxEx32" )
+        || isNativeClass( aHwnd, L"ComboLBox" ) || isNativeClass( aHwnd, L"Edit" ) )
+    {
+        return L"DarkMode_CFD";
+    }
+
+    return L"DarkMode_Explorer";
+}
+
+
+void applyNativeDarkTheme( HWND aHwnd, const wchar_t* aTheme )
+{
+    if( !aHwnd )
+        return;
+
+    allowWindowDarkMode( aHwnd );
+    SetWindowTheme( aHwnd, aTheme, nullptr );
+}
+
+
+void applyNativeDarkThemeToChildren( HWND aHwnd )
+{
+    EnumChildWindows( aHwnd,
+            []( HWND child, LPARAM ) -> BOOL
+            {
+                applyNativeDarkTheme( child, nativeThemeForHandle( child ) );
+                return TRUE;
+            },
+            0 );
+}
+
+
+HBRUSH dialogBrush()
+{
+    static HBRUSH brush = CreateSolidBrush( RGB( 40, 40, 45 ) );
+    return brush;
+}
+
+
+HBRUSH panelBrush()
+{
+    static HBRUSH brush = CreateSolidBrush( RGB( 30, 30, 30 ) );
+    return brush;
+}
+
+
+HBRUSH fieldBrush()
+{
+    static HBRUSH brush = CreateSolidBrush( RGB( 18, 18, 18 ) );
+    return brush;
 }
 
 
@@ -202,7 +291,68 @@ void KIPLATFORM::UI::ApplyDarkFrameTheme( wxWindow* aWindow )
     // builds; 19 covers older Windows 10 builds that first shipped the flag.
     DwmSetWindowAttribute( hwnd, 20, &dark, sizeof( dark ) );
     DwmSetWindowAttribute( hwnd, 19, &dark, sizeof( dark ) );
-    SetWindowTheme( hwnd, L"DarkMode_Explorer", nullptr );
+    applyNativeDarkTheme( hwnd, nativeThemeForWindow( aWindow ) );
+    applyNativeDarkThemeToChildren( hwnd );
+}
+
+
+bool KIPLATFORM::UI::HandleDarkThemeCtlColor( WXUINT aMessage, WXWPARAM aWParam,
+                                              WXLPARAM aLParam, WXLRESULT* aResult )
+{
+    if( !IsDarkTheme() || !aResult )
+        return false;
+
+    switch( aMessage )
+    {
+    case WM_CTLCOLORDLG:
+    case WM_CTLCOLORSTATIC:
+    case WM_CTLCOLOREDIT:
+    case WM_CTLCOLORLISTBOX:
+    case WM_CTLCOLORBTN:
+    case WM_CTLCOLORSCROLLBAR:
+        break;
+
+    default:
+        return false;
+    }
+
+    HDC  hdc = reinterpret_cast<HDC>( aWParam );
+    HWND hwnd = reinterpret_cast<HWND>( aLParam );
+
+    if( !hdc )
+        return false;
+
+    const bool fieldControl = aMessage == WM_CTLCOLOREDIT || aMessage == WM_CTLCOLORLISTBOX
+                              || isNativeClass( hwnd, L"Edit" )
+                              || isNativeClass( hwnd, L"ListBox" )
+                              || isNativeClass( hwnd, L"ComboBox" )
+                              || isNativeClass( hwnd, L"ComboBoxEx32" )
+                              || isNativeClass( hwnd, L"ComboLBox" );
+
+    const bool enabled = !hwnd || IsWindowEnabled( hwnd );
+
+    SetTextColor( hdc, enabled ? RGB( 245, 245, 245 ) : RGB( 176, 176, 176 ) );
+
+    if( aMessage == WM_CTLCOLORDLG )
+    {
+        SetBkMode( hdc, OPAQUE );
+        SetBkColor( hdc, RGB( 40, 40, 45 ) );
+        *aResult = reinterpret_cast<WXLRESULT>( dialogBrush() );
+    }
+    else if( fieldControl )
+    {
+        SetBkMode( hdc, OPAQUE );
+        SetBkColor( hdc, RGB( 18, 18, 18 ) );
+        *aResult = reinterpret_cast<WXLRESULT>( fieldBrush() );
+    }
+    else
+    {
+        SetBkMode( hdc, TRANSPARENT );
+        SetBkColor( hdc, RGB( 30, 30, 30 ) );
+        *aResult = reinterpret_cast<WXLRESULT>( panelBrush() );
+    }
+
+    return true;
 }
 
 
@@ -231,14 +381,15 @@ void KIPLATFORM::UI::ApplyDarkWindowTheme( wxWindow* aWindow )
     else if( dynamic_cast<wxTextCtrl*>( aWindow ) || dynamic_cast<wxStyledTextCtrl*>( aWindow )
              || dynamic_cast<wxTreeCtrl*>( aWindow ) || dynamic_cast<wxListCtrl*>( aWindow )
              || dynamic_cast<wxListBox*>( aWindow ) || dynamic_cast<wxDataViewCtrl*>( aWindow )
-             || dynamic_cast<wxGrid*>( aWindow ) )
+             || dynamic_cast<wxGrid*>( aWindow ) || dynamic_cast<wxChoice*>( aWindow )
+             || dynamic_cast<wxComboBox*>( aWindow )
+             || dynamic_cast<wxOwnerDrawnComboBox*>( aWindow )
+             || dynamic_cast<wxSpinCtrl*>( aWindow ) || dynamic_cast<wxSpinCtrlDouble*>( aWindow )
+             || dynamic_cast<wxFilePickerCtrl*>( aWindow ) )
     {
         bg = fieldBg;
     }
-    else if( dynamic_cast<wxNotebook*>( aWindow ) || dynamic_cast<wxChoice*>( aWindow )
-             || dynamic_cast<wxComboBox*>( aWindow ) || dynamic_cast<wxSpinCtrl*>( aWindow )
-             || dynamic_cast<wxSpinCtrlDouble*>( aWindow )
-             || dynamic_cast<wxFilePickerCtrl*>( aWindow ) || dynamic_cast<wxButton*>( aWindow )
+    else if( dynamic_cast<wxNotebook*>( aWindow ) || dynamic_cast<wxButton*>( aWindow )
              || dynamic_cast<wxBitmapButton*>( aWindow ) )
     {
         bg = controlBg;
@@ -247,6 +398,11 @@ void KIPLATFORM::UI::ApplyDarkWindowTheme( wxWindow* aWindow )
     {
         bg = panelBg;
         text = border;
+    }
+    else if( dynamic_cast<wxStaticBox*>( aWindow ) )
+    {
+        bg = panelBg;
+        text = wxColour( 190, 190, 190 );
     }
     else if( dynamic_cast<wxStaticText*>( aWindow ) || dynamic_cast<wxStaticBox*>( aWindow )
              || dynamic_cast<wxCheckBox*>( aWindow ) || dynamic_cast<wxRadioButton*>( aWindow )
@@ -268,6 +424,9 @@ void KIPLATFORM::UI::ApplyDarkWindowTheme( wxWindow* aWindow )
         grid->SetLabelBackgroundColour( controlBg );
         grid->SetLabelTextColour( fg );
         grid->SetGridLineColour( border );
+        grid->SetSelectionBackground( wxColour( 70, 70, 75 ) );
+        grid->SetSelectionForeground( fg );
+        grid->SetCellHighlightColour( wxColour( 105, 105, 110 ) );
     }
     else if( wxStyledTextCtrl* styledText = dynamic_cast<wxStyledTextCtrl*>( aWindow ) )
     {

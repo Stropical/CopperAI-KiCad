@@ -3387,30 +3387,13 @@ std::string McpHandler::HandleToolsCall( const void* params, const std::string& 
         for( const auto& q : queries )
         {
             if( !q.is_string() ) continue;
-            std::string queryStr = q.get<std::string>();
+            std::string queryStr = trimStr( q.get<std::string>() );
+            if( queryStr.empty() )
+                continue;
+
             std::string queryKey = queryStr;
-            auto trimLeft = []( std::string& value )
-            {
-                value.erase( value.begin(), std::find_if( value.begin(), value.end(),
-                                                          []( unsigned char ch )
-                                                          {
-                                                              return !std::isspace( ch );
-                                                          } ) );
-            };
-            auto trimRight = []( std::string& value )
-            {
-                value.erase( std::find_if( value.rbegin(), value.rend(),
-                                           []( unsigned char ch )
-                                           {
-                                               return !std::isspace( ch );
-                                           } )
-                                     .base(),
-                             value.end() );
-            };
-            trimLeft( queryKey );
-            trimRight( queryKey );
             std::transform( queryKey.begin(), queryKey.end(), queryKey.begin(),
-                            []( unsigned char ch ) { return static_cast<char>( std::tolower( ch ) ); } );
+                            []( unsigned char c ) { return std::tolower( c ); } );
 
             auto it = resultByQuery.find( queryKey );
             if( it != resultByQuery.end() )

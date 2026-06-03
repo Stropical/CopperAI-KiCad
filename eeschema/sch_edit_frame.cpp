@@ -2674,12 +2674,18 @@ WEBVIEW_PANEL* SCH_EDIT_FRAME::EnsureDatasheetWebView()
 
 
 /* AI Agent (Copper) webview: full URL, UTF-8.
- * - If the environment variable KICAD_AGENT_CHAT_URL is set and non-empty, that URL is used.
+ * - If COPPERAI_AGENT_URL or KICAD_AGENT_CHAT_URL is set and non-empty, that URL is used.
  * - Otherwise: production Cloudflare URL when KICAD_PRODUCTION_AGENT_CHAT_DEFAULT is defined at
  *   build time (e.g. release/packaging), else http://127.0.0.1:3000/... for local dev.
- * Adjust the port via KICAD_AGENT_CHAT_URL or run your local chat app on 3000. */
+ * Adjust the port via either environment variable or run your local chat app on 3000. */
 static wxString GetAgentChatWebviewUrl()
 {
+    if( const char* fromEnv = std::getenv( "COPPERAI_AGENT_URL" ) )
+    {
+        if( fromEnv[0] != '\0' )
+            return wxString::FromUTF8( fromEnv );
+    }
+
     if( const char* fromEnv = std::getenv( "KICAD_AGENT_CHAT_URL" ) )
     {
         if( fromEnv[0] != '\0' )

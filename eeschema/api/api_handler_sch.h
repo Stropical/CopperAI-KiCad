@@ -69,20 +69,6 @@ protected:
                                                   const KIID& aId ) override;
 
 private:
-    struct SYMBOL_SEARCH_ENTRY
-    {
-        wxString libraryNickname;
-        wxString symbolName;
-        wxString symbolNameLower;
-        wxString description;
-        wxString descriptionLower;
-        wxString keywords;
-        wxString keywordsLower;
-        wxString datasheet;
-        wxString datasheetLower;
-        bool metadataLoaded = false;
-    };
-
     HANDLER_RESULT<commands::GetOpenDocumentsResponse> handleGetOpenDocuments(
             const HANDLER_CONTEXT<commands::GetOpenDocuments>& aCtx );
 
@@ -133,13 +119,28 @@ private:
     handleAppendProjectSymbolLibraryRow(
             const HANDLER_CONTEXT<kiapi::schematic::types::AppendProjectSymbolLibraryRow>& aCtx );
 
+    struct SYMBOL_SEARCH_ENTRY
+    {
+        wxString libraryNickname;
+        wxString symbolName;
+        wxString symbolNameLower;
+        wxString description;
+        wxString descriptionLower;
+        wxString keywords;
+        wxString keywordsLower;
+        wxString datasheet;
+        bool     metadataLoaded = false;
+    };
+
     void clearSymbolSearchCache();
     void rebuildSymbolSearchCacheIfNeeded( SYMBOL_LIB_TABLE* aLibTable );
-    void loadSymbolSearchMetadata( SYMBOL_LIB_TABLE* aLibTable, SYMBOL_SEARCH_ENTRY& aEntry );
+    bool loadSymbolSearchMetadata( SYMBOL_LIB_TABLE* aLibTable, SYMBOL_SEARCH_ENTRY& aEntry );
 
     SCH_EDIT_FRAME* m_frame;
+
+    SYMBOL_LIB_TABLE*                m_symbolSearchCacheTable = nullptr;
+    wxString                         m_symbolSearchCacheSignature;
     std::vector<SYMBOL_SEARCH_ENTRY> m_symbolSearchCache;
-    wxString m_symbolSearchCacheSignature;
 };
 
 
