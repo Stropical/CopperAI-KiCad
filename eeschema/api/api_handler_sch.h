@@ -25,12 +25,16 @@
 #include <api/common/commands/editor_commands.pb.h>
 #include <api/schematic/schematic_commands.pb.h>
 #include <kiid.h>
+#include <wx/string.h>
+
+#include <vector>
 
 using namespace kiapi;
 using namespace kiapi::common;
 
 class SCH_EDIT_FRAME;
 class SCH_ITEM;
+class SYMBOL_LIB_TABLE;
 
 
 class API_HANDLER_SCH : public API_HANDLER_EDITOR
@@ -65,6 +69,20 @@ protected:
                                                   const KIID& aId ) override;
 
 private:
+    struct SYMBOL_SEARCH_ENTRY
+    {
+        wxString libraryNickname;
+        wxString symbolName;
+        wxString symbolNameLower;
+        wxString description;
+        wxString descriptionLower;
+        wxString keywords;
+        wxString keywordsLower;
+        wxString datasheet;
+        wxString datasheetLower;
+        bool metadataLoaded = false;
+    };
+
     HANDLER_RESULT<commands::GetOpenDocumentsResponse> handleGetOpenDocuments(
             const HANDLER_CONTEXT<commands::GetOpenDocuments>& aCtx );
 
@@ -115,7 +133,13 @@ private:
     handleAppendProjectSymbolLibraryRow(
             const HANDLER_CONTEXT<kiapi::schematic::types::AppendProjectSymbolLibraryRow>& aCtx );
 
+    void clearSymbolSearchCache();
+    void rebuildSymbolSearchCacheIfNeeded( SYMBOL_LIB_TABLE* aLibTable );
+    void loadSymbolSearchMetadata( SYMBOL_LIB_TABLE* aLibTable, SYMBOL_SEARCH_ENTRY& aEntry );
+
     SCH_EDIT_FRAME* m_frame;
+    std::vector<SYMBOL_SEARCH_ENTRY> m_symbolSearchCache;
+    wxString m_symbolSearchCacheSignature;
 };
 
 

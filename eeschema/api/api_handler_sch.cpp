@@ -56,6 +56,8 @@
 #include <kiway.h>
 #include <mail_type.h>
 #include <sch_io/sch_io_mgr.h>
+#include <wx/timer.h>
+#include <wx/utils.h>
 
 #include <api/common/types/base_types.pb.h>
 
@@ -107,6 +109,108 @@ void broadcastSymbolLibraryReload( SCH_EDIT_FRAME* aFrame )
     aFrame->Kiway().ExpressMail( FRAME_SCH_SYMBOL_EDITOR, MAIL_RELOAD_LIB, payload );
     aFrame->Kiway().ExpressMail( FRAME_SCH_VIEWER, MAIL_RELOAD_LIB, payload );
 }
+
+bool matchesAnyToken( const wxString& aTextLower, const std::vector<wxString>& aTokens )
+{
+    for( const wxString& token : aTokens )
+    {
+        if( !token.IsEmpty() && aTextLower.Contains( token ) )
+            return true;
+    }
+
+    return false;
+}
+}
+
+void API_HANDLER_SCH::clearSymbolSearchCache()
+{
+    m_symbolSearchCache.clear();
+    m_symbolSearchCacheSignature.Clear();
+}
+
+
+void API_HANDLER_SCH::rebuildSymbolSearchCacheIfNeeded( SYMBOL_LIB_TABLE* aLibTable )
+{
+    if( !aLibTable )
+        return;
+
+    wxString signature;
+    const std::vector<wxString> libs = aLibTable->GetLogicalLibs();
+
+    for( const wxString& lib : libs )
+    {
+        signature += lib;
+        signature += wxS( "\n" );
+    }
+
+    if( !m_symbolSearchCache.empty() && signature == m_symbolSearchCacheSignature )
+        return;
+
+    m_symbolSearchCache.clear();
+    m_symbolSearchCacheSignature = signature;
+
+    wxStopWatch yieldWatch;
+    yieldWatch.Start();
+
+    for( const wxString& libNickname : libs )
+    {
+        wxArrayString aliasNames;
+
+        try
+        {
+            aLibTable->EnumerateSymbolLib( libNickname, aliasNames, false );
+        }
+        catch( const IO_ERROR& )
+        {
+            continue;
+        }
+
+        for( size_t i = 0; i < aliasNames.GetCount(); ++i )
+        {
+            SYMBOL_SEARCH_ENTRY entry;
+            entry.libraryNickname = libNickname;
+            entry.symbolName = aliasNames[i];
+            entry.symbolNameLower = entry.symbolName.Lower();
+            m_symbolSearchCache.push_back( entry );
+
+            if( yieldWatch.Time() > 50 )
+            {
+                wxSafeYield( nullptr, true );
+                yieldWatch.Start();
+            }
+        }
+    }
+}
+
+
+void API_HANDLER_SCH::loadSymbolSearchMetadata( SYMBOL_LIB_TABLE* aLibTable, SYMBOL_SEARCH_ENTRY& aEntry )
+{
+    if( aEntry.metadataLoaded || !aLibTable )
+        return;
+
+    LIB_SYMBOL* symbol = nullptr;
+
+    try
+    {
+        symbol = aLibTable->LoadSymbol( aEntry.libraryNickname, aEntry.symbolName );
+    }
+    catch( const IO_ERROR& )
+    {
+        aEntry.metadataLoaded = true;
+        return;
+    }
+
+    if( symbol )
+    {
+        aEntry.description = symbol->GetDescription();
+        aEntry.descriptionLower = aEntry.description.Lower();
+        aEntry.keywords = symbol->GetKeyWords();
+        aEntry.keywordsLower = aEntry.keywords.Lower();
+        aEntry.datasheet = symbol->GetDatasheetField().GetText();
+        aEntry.datasheetLower = aEntry.datasheet.Lower();
+    }
+
+    aEntry.metadataLoaded = true;
 }
 
 
@@ -449,7 +553,9 @@ HANDLER_RESULT<SearchSymbolsResponse> API_HANDLER_SCH::handleSearchSymbols(
 
     wxString query = wxString( aCtx.Request.query().c_str(), wxConvUTF8 ).Trim();
     wxString targetLib = wxString( aCtx.Request.library().c_str(), wxConvUTF8 );
-    int limit = aCtx.Request.limit() > 0 ? aCtx.Request.limit() : 100;
+    int limit = aCtx.Request.limit() > 0 ? aCtx.Request.limit() : 50;
+    if( limit > 100 )
+        limit = 100;
 
     // Ripgrep-style: split query into tokens (space, comma, etc.); match if ANY token matches
     std::vector<wxString> queryTokens;
@@ -464,69 +570,55 @@ HANDLER_RESULT<SearchSymbolsResponse> API_HANDLER_SCH::handleSearchSymbols(
         }
     }
 
-    std::vector<wxString> libs;
-    if( !targetLib.IsEmpty() && libTable->HasLibrary( targetLib, true ) )
-        libs.push_back( targetLib );
-    else if( targetLib.IsEmpty() )
-        libs = libTable->GetLogicalLibs();
+    if( !targetLib.IsEmpty() && !libTable->HasLibrary( targetLib, true ) )
+        return response;
 
-    for( const wxString& libNickname : libs )
+    rebuildSymbolSearchCacheIfNeeded( libTable );
+
+    wxStopWatch yieldWatch;
+    yieldWatch.Start();
+
+    for( SYMBOL_SEARCH_ENTRY& entry : m_symbolSearchCache )
     {
         if( (int) response.results_size() >= limit )
             break;
 
-        wxArrayString aliasNames;
-        try
-        {
-            libTable->EnumerateSymbolLib( libNickname, aliasNames, false );
-        }
-        catch( const IO_ERROR& )
-        {
+        if( !targetLib.IsEmpty() && entry.libraryNickname != targetLib )
             continue;
+
+        bool matches = queryTokens.empty();
+
+        if( !matches )
+        {
+            if( matchesAnyToken( entry.symbolNameLower, queryTokens ) )
+            {
+                matches = true;
+            }
+            else
+            {
+                loadSymbolSearchMetadata( libTable, entry );
+                matches = matchesAnyToken( entry.descriptionLower, queryTokens )
+                          || matchesAnyToken( entry.keywordsLower, queryTokens )
+                          || matchesAnyToken( entry.datasheetLower, queryTokens );
+            }
         }
 
-        for( size_t i = 0; i < aliasNames.GetCount() && (int) response.results_size() < limit; i++ )
+        if( !matches )
+            continue;
+
+        loadSymbolSearchMetadata( libTable, entry );
+
+        SymbolSearchResult* result = response.add_results();
+        result->set_library_nickname( entry.libraryNickname.ToStdString() );
+        result->set_symbol_name( entry.symbolName.ToStdString() );
+        result->set_description( entry.description.ToStdString() );
+        result->set_keywords( entry.keywords.ToStdString() );
+        result->set_datasheet( entry.datasheet.ToStdString() );
+
+        if( yieldWatch.Time() > 50 )
         {
-            wxString name = aliasNames[i];
-
-            LIB_SYMBOL* symbol = nullptr;
-            try
-            {
-                symbol = libTable->LoadSymbol( libNickname, name );
-            }
-            catch( const IO_ERROR& )
-            {
-                continue;
-            }
-
-            if( !symbol )
-                continue;
-
-            // Ripgrep-style: if query has tokens, match if ANY token is in name, description, or keywords
-            if( !queryTokens.empty() )
-            {
-                wxString nameLower = name.Lower();
-                wxString descLower = symbol->GetDescription().Lower();
-                wxString kwLower = symbol->GetKeyWords().Lower();
-                bool anyMatch = false;
-                for( const wxString& tok : queryTokens )
-                {
-                    if( nameLower.Contains( tok ) || descLower.Contains( tok ) || kwLower.Contains( tok ) )
-                    {
-                        anyMatch = true;
-                        break;
-                    }
-                }
-                if( !anyMatch )
-                    continue;
-            }
-
-            SymbolSearchResult* result = response.add_results();
-            result->set_library_nickname( libNickname.ToStdString() );
-            result->set_symbol_name( name.ToStdString() );
-            result->set_description( symbol->GetDescription().ToStdString() );
-            result->set_keywords( symbol->GetKeyWords().ToStdString() );
-            result->set_datasheet( symbol->GetDatasheetField().GetText().ToStdString() );
+            wxSafeYield( nullptr, true );
+            yieldWatch.Start();
         }
     }
 
@@ -1607,6 +1699,7 @@ API_HANDLER_SCH::handleReloadProjectSymbolLibraries(
     }
 
     prj.SetElem( PROJECT::ELEM::SCH_SYMBOL_LIBS, nullptr );
+    clearSymbolSearchCache();
     broadcastSymbolLibraryReload( m_frame );
 
     response.set_ok( true );
@@ -1665,6 +1758,7 @@ API_HANDLER_SCH::handleAppendProjectSymbolLibraryRow(
     }
 
     prj.SetElem( PROJECT::ELEM::SCH_SYMBOL_LIBS, nullptr );
+    clearSymbolSearchCache();
     broadcastSymbolLibraryReload( m_frame );
 
     response.set_ok( true );
