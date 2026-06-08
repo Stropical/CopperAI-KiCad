@@ -23,6 +23,7 @@
 #include <api/api_handler_sch.h>
 #include <api/api_sch_utils.h>
 #include <api/api_utils.h>
+#include <api/api_enums.h>
 #include <api/schematic/schematic_commands.pb.h>
 #include <base_units.h>
 #include <lib_id.h>
@@ -128,6 +129,7 @@ API_HANDLER_SCH::API_HANDLER_SCH( SCH_EDIT_FRAME* aFrame ) :
         API_HANDLER_EDITOR( aFrame ),
         m_frame( aFrame )
 {
+    registerHandler<GetItems, GetItemsResponse>( &API_HANDLER_SCH::handleGetItems );
     registerHandler<GetOpenDocuments, GetOpenDocumentsResponse>(
             &API_HANDLER_SCH::handleGetOpenDocuments );
     registerHandler<SearchSymbols, SearchSymbolsResponse>( &API_HANDLER_SCH::handleSearchSymbols );
@@ -174,6 +176,72 @@ bool API_HANDLER_SCH::validateDocumentInternal( const DocumentSpecifier& aDocume
 
     //wxString currentPath = m_frame->GetCurrentSheet().PathAsString();
     //return 0 == aDocument.sheet_path().compare( currentPath.ToStdString() );
+}
+
+
+HANDLER_RESULT<GetItemsResponse> API_HANDLER_SCH::handleGetItems(
+        const HANDLER_CONTEXT<GetItems>& aCtx )
+{
+    if( std::optional<ApiResponseStatus> busy = checkForBusy() )
+        return tl::unexpected( *busy );
+
+    if( !validateItemHeaderDocument( aCtx.Request.header() ) )
+    {
+        ApiResponseStatus e;
+        e.set_status( ApiStatusCode::AS_UNHANDLED );
+        return tl::unexpected( e );
+    }
+
+    GetItemsResponse response;
+    SCH_SCREEN* screen = m_frame->GetScreen();
+    std::set<KICAD_T> typesRequested;
+    bool handledAnything = false;
+
+    for( int typeRaw : aCtx.Request.types() )
+    {
+        auto typeMessage = static_cast<kiapi::common::types::KiCadObjectType>( typeRaw );
+        KICAD_T type = FromProtoEnum<KICAD_T>( typeMessage );
+
+        if( type == TYPE_NOT_INIT )
+            continue;
+
+        typesRequested.emplace( type );
+
+        switch( type )
+        {
+        case SCH_LINE_T:
+        case SCH_LABEL_T:
+        case SCH_GLOBAL_LABEL_T:
+        case SCH_HIER_LABEL_T:
+        case SCH_DIRECTIVE_LABEL_T:
+            handledAnything = true;
+            break;
+        default:
+            break;
+        }
+    }
+
+    if( !handledAnything )
+    {
+        ApiResponseStatus e;
+        e.set_status( ApiStatusCode::AS_BAD_REQUEST );
+        e.set_error_message( "none of the requested types are valid for a Schematic object" );
+        return tl::unexpected( e );
+    }
+
+    for( SCH_ITEM* item : screen->Items() )
+    {
+        if( !typesRequested.count( item->Type() ) )
+            continue;
+
+        google::protobuf::Any itemBuf;
+        item->Serialize( itemBuf );
+        if( !itemBuf.type_url().empty() )
+            response.mutable_items()->Add( std::move( itemBuf ) );
+    }
+
+    response.set_status( kiapi::common::types::ItemRequestStatus::IRS_OK );
+    return response;
 }
 
 
