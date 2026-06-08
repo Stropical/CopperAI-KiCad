@@ -1486,6 +1486,7 @@ void SCH_LABEL::Serialize( google::protobuf::Any &aContainer ) const
 
     label.mutable_id()->set_value( m_Uuid.AsStdString() );
     kiapi::common::PackVector2( *label.mutable_position(), GetPosition() );
+    label.mutable_text()->mutable_text()->set_text( GetText().ToStdString() );
 
     aContainer.PackFrom( label );
 }
@@ -1579,14 +1580,29 @@ SCH_DIRECTIVE_LABEL::SCH_DIRECTIVE_LABEL( const SCH_DIRECTIVE_LABEL& aClassLabel
 
 void SCH_DIRECTIVE_LABEL::Serialize( google::protobuf::Any &aContainer ) const
 {
-    // TODO
+    kiapi::schematic::types::DirectiveLabel label;
+
+    label.mutable_id()->set_value( m_Uuid.AsStdString() );
+    kiapi::common::PackVector2( *label.mutable_position(), GetPosition() );
+    label.mutable_text()->mutable_text()->set_text( GetText().ToStdString() );
+
+    aContainer.PackFrom( label );
 }
 
 
 bool SCH_DIRECTIVE_LABEL::Deserialize( const google::protobuf::Any &aContainer )
 {
-    // TODO
-    return false;
+    kiapi::schematic::types::DirectiveLabel label;
+
+    if( !aContainer.UnpackTo( &label ) )
+        return false;
+
+    const_cast<KIID&>( m_Uuid ) = KIID( label.id().value() );
+    SetPosition( kiapi::common::UnpackVector2( label.position() ) );
+    if( label.has_text() )
+        SetText( wxString( label.text().text().text() ) );
+
+    return true;
 }
 
 
@@ -2117,14 +2133,29 @@ SCH_HIERLABEL::SCH_HIERLABEL( const VECTOR2I& pos, const wxString& text, KICAD_T
 
 void SCH_HIERLABEL::Serialize( google::protobuf::Any &aContainer ) const
 {
-    // TODO
+    kiapi::schematic::types::HierarchicalLabel label;
+
+    label.mutable_id()->set_value( m_Uuid.AsStdString() );
+    kiapi::common::PackVector2( *label.mutable_position(), GetPosition() );
+    label.mutable_text()->mutable_text()->set_text( GetText().ToStdString() );
+
+    aContainer.PackFrom( label );
 }
 
 
 bool SCH_HIERLABEL::Deserialize( const google::protobuf::Any &aContainer )
 {
-    // TODO
-    return false;
+    kiapi::schematic::types::HierarchicalLabel label;
+
+    if( !aContainer.UnpackTo( &label ) )
+        return false;
+
+    const_cast<KIID&>( m_Uuid ) = KIID( label.id().value() );
+    SetPosition( kiapi::common::UnpackVector2( label.position() ) );
+    if( label.has_text() )
+        SetText( wxString( label.text().text().text() ) );
+
+    return true;
 }
 
 
