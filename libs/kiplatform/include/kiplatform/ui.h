@@ -22,6 +22,7 @@
 #define KIPLATFORM_UI_H_
 
 #include <wx/cursor.h>
+#include <wx/string.h>
 
 class wxChoice;
 class wxNonOwnedWindow;
@@ -203,6 +204,23 @@ namespace KIPLATFORM
          * @param aWebView the wxWebView instance to patch
          */
         void FixupWebViewKeyEquivalents( wxWindow* aWebView );
+
+        /**
+         * Run a script in a wxWebView's native browser without scheduling a
+         * completion callback.
+         *
+         * On macOS, wxWebView::RunScriptAsync() queues a completion event back
+         * through wx for every call; for high-frequency IPC pushes into the
+         * Copper Agent webview the fire-and-forget native path avoids that
+         * overhead and the associated re-entrancy during modal dialogs.
+         *
+         * @param aWebView the wxWebView instance to run the script in
+         * @param aScript the JavaScript source to execute
+         * @return true when the script was handed to the native browser;
+         *         false means the caller must fall back to
+         *         wxWebView::RunScriptAsync() (non-macOS platforms).
+         */
+        bool RunWebViewScriptFireAndForget( wxWindow* aWebView, const wxString& aScript );
     }
 }
 

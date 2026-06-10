@@ -341,3 +341,29 @@ void KIPLATFORM::UI::FixupWebViewKeyEquivalents( wxWindow* aWebView )
 
     applied = true;
 }
+
+
+bool KIPLATFORM::UI::RunWebViewScriptFireAndForget( wxWindow* aWebView, const wxString& aScript )
+{
+    if( !aWebView )
+        return false;
+
+    NSView* nativeView = aWebView->GetHandle();
+
+    if( !nativeView )
+        return false;
+
+    // Find the actual WKWebView instance (may be nested several levels deep).
+    WKWebView* wkWebView = FindWKWebView( nativeView );
+
+    if( !wkWebView )
+        return false;
+
+    NSString* script = [NSString stringWithUTF8String:aScript.utf8_str()];
+
+    if( !script )
+        return false;
+
+    [wkWebView evaluateJavaScript:script completionHandler:nil];
+    return true;
+}

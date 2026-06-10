@@ -414,6 +414,14 @@ void KIPLATFORM::UI::FixupWebViewKeyEquivalents( wxWindow* aWebView )
     // Not needed on this platform
 }
 
+
+bool KIPLATFORM::UI::RunWebViewScriptFireAndForget( wxWindow* aWebView, const wxString& aScript )
+{
+    // No native fast path on this platform — callers fall back to
+    // wxWebView::RunScriptAsync().
+    return false;
+}
+
 //
 // **** Wayland hacks ahead ****
 //
