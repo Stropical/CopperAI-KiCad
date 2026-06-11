@@ -38,19 +38,24 @@ jobs:
           EVENT: ${{ github.event_name }}
         run: |
           set -euxo pipefail
-          auth=(-H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json")
+          api=(-H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json")
+          # Public repo: download via browser_download_url (CDN), which needs no
+          # auth and follows redirects cleanly. The API asset .url + octet-stream
+          # path returned a redirect stub here, not the binary.
           if [ -n "${RPM_URL:-}" ]; then
-            curl -fsSL "${RPM_URL}" -o copperai.rpm
+            url="${RPM_URL}"
           elif [ "${EVENT}" = "release" ]; then
-            url=$(curl -fsSL "${auth[@]}" "${ASSETS_URL}" \
-              | jq -r '.[] | select(.name|endswith(".rpm")) | .url' | head -1)
-            curl -fsSL "${auth[@]}" -H "Accept: application/octet-stream" "${url}" -o copperai.rpm
+            url=$(curl -fsSL "${api[@]}" "${ASSETS_URL}" \
+              | jq -r '.[] | select(.name|endswith(".rpm")) | .browser_download_url' | head -1)
           else
-            url=$(curl -fsSL "${auth[@]}" "https://api.github.com/repos/${REPO}/releases/latest" \
-              | jq -r '.assets[] | select(.name|endswith(".rpm")) | .url' | head -1)
-            curl -fsSL "${auth[@]}" -H "Accept: application/octet-stream" "${url}" -o copperai.rpm
+            url=$(curl -fsSL "${api[@]}" "https://api.github.com/repos/${REPO}/releases/latest" \
+              | jq -r '.assets[] | select(.name|endswith(".rpm")) | .browser_download_url' | head -1)
           fi
-          test -s copperai.rpm
+          echo "downloading: ${url}"
+          curl -fSL --retry 3 "${url}" -o copperai.rpm
+          # Guard: a redirect/error stub is not an RPM (this exact failure mode).
+          test "$(stat -c%s copperai.rpm)" -gt 1000000
+          file copperai.rpm | grep -qi RPM
           echo "rpm size: $(stat -c%s copperai.rpm) bytes"
 
       - name: Install on a clean Fedora (no KiCad deps pre-installed)
