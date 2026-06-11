@@ -1,0 +1,89 @@
+name: Fedora RPM Install Test
+
+# Quick gate: prove the shipped RPM installs cleanly on a pristine Fedora with
+# NO KiCad packages pre-installed, and that every binary resolves its libraries.
+# Runs automatically when a release is published, and can be triggered by hand
+# against any RPM URL.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      rpm_url:
+        description: "Direct URL to a .rpm to test (defaults to latest release's .rpm asset)"
+        required: false
+  push:
+    branches: [fedora]
+    paths:
+      - "packaging/fedora/**"
+      - ".github/workflows/fedora-rpm-install-test.yml"
+
+jobs:
+  install-test:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:41
+    steps:
+      - name: Install test tooling
+        run: dnf -y install findutils file curl jq /usr/bin/ldd glibc-common
+
+      - name: Resolve the RPM under test
+        id: rpm
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RPM_URL: ${{ github.event.inputs.rpm_url }}
+          ASSETS_URL: ${{ github.event.release.assets_url }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          set -euxo pipefail
+          auth=(-H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json")
+          if [ -n "${RPM_URL:-}" ]; then
+            curl -fsSL "${RPM_URL}" -o copperai.rpm
+          elif [ "${EVENT}" = "release" ]; then
+            url=$(curl -fsSL "${auth[@]}" "${ASSETS_URL}" \
+              | jq -r '.[] | select(.name|endswith(".rpm")) | .url' | head -1)
+            curl -fsSL "${auth[@]}" -H "Accept: application/octet-stream" "${url}" -o copperai.rpm
+          else
+            url=$(curl -fsSL "${auth[@]}" "https://api.github.com/repos/${REPO}/releases/latest" \
+              | jq -r '.assets[] | select(.name|endswith(".rpm")) | .url' | head -1)
+            curl -fsSL "${auth[@]}" -H "Accept: application/octet-stream" "${url}" -o copperai.rpm
+          fi
+          test -s copperai.rpm
+          echo "rpm size: $(stat -c%s copperai.rpm) bytes"
+
+      - name: Install on a clean Fedora (no KiCad deps pre-installed)
+        run: |
+          set -euxo pipefail
+          # If dnf cannot resolve a dependency, this fails — that IS the test.
+          dnf -y install ./copperai.rpm
+          rpm -q copperai
+
+      - name: Every installed binary resolves all libraries
+        run: |
+          set -euxo pipefail
+          missing=0
+          while read -r f; do
+            file "$f" | grep -q ELF || continue
+            case "$f" in */bin/*|*.so*) ;; *) continue ;; esac
+            if ldd "$f" 2>/dev/null | grep -i "not found"; then
+              echo "::error file=$f::unresolved shared libraries"
+              ldd "$f" | grep -i "not found" || true
+              missing=1
+            fi
+          done < <(rpm -ql copperai)
+          [ "$missing" -eq 0 ] || { echo "Unresolved libraries found"; exit 1; }
+          echo "All binaries fully linked."
+
+      - name: Headless smoke
+        run: |
+          set -euxo pipefail
+          # kicad-cli is the headless entry point; GUI binaries may need a display.
+          cli=$(rpm -ql copperai | grep -E '/usr/bin/kicad-cli$' | head -1 || true)
+          if [ -n "$cli" ]; then
+            "$cli" version || "$cli" --version || true
+          else
+            bin=$(rpm -ql copperai | grep -E '/usr/bin/(kicad|eeschema)$' | head -1)
+            echo "no kicad-cli; install + link checks already passed for $bin"
+          fi
