@@ -5,7 +5,7 @@ exec > /out/build.log 2>&1
 
 echo "=== PHASE: deps ==="
 dnf -y install dnf5-plugins 'dnf-command(builddep)' git cmake ninja-build gcc-c++ \
-    rpm-build ruby ruby-devel rubygems make patchelf file findutils which || true
+    rpm-build patchelf file findutils which || true
 # builddep covers most; the explicit list backstops anything builddep misses
 # (this is the Fedora analogue of the libs apt-get couldn't find).
 dnf -y builddep kicad || true
@@ -47,9 +47,12 @@ mkdir -p "$PRIV"
 # System libs that must stay external (kernel/loader/GPU/glibc core) — bundling
 # these breaks more than it fixes.
 KEEP='ld-linux|/libc\.so|/libm\.so|/libdl\.so|/libpthread\.so|/librt\.so|/libresolv\.so|libGLX|libGL\.so|libEGL|libGLdispatch|libdrm|libgbm|libwayland|/libgcc_s'
-mapfile -t BINS < <(find /pkgroot/usr/bin /pkgroot/usr/lib* -type f \( -name '*.so*' -o -perm -u+x \) 2>/dev/null | while read -r f; do file "$f" | grep -q ELF && echo "$f"; done)
+# Collect all ELF files — using file(1) rather than extension/permission so .kiface
+# plugin modules (which carry neither *.so nor exec bit) are included.
+mapfile -t ALL_ELF < <(find /pkgroot/usr/bin /pkgroot/usr/lib* -type f 2>/dev/null \
+  | while read -r f; do file "$f" | grep -q ELF && echo "$f"; done)
 copy_dep() { local lib="$1"; [ -f "$lib" ] || return; local base; base=$(basename "$lib"); [ -e "$PRIV/$base" ] && return; cp -L "$lib" "$PRIV/$base"; }
-for b in "${BINS[@]}"; do
+for b in "${ALL_ELF[@]}"; do
   ldd "$b" 2>/dev/null | awk '/=> \//{print $3}' | while read -r dep; do
     echo "$dep" | grep -qE "$KEEP" && continue
     echo "$dep" | grep -q '/pkgroot/' && continue   # already ours
@@ -66,18 +69,48 @@ for i in 1 2 3; do
   done
 done
 echo "bundled $(ls "$PRIV" | wc -l) libraries"
-# point every binary and bundled lib at the private dir first
-for b in "${BINS[@]}" "$PRIV"/*; do patchelf --set-rpath '$ORIGIN/../lib/copperai:$ORIGIN' "$b" 2>/dev/null || true; done
-for b in /pkgroot/usr/bin/*; do file "$b" | grep -q ELF && patchelf --set-rpath '$ORIGIN/../lib/copperai' "$b" 2>/dev/null || true; done
+
+# Patchelf ALL ELF files to absolute /usr/lib/copperai RPATH.
+# Absolute path is required for .kiface plugin modules loaded at runtime — they
+# cannot rely on $ORIGIN since dlopen resolves relative to the library, not cwd.
+cnt=0
+for b in "${ALL_ELF[@]}" "$PRIV"/*; do
+  [ -f "$b" ] || continue
+  patchelf --set-rpath '/usr/lib/copperai' "$b" 2>/dev/null && cnt=$((cnt+1)) || true
+done
+echo "patchelf'd $cnt ELF files"
+# Sanity: .kiface modules must carry the RPATH
+for k in $(find /pkgroot -name '*.kiface' | head -3); do echo "$k -> $(patchelf --print-rpath "$k")"; done
 
 echo "=== PHASE: package ==="
-gem install --no-document fpm
-fpm -s dir -t rpm -n copperai -v 1.0.0 --iteration 1 \
-  --rpm-auto-add-directories \
-  --description "CopperAI KiCad (Fedora, self-contained)" \
-  --url "https://copperai.workers.dev" \
-  --depends mesa-libGL --depends mesa-dri-drivers \
-  -C /pkgroot usr
-cp ./*.rpm /out/
+# Use native rpmbuild (not fpm) — fpm calls lchmod on .so symlinks which Linux rejects.
+mkdir -p /root/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,BUILDROOT}
+( cd /pkgroot && find usr \( -type f -o -type l \) -printf '"/%p"\n' ) > /root/files.list
+echo '%dir "/usr/lib/copperai"' >> /root/files.list
+cat > /root/rpmbuild/SPECS/copperai.spec <<'SPEC'
+%global __os_install_post %{nil}
+%global debug_package %{nil}
+Name: copperai
+Version: 1.0.0
+Release: 1%{?dist}
+Summary: CopperAI KiCad (Fedora, self-contained)
+License: GPLv3+
+BuildArch: x86_64
+Requires: mesa-libGL
+Requires: mesa-dri-drivers
+Requires: libwayland-client
+Requires: libwayland-cursor
+Requires: libwayland-egl
+AutoReqProv: no
+%description
+CopperAI KiCad self-contained Fedora build.
+%install
+mkdir -p %{buildroot}
+cp -a /pkgroot/usr %{buildroot}/usr
+%files -f /root/files.list
+SPEC
+rpmbuild -bb --define "_topdir /root/rpmbuild" --define "_build_id_links none" \
+  /root/rpmbuild/SPECS/copperai.spec || echo "rpmbuild returned $?"
+cp /root/rpmbuild/RPMS/x86_64/*.rpm /out/
 ls -la /out/*.rpm
 echo "BUILD-COMPLETE"
